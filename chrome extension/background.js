@@ -1,3 +1,39 @@
+
+// ICON MANAGEMENT BASED ON iAPI PRESENCE IN SELECTED TAB
+
+var iAPIPresence = new Array();	// iAPIPresence[tab.id] tells whether the respective tab contains iAPIs ("yes") or not ("no")
+
+// sets the correct icon based on the presence of iAPIs in the current tab
+function setIcon(tabId) {
+	
+	if (iAPIPresence[tabId] == "yes")
+ 		chrome.browserAction.setIcon({"path":"icon_green.png"});
+ 	else
+ 	 	chrome.browserAction.setIcon({"path":"icon_red.png"});
+
+}
+
+// listens for messages communicating iAPI presence info
+chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
+
+	if (msg.type == "iAPI presence") {
+		iAPIPresence[sender.tab.id] = msg.presence;	// memorize presence
+		setIcon(sender.tab.id); // set icon accordingly	
+	}
+ 	 	
+});
+
+chrome.tabs.onActivated.addListener(function(activeInfo) { setIcon(activeInfo.tabId); }); // update icon upon tab change
+
+
+
+
+
+
+
+
+
+
 /*chrome.browserAction.onClicked.addListener(function(tab) {
 chrome.browserAction.setIcon({path:"icogray.gif"});
 });
@@ -13,31 +49,38 @@ else if(msg.color=='red'){
 */
 //Funzione per far cambiare l'icona in caso di click su di essa
 chrome.browserAction.onClicked.addListener(function(tab) {
-if(localStorage["icon"]=="logo_gray.png"){
-localStorage["icon"]="logo_red.png";
+if(localStorage["icon"]=="icon_black.png"){
+localStorage["icon"]="icon_red.png";
 }
-else if(localStorage["icon"]=="logo_red.png"||localStorage["icon"]=="logo_green.png"){
-localStorage["icon"]="logo_gray.png";
+else if(localStorage["icon"]=="icon_red.png"||localStorage["icon"]=="icon_green.png"){
+localStorage["icon"]="icon_black.png";
 }
 chrome.browserAction.setIcon({"path":localStorage["icon"]});
 });
 
 
+
+
+
+
+
+/*
 //Funzione che cambia il colore dell'icona se ci sono iApi nella pagina o no (riceve i messaggi dagli script)
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 
   if (msg.color == 'green') {
-    localStorage["icon"]="logo_green.png";
+    localStorage["icon"]="icon_green.png";
 	chrome.browserAction.setIcon({"path":localStorage["icon"]});
   }
 else if(msg.color=='red'){
- localStorage["icon"]="logo_red.png";
+ localStorage["icon"]="icon_red.png";
  chrome.browserAction.setIcon({"path":localStorage["icon"]});
 }
 chrome.extension.onRequest.addListener(onRequest);
 
 
 });
+*/
 
 
 

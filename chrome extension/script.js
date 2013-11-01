@@ -1,5 +1,9 @@
 
+
+
 $(document).ready(function(){
+
+
 
 	iapi_control = "<div id='iapi_frame' style='border: 3px solid black; display: none;'>" +
 	               '<div id="iapi_menu" class="iapi_menu" style="background-color:black; padding: 3px; width: 200px;">'+
@@ -134,7 +138,7 @@ $(".iapi").attr("ondrop","drop(event)");
 
 
 	//alert("Sono state individuate delle iapi nella pagina");
-chrome.extension.sendMessage({color:'green'}, function(){});
+chrome.extension.sendMessage({"type":"iAPI presence", "presence":"yes"}, function(){});
 
     
 	//chrome.browserAction.setIcon({path:"icogreen.gif"});
@@ -145,7 +149,7 @@ chrome.extension.sendMessage({color:'green'}, function(){});
 	*/
 }
 else {
-chrome.extension.sendMessage({color:'red'}, function(){});
+chrome.extension.sendMessage({"type":"iAPI presence", "presence":"no"}, function(){});
 }
 //Da qui in poi mi occupo di settare le variabili da passare alle funzioni di generazione del codice 
 var YourFindElement = $(".iapi");
