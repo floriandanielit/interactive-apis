@@ -13,11 +13,11 @@ else if(msg.color=='red'){
 */
 //Funzione per far cambiare l'icona in caso di click su di essa
 chrome.browserAction.onClicked.addListener(function(tab) {
-if(localStorage["icon"]=="icogray.gif"){
-localStorage["icon"]="icored.gif";
+if(localStorage["icon"]=="logo_gray.png"){
+localStorage["icon"]="logo_red.png";
 }
-else if(localStorage["icon"]=="icored.gif"||localStorage["icon"]=="icogreen.gif"){
-localStorage["icon"]="icogray.gif";
+else if(localStorage["icon"]=="logo_red.png"||localStorage["icon"]=="logo_green.png"){
+localStorage["icon"]="logo_gray.png";
 }
 chrome.browserAction.setIcon({"path":localStorage["icon"]});
 });
@@ -27,11 +27,11 @@ chrome.browserAction.setIcon({"path":localStorage["icon"]});
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 
   if (msg.color == 'green') {
-    localStorage["icon"]="icogreen.gif";
+    localStorage["icon"]="logo_green.png";
 	chrome.browserAction.setIcon({"path":localStorage["icon"]});
   }
 else if(msg.color=='red'){
- localStorage["icon"]="icored.gif";
+ localStorage["icon"]="logo_red.png";
  chrome.browserAction.setIcon({"path":localStorage["icon"]});
 }
 chrome.extension.onRequest.addListener(onRequest);
