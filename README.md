@@ -7,3 +7,6 @@ This project develops a middleware for the integration of iAPIs as discussed in 
 W3C Interactive APIs Community Group (http://www.w3.org/community/interative-apis/).
 In its first version, the middleware comes as an extension of Google Chrome. Other
 implementations may follow.
+
+For more details, have a look at the project wiki:
+https://github.com/floriandanielit/interactive-apis/wiki
