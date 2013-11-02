@@ -138,7 +138,7 @@ $(".iapi").attr("ondrop","drop(event)");
 
 
 	//alert("Sono state individuate delle iapi nella pagina");
-chrome.extension.sendMessage({"type":"iAPI presence", "presence":"yes"}, function(){});
+chrome.extension.sendMessage({"type":"iAPI presence", "presence":"true"}, function(){});
 
     
 	//chrome.browserAction.setIcon({path:"icogreen.gif"});
@@ -149,7 +149,7 @@ chrome.extension.sendMessage({"type":"iAPI presence", "presence":"yes"}, functio
 	*/
 }
 else {
-chrome.extension.sendMessage({"type":"iAPI presence", "presence":"no"}, function(){});
+chrome.extension.sendMessage({"type":"iAPI presence", "presence":"false"}, function(){});
 }
 //Da qui in poi mi occupo di settare le variabili da passare alle funzioni di generazione del codice 
 var YourFindElement = $(".iapi");
