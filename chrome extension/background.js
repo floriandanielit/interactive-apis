@@ -1,12 +1,12 @@
 
 // ICON MANAGEMENT BASED ON iAPI PRESENCE IN SELECTED TAB
 
-var iAPIPresence = new Array();	// iAPIPresence[tab.id] tells whether the respective tab contains iAPIs ("true") or not ("false")
+var iAPIPresence = new Array();	// iAPIPresence[tab.id] tells whether the respective tab contains iAPIs ("yes") or not ("no")
 
 // sets the correct icon based on the presence of iAPIs in the current tab
 function setIcon(tabId) {
 	
-	if (iAPIPresence[tabId])
+	if (iAPIPresence[tabId] == "yes")
  		chrome.browserAction.setIcon({"path":"icon_green.png"});
  	else
  	 	chrome.browserAction.setIcon({"path":"icon_red.png"});
