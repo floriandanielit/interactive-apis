@@ -23,7 +23,8 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
  	 	
 });
 
-chrome.tabs.onActivated.addListener( function(activeInfo) { setIcon(activeInfo.tabId); } ); // update icon upon tab change
+// update icon upon tab change
+chrome.tabs.onActivated.addListener( function(activeInfo) { setIcon(activeInfo.tabId); } ); 
 
 
 
