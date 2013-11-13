@@ -85,7 +85,7 @@ chrome.extension.onRequest.addListener(onRequest);
 
 
 
-chrome.extension.onRequest.addListener(onRequest);
+//chrome.extension.onRequest.addListener(onRequest);
 
 
 
