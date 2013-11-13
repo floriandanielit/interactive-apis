@@ -1,0 +1,27 @@
+{
+"name": "iAPI middleware",
+"version": "0.1",
+"manifest_version": 2,
+"description": "Description",
+        "icons": {
+                 "128":"logo.png" 
+        }, 
+
+"browser_action": {
+    "default_icon": "icon_black.png"
+  },
+"content_scripts": [
+{
+"matches": ["http://*/*","https://*/*"],
+"js": ["jquery.min.js","jquery.jfeed.js","jquery.jfeeditem.js","libgen.js","script.js"]
+}
+],
+"background": {
+       "scripts": ["background.js"]
+  },
+
+  "permissions": [
+"management","webNavigation","webRequest","tabs","webRequestBlocking", "contextMenus","http://*/*","https://*/*"
+  ],
+  "web_accessible_resources": ["jquery.min.js","scripttoinject.js"]
+}
