@@ -2,20 +2,20 @@ var disable = true;
 
 
 chrome.extension.sendMessage({ "type": "extension_status" }, function (msg) {
-    console.log("disabilita: " + msg.disabilita);
-    this.disable = msg.disabilita;
+    console.log("disabilita script: " + msg.disa);
+    this.disable = msg.disa;
 
     scriptBody();
 });
 //scriptBody();
 
 function scriptBody() {
-    console.log("disabilita__: " + this.disable);
+    console.log("disabilita hdajda__: " + this.disable);
 
     if (this.disable == false) {
 
 
-        $(document).ready(function () {
+
 
 
 
@@ -44,7 +44,7 @@ function scriptBody() {
                 $('#iapi_menu').offset({ top: offset.top, left: offset.left + $(this).width() - 3 });
 
             });
-        });
+
     }
 
 
