@@ -5,6 +5,7 @@ var iAPIPresence = new Array();	// iAPIPresence[tab.id] tells whether the respec
 var disabilita = true;
 // sets the correct icon based on the presence of iAPIs in the current tab
 function setIcon(tabId) {
+    console.log("DISABLE: " + disabilita);
     if (disabilita == true) {
         chrome.browserAction.setIcon({ "path": "img/icon_black.png" });
     }
@@ -14,7 +15,7 @@ function setIcon(tabId) {
         else
             chrome.browserAction.setIcon({ "path": "img/icon_red.png" });
     }
-    console.log("DISABLE: " + disabilita);
+
 }
 
 // listen for messages communicating iAPI presence info
@@ -28,7 +29,8 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
         }
     }
     else if (msg.type == "extension_status") {
-        sendResponse({ 'disabilita': disabilita });
+        console.log("send response"+disabilita);
+        sendResponse({ 'disa': this.disabilita });
     }
     
 
@@ -38,42 +40,62 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
 
 //background open a new page (used in popup.js)
 function openTab(url) {
-    console.log("masdkamskm");
-        chrome.tabs.create({ url: url });
+   chrome.tabs.create({ url: url });
 }
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
 
-
-    chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+    if (disabilita == false) {
+        console.log("before" + disabilita);
         if (disabilita == false) {
             console.log("sendscript");
-            chrome.tabs.executeScript(tabs[0].id, {  file: 'script.js' }, function () {
-                    console.log('Successfully injected script into the page');
-                });
+            chrome.tabs.executeScript(activeInfo.tabId, { file: 'script.js' }, function () {
+                console.log('Successfully injected script into the page');
+            });
         }
-        setIcon(tabs[0].id);
-    });
+    } else {
+        chrome.tabs.executeScript(activeInfo.tabId, { file: "lib/jquery-2.0.3.js" }, function () {
+
+            chrome.tabs.executeScript(activeInfo.tabId, { code: "$(document).ready(function(){ $('#iapi_frame').remove();});" }, function () {
+                console.log('Successfully deleted script from the page');
+            });
+        });
+    }
+        setIcon(activeInfo.tabId);
+   
 });
 
 function changeStatusExtension() {
-    if (disabilita == true) {
-        disabilita = false;
+    if (this.disabilita == true) {
+        this.disabilita = false;
     } else {
-        disabilita = true;
+        this.disabilita = true;
     }
 
 }
 
 function sendAllScript() {
 
-    console.log("Disable2: " + disabilita);
+  //  console.log("Disable2: " + this.disabilita);
     if (disabilita == false) {
         console.log("sendscript");
+        chrome.tabs.executeScript(null, {file: "lib/jquery-2.0.3.js"}, function(){
+        chrome.tabs.executeScript(null,{file:"libgen.js"},function(){
         chrome.tabs.executeScript(null, { allFrames: true, file: 'script.js' }, function () {
             console.log('Successfully injected script into the page');
         });
+        });
+        });
     }
+    else{
+        chrome.tabs.executeScript(null, {file: "lib/jquery-2.0.3.js"}, function(){
+
+        chrome.tabs.executeScript(null, { allFrames: true, code: "$(document).ready(function(){ $('#iapi_frame').remove();});" }, function () {
+             console.log('Successfully deleted script from the page');
+        });
+        });
+    }
+    console.log("i am back to popoup");
 }
 
 //Funzione che utilizzo per ricavarmi alcuni parametri dagli URL
