@@ -1,0 +1,6 @@
+Contributors ordered by first contribution.
+
+Florian Daniel <mail@floriandaniel.it>
+Andrea Furlan <andrea.furlan@studenti.unitn.it>
+Alessandro Zucchelli <alessandro.zucchel-1@studenti.unitn.it>
+Anis Nouri <anis.nouri-1@studenti.unitn.it>
