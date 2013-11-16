@@ -1,27 +1,28 @@
 {
-"name": "iAPI middleware",
+"name": "iAPI middleware2",
 "version": "0.1",
 "manifest_version": 2,
 "description": "Description",
         "icons": {
-                 "128":"logo.png" 
+                 "128":"img/logo.png" 
         }, 
 
 "browser_action": {
-    "default_icon": "icon_black.png"
+    "default_icon": "img/icon_black.png",
+	"default_popup": "html/popup.html"
   },
 "content_scripts": [
 {
-"matches": ["http://*/*","https://*/*"],
-"js": ["jquery.min.js","jquery.jfeed.js","jquery.jfeeditem.js","libgen.js","script.js"]
+"matches": ["http://*/*","https://*/*","file://*/*"],
+"js": ["lib/jquery-2.0.3.js","libgen.js","script.js"]
 }
 ],
 "background": {
        "scripts": ["background.js"]
   },
-
-  "permissions": [
-"management","webNavigation","webRequest","tabs","webRequestBlocking", "contextMenus","http://*/*","https://*/*"
+  "options_page": "html/options.html",
+ "permissions": [	
+ "management","webNavigation","webRequest","tabs","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"
   ],
-  "web_accessible_resources": ["jquery.min.js","scripttoinject.js"]
+  "web_accessible_resources": ["lib/jquery-2.0.3.js"]
 }
