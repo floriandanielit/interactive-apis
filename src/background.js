@@ -43,6 +43,35 @@ function openTab(url) {
    chrome.tabs.create({ url: url });
 }
 
+
+chrome.windows.onFocusChanged.addListener(function()
+{
+    chrome.tabs.query({ index:0,currentWindow:true}, function(ctab){
+            setIcon(ctab.id);
+        if (disabilita == false) {
+            console.log("before" + disabilita);
+            if (disabilita == false) {
+                console.log("sendscript");
+                chrome.tabs.executeScript(ctab.id, { file: 'script.js' }, function () {
+                    console.log('Successfully injected script into the page');
+                });
+            }
+        } else {
+            chrome.tabs.executeScript(ctab.id, { file: "lib/jquery-2.0.3.js" }, function () {
+
+                chrome.tabs.executeScript(ctab.id, { code: "$(document).ready(function(){ $('#iapi_frame').remove(); }   );" }, function () {
+                    console.log('Successfully deleted script from the page');
+                });
+            });
+        }
+        setIcon(ctab.id);
+
+    });
+});
+
+
+
+
 chrome.tabs.onActivated.addListener(function (activeInfo) {
 
     if (disabilita == false) {

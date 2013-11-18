@@ -2,20 +2,20 @@ var disable = true;
 
 
 chrome.extension.sendMessage({ "type": "extension_status" }, function (msg) {
-    console.log("disabilita: " + msg.disabilita);
-    this.disable = msg.disabilita;
+    console.log("disabilita script: " + msg.disa);
+    this.disable = msg.disa;
 
     scriptBody();
 });
 //scriptBody();
 
 function scriptBody() {
-    console.log("disabilita__: " + this.disable);
+    console.log("disabilita hdajda__: " + this.disable);
 
     if (this.disable == false) {
 
 
-        $(document).ready(function () {
+
 
 
 
@@ -44,7 +44,7 @@ function scriptBody() {
                 $('#iapi_menu').offset({ top: offset.top, left: offset.left + $(this).width() - 3 });
 
             });
-        });
+
     }
 
 
@@ -59,13 +59,13 @@ function scriptBody() {
         
         (document.head || document.documentElement).appendChild(sjq);
 
-        /*var s = document.createElement('script');
+        var s = document.createElement('script');
         s.src = chrome.extension.getURL("scripttoinject.js");
         s.onload = function () {
             this.parentNode.removeChild(this);
         };
         (document.head || document.documentElement).appendChild(s);
-        */
+
         $(".iapi").attr("ondragover", "allowDrop(event)");
         $(".iapi").attr("ondrop", "drop(event)");
 
@@ -79,7 +79,7 @@ function scriptBody() {
         chrome.extension.sendMessage({ "type": "iAPI presence", "presence": "no" }, function () { });
     }
     //Da qui in poi mi occupo di settare le variabili da passare alle funzioni di generazione del codice 
-    /*var YourFindElement = $(".iapi");
+ /*   var YourFindElement = $(".iapi");
     lib = false
     $.each(YourFindElement, function (i, rowValue) {
         var tagtarg = $(this).attr("class").split(" ");
@@ -143,5 +143,7 @@ function scriptBody() {
                 }
             }
         }
-    });*/
+    });
+    */
 }
+

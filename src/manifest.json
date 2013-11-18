@@ -14,7 +14,7 @@
 "content_scripts": [
 {
 "matches": ["http://*/*","https://*/*","file://*/*"],
-"js": ["lib/jquery-2.0.3.js","libgen.js","script.js"]
+"js": ["lib/jquery-2.0.3.js","libgen.js","scripttoinject.js"]
 }
 ],
 "background": {
@@ -22,7 +22,8 @@
   },
   "options_page": "html/options.html",
  "permissions": [	
- "management","webNavigation","webRequest","tabs","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"
+ "management","webNavigation","webRequest","tabs", "storage","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"
   ],
-  "web_accessible_resources": ["lib/jquery-2.0.3.js"]
+  "web_accessible_resources": ["lib/jquery-2.0.3.js",
+      "scripttoinject.js"]
 }
