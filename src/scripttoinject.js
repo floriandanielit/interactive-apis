@@ -66,6 +66,3 @@ else{
 		}
 	});
 }
-chrome.storage.local.set({'channels': code},function(){
- console.log("done storage");
- });

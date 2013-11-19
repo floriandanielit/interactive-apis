@@ -8,13 +8,13 @@ var disable = true;   //initial state of the extension "Off"
 function setIcon(tabId) {
  //   console.log("disable: " + disablebilita);
     if (disable === true) {
-        chrome.browserAction.setIcon({ "path": "img/icon_black.png" });
+        chrome.browserAction.setIcon({ "path": "img/icon_black.png" ,"tabId": tabId});
     }
     else {
         if (iAPIPresence[tabId] === "yes")
-            chrome.browserAction.setIcon({ "path": "img/icon_green.png" });
+            chrome.browserAction.setIcon({ "path": "img/icon_green.png", "tabId": tabId });
         else
-            chrome.browserAction.setIcon({ "path": "img/icon_red.png" });
+            chrome.browserAction.setIcon({ "path": "img/icon_red.png", "tabId": tabId });
     }
 
 }
@@ -37,7 +37,7 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
 
 
 });
-
+/*
 // React when a browser action's icon is clicked (whether the extension is On or Off  )
 chrome.browserAction.onClicked.addListener(function(){
     changeStatusExtension();
@@ -46,16 +46,22 @@ chrome.browserAction.onClicked.addListener(function(){
         setIcon(tabs[0].id);//set the relative icon of the current tab (red/green) or black if disable
 
     });
-});
-
+});*/
 //React when a tab is updated
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    ScriptJs(tabId);
+chrome.tabs.onUpdated.addListener(function () {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        ScriptJs(tabs[0].id);
+
+    });
+    
 });
 
 //React when a new tab is created
 chrome.tabs.onCreated.addListener(function(tabId, changeInfo, tab) {
-    ScriptJs(tabId);
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        ScriptJs(tabs[0].id);
+
+    });
 });
 
 //background open a new tab (used in popup.js)
@@ -84,7 +90,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 
 //change the state of the extension
 function changeStatusExtension() {
-    if (this.disable === true) {
+    if (this.disable == true) {
         this.disable = false;
     } else {
         this.disable = true;

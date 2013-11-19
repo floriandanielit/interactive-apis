@@ -1,7 +1,4 @@
 
-
-
-//
 chrome.extension.sendMessage({ "type": "extension_status" }, function (msg) {
 
     scriptBody(msg.disable);

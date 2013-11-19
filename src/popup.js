@@ -32,9 +32,8 @@ function on_off() {
     changeColor();
     $("#on_off").click(function () {
         BG.changeStatusExtension();//in the BackGround set the variable disabilita (true-->false & false-->true)
-        BG.sendAllScript();//enable the script to all pages
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-
+            BG.ScriptJs(tabs[0].id);
             BG.setIcon(tabs[0].id);//set the relative icon of the current tab (red/green) or black if disable
 
         });
