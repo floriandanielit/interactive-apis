@@ -1,9 +1,10 @@
 var idtarget="";
+var code="";
   function allowDrop(ev)
 {
 ev.preventDefault();
 idtarget=ev.target.id;
-    //ev.dataTransfer.setData("id",idtarget);
+//ev.dataTransfer.setData("id",idtarget);
 console.log(idtarget);
 }
 //Funzione per definire cosa fare in caso di drag(non funziona)
@@ -22,23 +23,23 @@ var source=ev.dataTransfer.getData("source");
 var id=ev.dataTransfer.getData("id");
 
 
-generate(source,id,"table","tr","td","div");
+generate(source,id,"ul","li","ol","div");
 //ev.preventDefault();
 //var data=ev.dataTransfer.getData("Text");
 //ev.target.appendChild(document.getElementById(data));
 }
 function generate(urlsource,iapiid,feedtag,itemtag,attributetag,tagsource){
 
-var code="";
+
 	$.get(urlsource, function(data){
-        
-if (data=="[object Document]"){
+      //  console.log(data);
+        if (data=="[object Document]"){
 
 generateRSS(urlsource,feedtag,itemtag,attributetag,tagsource);
 }
 else{
      		var YourFindElement = $("<div>" + data + "</div>").find('.iapi,#'+iapiid+' [class^=data]');
-			
+            //console.log(YourFindElement);
 
 		$.each(YourFindElement , function (i, rowValue) {
 			var classarg=$(this).attr("class").split(" ");
@@ -60,10 +61,11 @@ else{
 
        		});
 			code=code.concat("</"+feedtag+">");
-   /* chrome.storage.local.set({'channels': code},function(){
-        console.log("done storage");
-    });*/
+
 	$(tagsource+"[class~='iapi'][id="+idtarget+"]").html(code);
 		}
 	});
 }
+chrome.storage.local.set({'channels': code},function(){
+ console.log("done storage");
+ });

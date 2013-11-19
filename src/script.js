@@ -1,18 +1,16 @@
-var disable = true;
 
 
+
+//
 chrome.extension.sendMessage({ "type": "extension_status" }, function (msg) {
-    console.log("disabilita script: " + msg.disa);
-    this.disable = msg.disa;
 
-    scriptBody();
+    scriptBody(msg.disable);
 });
-//scriptBody();
 
-function scriptBody() {
-    console.log("disabilita hdajda__: " + this.disable);
 
-    if (this.disable == false) {
+function scriptBody(disa) {
+
+    if (disa === false) {
 
 
 
