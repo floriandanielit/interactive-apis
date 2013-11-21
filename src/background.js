@@ -102,18 +102,20 @@ function ScriptJs(tabId){
 
     if (extensionDisabled === false) {
 
-        chrome.tabs.executeScript(tabId,{file:'libgen.js'},function(){
+        chrome.tabs.executeScript(tabId, { file: 'libgen.js' }, function () {
             chrome.tabs.executeScript(tabId, { file: 'script.js' }, function () {
-                 console.log('Successfully injected script into the page');
+                console.log('Successfully injected script into the page');
             });
         });
 
     } else {
-        chrome.tabs.executeScript(tabId, { file: 'lib/jquery-2.0.3.js' }, function () {
-            chrome.tabs.executeScript(tabId, { code: "$(document).ready(function(){ $('div[id=iapi_frame]').remove(); } );" }, function () {
-                console.log('Successfully deleted script from the page');
-            });
-       });
+
+
+        chrome.tabs.executeScript(tabId, { code: "iapi_frame = document.getElementById('iapi_frame'); if(iapi_frame){iapi_frame.parentNode.removeChild(iapi_frame);}" }, function () {
+
+            console.log('Successfully injected script into the page');
+
+        });
     }
     setIcon(tabId);
 }

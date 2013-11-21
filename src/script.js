@@ -7,12 +7,7 @@ chrome.extension.sendMessage({ "type": "extension_status" }, function (msg) {
 
 function scriptBody(disa) {
 
-    if (disa === false) {
-
-
-
-
-
+    if (disa === false && !document.getElementById("iapi_frame")) {
 
             iapi_control = "<div id='iapi_frame' style='border: 3px solid black; display: none;'>" +
                            '<div id="iapi_menu" class="iapi_menu" style="background-color:black; padding: 3px; width: 200px;">' +
