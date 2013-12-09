@@ -14,7 +14,7 @@
 "content_scripts": [
 {
 "matches": ["http://*/*","https://*/*","file://*/*"],
-"js": ["lib/jquery-2.0.3.js","libgen.js","scripttoinject.js"]
+"js": ["lib/jquery-2.0.3.js","libgen.js","scripttoinject.js","parsers/iAPI.js"]
 }
 ],
 "background": {
@@ -25,5 +25,5 @@
  "management","webNavigation","webRequest","tabs", "storage","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"
   ],
   "web_accessible_resources": ["lib/jquery-2.0.3.js",
-      "scripttoinject.js"]
+      "scripttoinject.js","parsers/iAPI.js"]
 }

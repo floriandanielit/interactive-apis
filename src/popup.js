@@ -45,12 +45,12 @@ function on_off() {
 }
 // set for the id="on_off" the status of the plugin(Disabled/Enabled)
 function changeColor() {
-    console.log("disabilita: " + BG.disabilita);
-    if (BG.disabilita == true) {
-        $("#on_off").html("<b>The extension is Disabled</b>");
+    console.log("disabilita: " + BG.extensionDisabled);
+    if (BG.extensionDisabled == true) {
+        $("#on_off").html("<b>Extension Disabled (Click to Enable)</b>");
         //$("#on_off").css("background-color", "red");
     } else {
-        $("#on_off").html("<b>The extension is Enabled</b>");
+        $("#on_off").html("<b>Extension Enabled (Click to Disable)</b>");
 
         //$("#on_off").css("background-color", "green");
     }
@@ -60,13 +60,13 @@ function changeColor() {
 function typeInteraction() {
     //Current tab (chrome.tabs.getSelected() is deprecated)
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        console.log("tab presence: " + BG.iAPIPresence[tabs[0].id] + " disable: " + BG.disabilita);
-            if (BG.iAPIPresence[tabs[0].id] == "yes" && BG.disabilita == false) {
-                $("#typeInteraction").html("<b>(Type) Interaction</b>");
+        console.log("tab presence: " + BG.iAPIPresence[tabs[0].id] + " disable: " + BG.extensionDisabled);
+        if (BG.iAPIPresence[tabs[0].id] == "yes" && BG.extensionDisabled == false) {
+                $("#typeInteraction").html("<b>iAPI Interaction</b>");
                 $("#typeInteraction").css("color","green");
                 $('#typeInteraction').show();
 
-            } else if (BG.iAPIPresence[tabs[0].id] == "no" && BG.disabilita == false) {
+        } else if (BG.iAPIPresence[tabs[0].id] == "no" && BG.extensionDisabled == false) {
                 $("#typeInteraction").html("<b>No Interaction</b>");
                 $("#typeInteraction").css("color", "red");
                 $('#typeInteraction').show();
