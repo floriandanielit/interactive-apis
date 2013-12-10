@@ -95,22 +95,17 @@ function generateIAPI(urlsource, iapiid, id) {
 }
 
 function generateJSON(urlsource, html) {
+    console.log("inizio generateJSON");
     chrome.extension.sendMessage({ "type": "loadJSON", "url": urlsource }, function (data) {
         //var data = JSON.parse(ret);
 
-        var ret = JSON.parse(data);
-
+        
         console.log(typeof data);
-        console.log(typeof ret);
-        console.log(ret);
-
+        
         console.log(data);
 
-        //if (data.errorJSON != undefined) {
-            console.log("errorJSON: " + data.dataJSON);
-        //} else {
-            console.log("dataJSON: " + data.errorJSON);
-        //}
+        console.log("dataJSON: " + data.errorJSON);
+        
     });
 
     

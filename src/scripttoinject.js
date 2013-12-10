@@ -1,5 +1,6 @@
 var idtarget="";
-var code="";
+var code = "";
+
   function allowDrop(ev)
 {
 ev.preventDefault();
@@ -12,7 +13,7 @@ console.log(idtarget);
   {
       getAttributeTags(ev.target.id, function (ret) {
 
-          //stampMyObj(ret);
+          stampMyObj(ret);
 
           ev.dataTransfer.setData("source", source);
           ev.dataTransfer.setData("id", ev.target.id);
@@ -33,9 +34,7 @@ console.log(idtarget);
           var ret = JSON.parse(ev.dataTransfer.getData("foo"));
           var source = ev.dataTransfer.getData("source");
 
-          console.log(typeof id);
-          //console.log(source);
-
+          stampMyObj(ret);
           if (ret.type === "iapi") {
               console.log("generate iapi");
           } else if (ret.type === "json") {
@@ -167,6 +166,7 @@ function parseSRC(YourFindElement,id, callback) {
         var urlsource;
         var iapiid;
         var sourcetype;
+        var arrayHideElements = new Array();
 
         for (i = 0; i < tagtarg.length; i++) {
             if (tagtarg[i].slice(0, 5) == ("json:")) {
@@ -180,7 +180,13 @@ function parseSRC(YourFindElement,id, callback) {
             else if (tagtarg[i].slice(0, 4) == ("xml:")) {
                 sourcetype = tagtarg[i].substr(0, 3);
                 urlsource = tagtarg[i].substr(4);
-            } 
+            }
+            else if (tagtarg[i].slice(0, 5) == ("hide:")) {//hide:Author:Title:Where
+                var hideElements = tagtarg[i].substr(5).split(":");//Author Title Where
+                for (var j = 0; j < hideElements.length; j++) {
+                    arrayHideElements.push(hideElements[j]);
+                }
+            }
         }
         if (sourcetype === undefined)
             sourcetype = "iapi";
@@ -190,7 +196,7 @@ function parseSRC(YourFindElement,id, callback) {
         //    console.log("url:" + urlsource);
 
         var retCommon = parseCommon(id, sourcetype);
-        var ret = {"url":urlsource,"type":sourcetype,"iapiid":iapiid,"other":retCommon};
+        var ret = {"url":urlsource,"type":sourcetype,"iapiid":iapiid,"hide":arrayHideElements,"other":retCommon};
 
         callback(ret);
     });
@@ -208,6 +214,8 @@ function parseTRG(YourFindElement, id, callback) {
         var urlsource;
         var sourcetype;
         var iapiid;
+        var arrayHideElements = new Array();
+
 
         for (i = 0; i < tagtarg.length; i++) {
             if (tagtarg[i].slice(0, 11) == ("datasource:")) {
@@ -219,17 +227,20 @@ function parseTRG(YourFindElement, id, callback) {
             else if (tagtarg[i].slice(0, 11) == ("sourcetype:")) {
                 sourcetype = tagtarg[i].substr(11);
             }
+            else if (tagtarg[i].slice(0, 5) == ("hide:")) {//hide:Author:Title:Where
+                var hideElements = tagtarg[i].substr(5).split(":");//Author Title Where
+                for (var j = 0; j < hideElements.length; j++) {
+                    arrayHideElements.push(hideElements[j]);
+                }
+            }
 
         }
         if (sourcetype === "iapi" && iapiid === undefined) {
             console.log("ERROR: you must declare iapiid");
             console.log("TODO");
-            
             //TODO
         }
         
-
-
         ///DEBUG
         //if (urlsource != undefined)
         //    console.log("url:" + urlsource);
@@ -238,7 +249,7 @@ function parseTRG(YourFindElement, id, callback) {
 
 
         var retCommon = parseCommon(id, sourcetype);
-        var ret = {"url":urlsource,"type":sourcetype,"iapiid":iapiid,"other":retCommon};
+        var ret = { "url": urlsource, "type": sourcetype, "iapiid": iapiid, "hide": arrayHideElements, "other": retCommon };
 
         callback(ret);
     });
@@ -254,8 +265,7 @@ function parseCommon(id,sourcetype) {
     dataattribute = new Array();
     iapitemplate = false;
     var dataitem;
-    var YourFindElement3 = YourFindElement2.find("[class*=data]").attr("class").split(" ");//first().html();
-    
+    var YourFindElement3 = YourFindElement2.find("[class*=dataitem]").attr("class").split(" ");//first().html();
     for (i = 0; i < YourFindElement3.length; i++) {
         if (YourFindElement3[i] === "iapitemplate") {
             iapitemplate = true;
@@ -288,10 +298,8 @@ function parseCommon(id,sourcetype) {
             }
         }
     }
-
-    var YourFindElement4 = YourFindElement2.find("[class*=data]").first().children();
-    
-
+    var YourFindElement5 = YourFindElement2.find("[class*=dataitem]");
+    var YourFindElement4 = YourFindElement5.first().children("[class*=dataattribute]");
     $.each(YourFindElement4, function (i, rowValue) {
         
        
@@ -334,6 +342,17 @@ function stampMyObj(ret) {
     console.log("url->" + ret.url);
     console.log("type->" + ret.type);
     console.log("iapiid->" + ret.iapiid);
+    if (ret.hide.length !== 0) {
+        var txt = "";
+        console.log("hide:");
+        for (var i = 0; i < ret.hide.length; i++) {
+            if (i === 0)
+                txt+="\t" + ret.hide[i];
+            else
+                txt+=" - " + ret.hide[i];
+        }
+        console.log(txt);
+    }
     console.log("other:");
     console.log("\t iapitemplate->" + ret.other.iapitemplate);
     console.log("\t " + ret.other.dataitem.type + " 'label'->" + ret.other.dataitem.label + " 'key'->" + ret.other.dataitem.key);

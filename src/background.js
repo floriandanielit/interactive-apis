@@ -31,8 +31,6 @@ function setIcon(tabId) {
             scriptPresence[tabId] = "yes";
         }
         else {
-
-
             chrome.browserAction.setIcon({ "path": "img/icon_red.png", "tabId": tabId });
             scriptPresence[tabId] = "no";
         }
@@ -61,7 +59,6 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
                      /*var j = JSON.stringify(data);
                      sendResponse({ "dataJSON": j });*/
                      sendResponse({ "dataJSON": data });
-                     
                      console.log("send");
                  },
                  function (xhr) {

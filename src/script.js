@@ -12,7 +12,7 @@ function scriptBody(disa) {
         iapi_control = "<div id='iapi_frame' style='border: 3px solid black;display: none;'>" +
                         '<div id="iapi_menu" class="iapi_menu" style="background-color:black; padding: 3px; width: 200px;">' +
                            '<div style="font-size: 16px;font-weight: bold; color:white;"></div>' +
-                           '<div id="ciao"style="font-size: 16px;font-weight: bold; color:white;">Formatting:<br/>' +
+                           '<div style="font-size: 16px;font-weight: bold; color:white;">Formatting:<br/>' +
 
                                '<input type="radio" name="format" value="table">Table<br/>' +
                                '<input type="radio" name="format" value="list">List<br/>' +
@@ -88,17 +88,23 @@ function scriptBody(disa) {
                 }
 
 
+
                 //SET MORE ATTRIBUTE FOR THIRDCHILD
                 //TODO
-                
+                //ANIS
+                /*
                 getAttributeTags($(this).prop("id"), function (actualObj) {
 
-                   //stampMyObj(actualObj);
+                    //stampMyObj(actualObj);
 
-                    //TODO
-                   thirdchild = $("#iapi_menu div:nth-child(3)");
+                    getSourceData(actualObj, function (sourceObj) {
+                        //thirdchild = $("#iapi_menu div:nth-child(3)");
+                        //console.log(thirdchild.html());
+
+                        //REMOVE AFTER
                         if (actualObj.type === "iapi") {
-                            if (actualObj.other.dataattribute.length > 0) {
+                            stampMyObj(sourceObj);
+                            if (sourceObj.other.dataattribute.length > 0) {
                                 thirdchild.html('');
                                 thirdchild.html('More data:<br/>');
                                 thirdchild.css("display", "block");
@@ -106,33 +112,68 @@ function scriptBody(disa) {
                             else {
                                 thirdchild.css("display", "none");
                             }
-                            for (var j = 0; j < actualObj.other.dataattribute.length ; j++) {
-                                var newchi = '<input type="checkbox" name="more_data" value="' + actualObj.other.dataattribute[j].label + '" >' + actualObj.other.dataattribute[j].label + '<br/>';
+                            console.log(sourceObj.other.dataattribute.length);
+                            for (var i = 0; i < sourceObj.other.dataattribute.length; i++) {
+                                var find = false;
+                                for (var j = 0; j < actualObj.other.dataattribute.length && find === false; j++) {
+                                    if (sourceObj.other.dataattribute[i].label === actualObj.other.dataattribute[j].label) {
+                                        find = true;
+                                    }
+                                }
+                                var newchi = '<input type="checkbox" name="more_data" value="' + sourceObj.other.dataattribute[i].label + '" >' + sourceObj.other.dataattribute[i].label + '<br/>';
                                 thirdchild.append(newchi);
-                                thirdchild.children("input").last().prop('checked', 'checked');
+                                if (find === true) {
+                                    thirdchild.children("input").last().prop('checked', 'checked');
+                                }
+
                             }
                         }
                         else {
                             thirdchild.css("display", "none");
                         }
-                });             
+                    });
+                });*/
+                
+                
+                //SET MORE ATTRIBUTE FOR THIRDCHILD
+                //TODO GET SOURCE DATAATTRIBUTE
+                //FLORIAN
+                
+                getAttributeTags($(this).prop("id"), function (actualObj) {
+
+                   //stampMyObj(actualObj);
+
+                   thirdchild = $("#iapi_menu div:nth-child(3)");
+                        if (actualObj.other.dataattribute.length > 0) {
+                            thirdchild.html('');
+                            thirdchild.html('More data:<br/>');
+                            thirdchild.css("display", "block");
+                        }
+                        else {
+                            thirdchild.css("display", "none");
+                        }
+                        for (var j = 0; j < actualObj.other.dataattribute.length ; j++) {
+                            var newchi = '<input type="checkbox" name="more_data" value="' + actualObj.other.dataattribute[j].label + '" >' + actualObj.other.dataattribute[j].label + '<br/>';
+                            thirdchild.append(newchi);
+                            thirdchild.children("input").last().prop('checked', 'checked');
+                        }
+                        for (var i = 0; i < actualObj.hide.length; i++) {
+                            thirdchild.children('[value=' + actualObj.hide[i] + ']').prop('checked',false);
+                        }
+                });
             }
         });
 
         //SET CLICK STATUS FORMATTING
         $("#iapi_menu div:nth-child(2)").children().click(function () {
-            console.log($(this).val());
-            formattingDOM(5, $(this).val());
+            formattingDOM($("#iapi_menu [class='getAll']").attr("id"), $(this).val());
         });
 
         //SET CLICK STATUS MORE DATA
-        //TODO
-        $("#iapi_menu div:nth-child(3)").children().click(function () {
-            //console.log("aaaaaaaaaaaaa");
-            hideShowDataattributeDOM(5, $(this).val());
-            //checkCheckBoxFormatting($(this).val());
+        $("#iapi_menu div:nth-child(3)").change(function (i) {
+            var obj ={"type_dataattribute":$(i.target).attr("value"),"value":$(i.target).is(":checked")};
+            hideShowDataattributeDOM($("#iapi_menu [class='getAll']").attr("id"), obj);
         });
-
     }
 
     //Qui controllo se ci sono iApi nella pagina e nel caso ci siano lo notifico all'utente
@@ -200,7 +241,7 @@ function scriptBody(disa) {
 
 
         if (urlsource != undefined && sourcetype != undefined) {
-            var YourFindElement2 = $(".iapi [class*=data]");
+            var YourFindElement2 = $(".iapi [class*=dataitem]");
 
             iapitemplate = false;
             $.each(YourFindElement2, function (i, rowValue) {
@@ -213,61 +254,6 @@ function scriptBody(disa) {
                     }
                 }
             });
-
-
-
-
-            /*
-            dataattribute = new Array();
-            iapitemplate=false;
-            var dataitem;
-            $.each(YourFindElement2, function (i, rowValue) {
-
-                 var tagtarg2 = $(this).attr("class").split(" ");
-                 for (i = 0; i < tagtarg2.length; i++) {
-            
-                        if (tagtarg2[i] == "iapitemplate") {
-                            iapitemplate =true;
-                        }
-                        else if (tagtarg2[i].slice(0,9) == "dataitem:") {
-                            var temp2 = tagtarg2[i].substr(9);//Publication:pubs or //Publication
-                            console.log("console" + temp2);
-                            if (sourcetype != "iapi") {
-                                var n = temp2.indexOf(":");//Publication:pubs
-                                var a = temp2.substr(0, n);//Publication
-                                var b = temp2.substr(n + 1);//pubs
-
-                                if (a == "" || b == "") {
-                                    console.log("ERROR");
-                                }
-                                dataitem = ({ "type": tagtarg2[i].slice(0, 8), "ref": a, "extref": b });
-                            }
-                            else {//Publication
-                                dataitem = ({ "type": tagtarg2[i].slice(0, 8), "ref": temp2 });
-                            }
-                        }
-                    }
-                    if ($(this).attr("class").slice(0, 14) == ("dataattribute:")) {
-
-                    var temp = $(this).attr("class").substr(14);//Author:auth or //Author
-
-                    if (sourcetype != "iapi") {
-                        var n = temp.indexOf(":");//Author:auth
-                        var a = temp.substr(0, n);//Author
-                        var b = temp.substr(n + 1);//auth
-
-
-                        if (a == "" || b == "") {
-                            console.log("ERROR");
-                        }
-                        dataattribute.push({ "type": $(this).attr("class").substr(0, 13), "ref": a, "extref": b });
-                    }
-                    else {//Author
-                        dataattribute.push({ "type": $(this).attr("class").substr(0, 13), "ref": temp});
-                    }
-                }
-            });*/
-
 
             //////////////////////////////////////////
             //////////////DEBUG
@@ -343,12 +329,6 @@ function scriptBody(disa) {
     });
 }
 
-
-//function select radio button  MORE DATA
-function checkCheckBoxFormatting(value) {
-    console.log("value"+value);
-}
-
 //function: if is Srcpage return true else false (presence  "datasource:")
 function isSrcPage(YourFindElement) {
        var tagtarg = YourFindElement.attr("class").split(" ");
@@ -405,13 +385,36 @@ function formattingDOM(id, tag) {
 }
 
 //call sendMessageMiddleware with the current iapiid and the tag "more_data"
-function hideShowDataattributeDOM(id, tag) {
-    //format
-    //<table class="iapi datasource:http://source sourcetype:iapi hide:dataattribute:author">
+//format
+//<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
+function hideShowDataattributeDOM(id, obj) {
+    console.log("dataattribute :" + obj.type_dataattribute + " value:" + obj.value);
+    if(obj.value){
+        showDataattribute(id,obj.type_dataattribute);
+    }else{
+        hideDataattribute(id,obj.type_dataattribute);
+    }
+
     console.log("SCRIPT.JS:hide/show element of the DOM");
     sendMessageMiddleware("more_data", id, function (ret) {
         console.log("more_data: " + ret);
     });
+}
+
+//hide the dataAttribute
+//Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Title:Where">
+//After:<table class="iapi datasource:http://source sourcetype:iapi hide:Author:Title:Where">
+function hideDataattribute(id,type) {
+
+
+}
+
+//show the dataAttribute
+//Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
+//After:<table class="iapi datasource:http://source sourcetype:iapi ">
+function showDataattribute(id,type) {
+
+
 }
 
 //call sendMessageMiddleware with the current iapiid and the tag "save"
@@ -423,6 +426,7 @@ function saveTemplateDOM(id, tag) {
     });
 }
 
+//generate the dinamic title of iapi_menu
 function messageIapi_menu(id) {
 
     var iapiDiv = $("#" + id);
@@ -487,4 +491,66 @@ function messageIapi_menu(id) {
         }
 
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//get more data (used only in targetpage) and call relative parser (RSS, JSON, XML, IAPI)
+function getSourceData(obj, call) {
+
+    if (obj.type.toLowerCase() === "iapi") {
+        getDataFromIAPI(obj.url, obj.iapiid, function (r) {
+            call(r);
+        });
+    } else if (obj.type.toLowerCase() === "json") {
+        getDataFromJSON(obj.url, function (r) {
+            call(r);
+        });
+    } else if (obj.type.toLowerCase() === "rss") {
+        getDataFromRSS(obj.url, function (r) {
+            call(r);
+        });
+    } else if (obj.type.toLowerCase() === "xml") {
+        getDataFromXML(obj.url, function (r) {
+            call(r);
+        });
+    }
+}
+
+//relative parser (JSON) to get data (MyObject)
+//TODO
+//MUST COMPLETE THE FUNCTION (getDataFromJSON)
+function getDataFromJSON(url, callback) {
+    console.log("getDataFromJSON--->>>>");
+    callback("");
+}
+
+//relative parser (RSS) to get data (MyObject)
+//TODO
+//MUST COMPLETE THE FUNCTION (getDataFromRSS)
+function getDataFromRSS(url, callback) {
+    console.log("getDataFromRSS--->>>>");
+    callback("");
+}
+
+//relative parser (XML) to get data (MyObject)
+//TODO
+//MUST COMPLETE THE FUNCTION (getDataFromXML)
+function getDataFromXML(url, callback) {
+    console.log("getDataFromXML--->>>>");
+    callback("");
+}
+
+//relative parser (IAPI) to get data (MyObject)
+function getDataFromIAPI(url, iapiid, callback) {
+    console.log("getDataFromIAPI--->>>>");
+    $.get(url, function (data) {
+        var element = $("<Div>" + data + "</Div>").find('#' + iapiid, '.iapi'); // select the source
+        getAttributeTags(iapiid, function (re) {
+            callback(re);
+        });
+    });
 }
