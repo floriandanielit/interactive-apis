@@ -13,7 +13,7 @@ console.log(idtarget);
   {
       getAttributeTags(ev.target.id, function (ret) {
 
-          stampMyObj(ret);
+          //stampMyObj(ret);
 
           ev.dataTransfer.setData("source", source);
           ev.dataTransfer.setData("id", ev.target.id);
@@ -34,7 +34,7 @@ console.log(idtarget);
           var ret = JSON.parse(ev.dataTransfer.getData("foo"));
           var source = ev.dataTransfer.getData("source");
 
-          stampMyObj(ret);
+          //stampMyObj(ret);
           if (ret.type === "iapi") {
               console.log("generate iapi");
           } else if (ret.type === "json") {
