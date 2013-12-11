@@ -74,11 +74,9 @@ function loadJSON(path, success, error)
     {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                if (success)
-                    success(JSON.parse(xhr.responseText));
+                success(JSON.parse(xhr.responseText));
             } else {
-                if (error)
-                    error(xhr);
+                error(xhr);
             }
         }
     };
