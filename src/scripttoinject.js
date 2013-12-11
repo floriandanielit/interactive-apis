@@ -265,7 +265,7 @@ function parseCommon(id,sourcetype) {
     dataattribute = new Array();
     iapitemplate = false;
     var dataitem;
-    var YourFindElement3 = YourFindElement2.find("[class*=dataitem]").attr("class").split(" ");//first().html();
+    var YourFindElement3 = YourFindElement2.find("[class*='dataitem:']").attr("class").split(" ");//first().html();
     for (i = 0; i < YourFindElement3.length; i++) {
         if (YourFindElement3[i] === "iapitemplate") {
             iapitemplate = true;
@@ -298,8 +298,8 @@ function parseCommon(id,sourcetype) {
             }
         }
     }
-    var YourFindElement5 = YourFindElement2.find("[class*=dataitem]");
-    var YourFindElement4 = YourFindElement5.first().children("[class*=dataattribute]");
+    var YourFindElement5 = YourFindElement2.find("[class*='dataitem:']");
+    var YourFindElement4 = YourFindElement5.first().children("[class*='dataattribute:']");
     $.each(YourFindElement4, function (i, rowValue) {
         
        
