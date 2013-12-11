@@ -97,19 +97,11 @@ function generateIAPI(urlsource, iapiid, id) {
 function generateJSON(urlsource, html) {
     console.log("inizio generateJSON");
     chrome.extension.sendMessage({ "type": "loadJSON", "url": urlsource }, function (data) {
-        //var data = JSON.parse(ret);
-
-        
-        console.log(typeof data);
-        
-        console.log(data);
-
-        console.log("dataJSON: " + data.errorJSON);
-        
+        if(data.errorJSON===undefined)
+            console.log("dataJSON: " + data.dataJSON);
+        else
+            console.log("errorJSON: " + data.errorJSON.statusText);  
     });
-
-    
-    
 }
 
 function generateRSS(urlsource, html) {

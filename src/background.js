@@ -51,25 +51,18 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
         sendResponse({ 'disable': this.extensionDisabled });   // send the extension status to the script
     } else if (msg.type === "loadJSON") {
         console.log("url:" + msg.url);
-        
 
+        
+        
         loadJSON(msg.url,
                  function (data) {
-                     console.log(data);
-                     /*var j = JSON.stringify(data);
-                     sendResponse({ "dataJSON": j });*/
                      sendResponse({ "dataJSON": data });
-                     console.log("send");
                  },
                  function (xhr) {
-                     console.log(xhr);
-                     /*var j = JSON.stringify(xhr);
-                     sendResponse({ "errorJSON": j });*/
                      sendResponse({ "errorJSON": xhr });
-
                  }
         );
-
+        return true;
     }
 });
 
