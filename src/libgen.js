@@ -13,109 +13,36 @@ codeactions=codeactions.concat('<a href="#" style="color:white">getRss</a> \n');
 $("div[class~=iapiactions]").html(codeactions);
 }
 
-function generateIAPI(urlsource, iapiid, id) {
-    $.get(urlsource, function (data) {
-
-        var element = $("<Div>" + data + "</Div>").find('#' + iapiid, '.iapi'); // select the source
-
-        template = $('#' + id);  // select the template
-
-        tagtmp = template.prop('tagName');
-        //console.log(tagtmp);
-
-        // var txt=$("#1").html();
-
-        // console.log($("#1").html());
-        if (tagtmp === "TABLE") {
-            var txt = "";
-            $.each(element, function (i, row) {
+//Bidimensional target (Div,Table .. ) 
+function generate(data, idTemplate) {
 
 
-                var YourFindElement2 = $(this).children();
-                var ts = template.children();
+    template = $('#' + idTemplate);  // select the template
 
-                var tmp = ts.children('[class*=data]');
 
-                $.each(YourFindElement2, function (j, rowValue) {
+    var txt = "";
+    $.each(data, function (key, value) {
 
-                    tmp.prop('id', j);
-                    var YourFindElement3 = $(this).children();
-                    tmpChild = tmp.children();
+        var subtemplate = template.find('[class*="dataitem:"]');  //get the dataitem
 
-                    $(YourFindElement3).each(function (i, rowValue) {
+        $.each(value, function (key, value) {
 
-                        $(tmpChild).eq(i).html(YourFindElement3[i].innerHTML);
+            //   subtemplate.prop('id',key);    //set an Id for the current..
+           var tmpChild = subtemplate.children();
 
-                    });
-
-                    //   console.log("E un table"+$(ts).html());
-                    txt = txt.concat($('#' + j)[0].outerHTML);
-                    //console.log($('#' + j)[0].outerHTML, j);
-
-                });
-                $(template).append(txt);
-
-                //  console.log(txt);
+            var i = 0;  // counter dipends on the object element (dataattribute of each dataitem)
+            $.each(value, function (key, value) {
+                $(tmpChild).eq(i).text(value);
+                i++;
 
             });
-        }
 
-        else if (tagtmp === "DIV") {
-            var txt = "";
+            txt = txt.concat($(subtemplate)[0].outerHTML);
+        });
 
-            $.each(element, function (i, row) {
-
-                var YourFindElement2 = $(this).children();
-                var tmp = template.children();   // the ul tag
-
-                // var tmp=ts.children('[class*=data]');
-
-                $.each(YourFindElement2, function (j, rowValue) {
-
-                    tmp.prop('id', j);    // give each ul (publication) an ID
-                    var YourFindElement3 = $(this).children();
-                    tmpChild = tmp.children();   // the li
-
-                    $(YourFindElement3).each(function (i, rowValue) {
-
-                        $(tmpChild).eq(i).html(YourFindElement3[i].innerHTML);
-
-                    });
-
-                    txt = txt.concat($(template).html());
-
-
-                });
-                //console.log(txt);
-                $(template).html(txt);
-
-            });
-        }
     });
-}
-
-function generateJSON(urlsource, html) {
-    console.log("inizio generateJSON");
-    chrome.extension.sendMessage({ "type": "loadJSON", "url": urlsource }, function (data) {
-        if(data.errorJSON===undefined)
-            console.log("dataJSON: " + data.dataJSON);
-        else
-            console.log("errorJSON: " + data.errorJSON.statusText);  
-    });
-}
-
-function generateRSS(urlsource, html) {
-
-    console.log("urlsource " + urlsource);
-    console.log("html " + html.html());
-
-}
-
-function generateXML(urlsource, html) {
-
-    console.log("urlsource " + urlsource);
-    console.log("html " + html.html());
-
+    template.find('[class*=data]').remove();
+    $(template).append(txt);
 }
 
 function middlewareAction(msg,id, callback) {

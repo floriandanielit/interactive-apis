@@ -6,7 +6,6 @@ chrome.extension.sendMessage({ "type": "extension_status" }, function (msg) {
 
 
 function scriptBody(disa) {
-
     if (disa === false && !document.getElementById("iapi_frame")) {
         //use pointer-events: none;
         iapi_control = "<div id='iapi_frame' style='border: 3px solid black;display: none;'>" +
@@ -204,129 +203,138 @@ function scriptBody(disa) {
         chrome.extension.sendMessage({ "type": "iAPI presence", "presence": "no" }, function () { });
     }
 
-    //Da qui in poi mi occupo di settare le variabili da passare alle funzioni di generazione del codice 
-    var YourFindElement = $(".iapi").get();
-    var stamp = document.getElementsByClassName("iapi")[0].innerHTML;
+    if (document.getElementsByClassName("iapi").length > 0) {
 
-    lib = false
-    console.log("number execute---------------" + YourFindElement.length);
+        //Da qui in poi mi occupo di settare le variabili da passare alle funzioni di generazione del codice 
+        var YourFindElement = $(".iapi").get();
+        var stamp = document.getElementsByClassName("iapi")[0].innerHTML;
 
-    console.log(YourFindElement);
-    
-    $.each(YourFindElement, function (i, rowValue) {
-        var tagtarg = $(this).attr("class").split(" ");
-        var id = $(this).attr('id');
+        lib = false
+        console.log("number execute---------------" + YourFindElement.length);
 
-        var urlsource;
-        var sourcetype;
-        var iapiid;
-        
-        for (i = 0; i < tagtarg.length; i++) {
-            if (tagtarg[i].slice(0, 11) == ("datasource:")) {
-                urlsource = tagtarg[i].substr(11);
+        console.log(YourFindElement);
+
+        $.each(YourFindElement, function (i, rowValue) {
+            var tagtarg = $(this).attr("class").split(" ");
+            var id = $(this).attr('id');
+
+            var urlsource;
+            var sourcetype;
+            var iapiid;
+
+            for (i = 0; i < tagtarg.length; i++) {
+                if (tagtarg[i].slice(0, 11) == ("datasource:")) {
+                    urlsource = tagtarg[i].substr(11);
+                }
+                else if (tagtarg[i].slice(0, 7) == ("iapiid:")) {
+                    iapiid = tagtarg[i].substr(7);
+                }
+                else if (tagtarg[i].slice(0, 11) == ("sourcetype:")) {
+                    sourcetype = tagtarg[i].substr(11);
+                }
+
             }
-            else if (tagtarg[i].slice(0, 7) == ("iapiid:")) {
-                iapiid = tagtarg[i].substr(7);
+
+            if (sourcetype == "iapi" && iapiid == undefined) {
+                console.log("ERROR: you must declare iapiid");
+                //TODO
             }
-            else if (tagtarg[i].slice(0, 11) == ("sourcetype:")) {
-                sourcetype = tagtarg[i].substr(11);
-            }
-
-        }
-
-        if (sourcetype == "iapi" && iapiid == undefined) {
-            console.log("ERROR: you must declare iapiid");
-            //TODO
-        }
 
 
-        if (urlsource != undefined && sourcetype != undefined) {
-            var YourFindElement2 = $(".iapi [class*=dataitem]");
+            if (urlsource != undefined && sourcetype != undefined) {
+                var YourFindElement2 = $(".iapi [class*='dataitem:']");
 
-            iapitemplate = false;
-            $.each(YourFindElement2, function (i, rowValue) {
+                iapitemplate = false;
+                $.each(YourFindElement2, function (i, rowValue) {
 
-                var tagtarg2 = $(this).attr("class").split(" ");
-                for (i = 0; i < tagtarg2.length; i++) {
+                    var tagtarg2 = $(this).attr("class").split(" ");
+                    for (i = 0; i < tagtarg2.length; i++) {
 
-                    if (tagtarg2[i] == "iapitemplate") {
-                        iapitemplate = true;
+                        if (tagtarg2[i] == "iapitemplate") {
+                            iapitemplate = true;
+                        }
                     }
-                }
-            });
+                });
 
-            //////////////////////////////////////////
-            //////////////DEBUG
-            //////////////////////////////////////////
-            /*console.log("YourFindElement2    :" + YourFindElement2);
-            console.log("urlsource    :" + urlsource);
-            if (iapiid != undefined)
-                console.log("iapiid    :" + iapiid);
-            console.log("sourceType   :" + sourcetype);
-            console.log("iapitemplate   :" + iapitemplate);
-            console.log("id   :" + id);
-            */
-            /*
-            console.log("dataitem    :type: [" + dataitem.type + "] ref: [" + dataitem.ref + "] extref: [" + dataitem.extref + "]");
-            
-            if (sourcetype != "iapi") {
-                for (var i = 0; i < dataattribute.length; i++) {
-                    console.log("attribute[" + i + "]    : type: [" + dataattribute[i].type + "] ref: [" + dataattribute[i].ref + "] extref: [" + dataattribute[i].extref + "]");
-                }
-            } else {
-                for (var i = 0; i < dataattribute.length; i++) {
-                    console.log("attribute[" + i + "]    : type: [" + dataattribute[i].type + "] ref: [" + dataattribute[i].ref + "]");
-                }
-            }*/
-
-
-            //////////////////////////////////////////
-            //////////////LoadTemplate()
-            //////////////////////////////////////////
-            if (iapitemplate == false) {
-                LoadTemplate();
-            }
-
-            function LoadTemplate() {
-                console.log("LOADTEMPLATE");
-            }
-
-            //////////////////////////////////////////
-            //////////////JSON
-            //////////////////////////////////////////
-            if (sourcetype == "json") {
-                console.log("JSON->>>>>>>>>>>>");
-                generateJSON(urlsource, $(this));
+                //////////////////////////////////////////
+                //////////////DEBUG
+                //////////////////////////////////////////
+                /*console.log("YourFindElement2    :" + YourFindElement2);
+                console.log("urlsource    :" + urlsource);
+                if (iapiid != undefined)
+                    console.log("iapiid    :" + iapiid);
+                console.log("sourceType   :" + sourcetype);
+                console.log("iapitemplate   :" + iapitemplate);
+                console.log("id   :" + id);
+                */
+                /*
+                console.log("dataitem    :type: [" + dataitem.type + "] ref: [" + dataitem.ref + "] extref: [" + dataitem.extref + "]");
                 
-            }
-
-                //////////////////////////////////////////
-                //////////////RSS
-                //////////////////////////////////////////
-            else if (sourcetype == "rss") {
-                console.log("RSS->>>>>>>>>>>>");
-                //generateRSS(urlsource, $(this));
-            }
-
-                //////////////////////////////////////////
-                //////////////XML
-                //////////////////////////////////////////
-            else if (sourcetype == "xml") {
-                console.log("XML->>>>>>>>>>>>");
-                //generateXML(urlsource, $(this));
-            }
+                if (sourcetype != "iapi") {
+                    for (var i = 0; i < dataattribute.length; i++) {
+                        console.log("attribute[" + i + "]    : type: [" + dataattribute[i].type + "] ref: [" + dataattribute[i].ref + "] extref: [" + dataattribute[i].extref + "]");
+                    }
+                } else {
+                    for (var i = 0; i < dataattribute.length; i++) {
+                        console.log("attribute[" + i + "]    : type: [" + dataattribute[i].type + "] ref: [" + dataattribute[i].ref + "]");
+                    }
+                }*/
 
 
                 //////////////////////////////////////////
-                //////////////IAPI
+                //////////////LoadTemplate()
                 //////////////////////////////////////////
-            else if (sourcetype == "iapi") {
-                console.log("IAPI->>>>>>>>>>>>");
-                //generateIAPI(urlsource, iapiid, id);
-                
+                if (iapitemplate == false) {
+                    LoadTemplate();
+                }
+
+                function LoadTemplate() {
+                    console.log("LOADTEMPLATE");
+                }
+
+                //////////////////////////////////////////
+                //////////////JSON
+                //////////////////////////////////////////
+                if (sourcetype == "json") {
+                    console.log("JSON->>>>>>>>>>>>");
+                    extractJSON(urlsource, id, function (ret) {
+                        console.log(ret);
+                    });
+
+                }
+
+                    //////////////////////////////////////////
+                    //////////////RSS
+                    //////////////////////////////////////////
+                else if (sourcetype == "rss") {
+                    console.log("RSS->>>>>>>>>>>>");
+                    extractRSS(urlsource,id, function (ret) {
+                        console.log(ret);
+                    });
+                }
+
+                    //////////////////////////////////////////
+                    //////////////XML
+                    //////////////////////////////////////////
+                else if (sourcetype == "xml") {
+                    console.log("XML->>>>>>>>>>>>");
+                    //generateXML(urlsource, $(this));
+                }
+
+
+                    //////////////////////////////////////////
+                    //////////////IAPI
+                    //////////////////////////////////////////
+                else if (sourcetype == "iapi") {
+                    console.log("IAPI->>>>>>>>>>>>");
+                    extractIAPI(iapiid, urlsource, function (datas) {
+                        generate(datas, id);
+                    });
+
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 //function: if is Srcpage return true else false (presence  "datasource:")
@@ -352,6 +360,7 @@ function isSrcPage(YourFindElement) {
     }
 
 //send a message to Middleware and wait a response
+//TODO
 function sendMessageMiddleware(action,id,call) {
     if (action === "formatting") {
         console.log("call liben.js");
@@ -375,6 +384,7 @@ function sendMessageMiddleware(action,id,call) {
 }
 
 //call sendMessageMiddleware with the current iapiid and the tag "formatting"
+//TODO
 function formattingDOM(id, tag) {
 
     console.log("SCRIPT.JS:format the DOM");
@@ -387,6 +397,7 @@ function formattingDOM(id, tag) {
 //call sendMessageMiddleware with the current iapiid and the tag "more_data"
 //format
 //<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
+//TODO
 function hideShowDataattributeDOM(id, obj) {
     console.log("dataattribute :" + obj.type_dataattribute + " value:" + obj.value);
     if(obj.value){
@@ -404,20 +415,60 @@ function hideShowDataattributeDOM(id, obj) {
 //hide the dataAttribute
 //Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Title:Where">
 //After:<table class="iapi datasource:http://source sourcetype:iapi hide:Author:Title:Where">
+//TODO
 function hideDataattribute(id,type) {
+    var YourFindElement = $(".iapi").filter("#" + id);
+    var findHide = false;
+    var tagtarg = YourFindElement.attr("class").split(" ");
+    var tagtarg2;
+    for (i = 0; i < tagtarg.length && findHide === false; i++) {
+        if (tagtarg[i].substr(0,5) === "hide:") {
+            findHide = true;
+            tagtarg[i] += ":" + type;
+        }
+        console.log("tag:"+tagtarg[i]);
+    }
+    
+    if (findHide === false) {
+        tagtarg2 = YourFindElement.attr("class");
+        tagtarg2 += " hide:"+type;
+    }
 
-
+    console.log(tagtarg2);
 }
 
 //show the dataAttribute
 //Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
 //After:<table class="iapi datasource:http://source sourcetype:iapi ">
+//TODO
 function showDataattribute(id,type) {
-
+    var YourFindElement = $(".iapi").filter("#" + id).get();
+    var findHide = false;
+    var findDataAttribute = false;
+    $.each(YourFindElement, function (i, rowValue) {
+        var tagtarg = $(this).attr("class").split(" ");
+        for (i = 0; i < tagtarg.length && findHide === false; i++) {
+            if (tagtarg[i].substr(0, 5) === "hide:") {
+                findHide = true;
+                var arrayHideElement = tagtarg[i].substr(5).split(":");
+                for (var j = 0; j < arrayHideElement.length && findDataAttribute===false; j++) {
+                    if (arrayHideElement[j] === type) {
+                        console.log("TROVATO");
+                        findDataAttribute = true;
+                    }
+                }
+            }
+        }
+        if (findHide === false)
+            console.log("ERROR");
+        if (findHide === false)
+            console.log("ERROR");
+    });
 
 }
 
 //call sendMessageMiddleware with the current iapiid and the tag "save"
+//TODO
 function saveTemplateDOM(id, tag) {
 
     console.log("SCRIPT.JS:save the DOM");

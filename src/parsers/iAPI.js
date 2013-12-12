@@ -1,55 +1,33 @@
-/**
- * Created by Benny on 05/12/13.
- */
-function extractIAPI(iapiid){
- var data ={
-     pubs: []
- };
-
-    var template=$('#'+iapiid);
-
-    $.each(template,function(i,row){
+function extractIAPI(iapiid, urlsource, call) {
 
 
-        var tmp=template.children();   // the ul tag
+    var idObject = {};
+    var datas = new Array();  //array contains objects representing the extracted data
+    $.get(urlsource, function (data) {
+        var template = $("<div>" + data + "</div>").find('#' + iapiid);   //source template
 
-        // var tmp=ts.children('[class*=data]');
-
-        $.each(tmp, function (j, rowValue) {
+        var dataItem = template.find("[class*='dataitem:']");
 
 
-            tmpChild=tmp.children();   // the li
+        $.each(dataItem, function (j, rowValue) {
+            //   var cla=pubs.attr("class").substr(9);
+            var dataAttri = $(this).find("[class*='dataattribute:']");
 
-            $(tmpChild).each(function(i,rowValue){
-
-                data.pubs.push({
-                    "Author" :    $(tmpChild).eq(i).html(),
-                    "Title"  :  $(tmpChild).eq(i).html(),
-                    "where"       :  $(tmpChild).eq(i).html()
-                });
-
+            var dataatribute = {};
+            $.each(dataAttri, function (i, rowValue) {
+                dataatribute[$(this).attr("class").substr(14)] = $(this).html();
             });
 
+            var dataitem = {};
+            dataitem[$(this).attr("class").substr(9)] = dataatribute;
+            datas.push(dataitem);
+
+
         });
 
+        call(datas);
+
+        idObject[iapiid] = datas;  //iapiid,data :each datas is associated with the id
     });
-  /*
-    var employees = {
-        accounting: []
-    };
-
-    for(var i in someData) {
-
-        var item = someData[i];
-
-        employees.accounting.push({
-            "firstName" : item.firstName,
-            "lastName"  : item.lastName,
-            "age"       : item.age
-        });
-    }
-
-
-*/
-
+    //localStorage(urlsource,idObect);   //  persist the data extracted of each iapi target !
 }

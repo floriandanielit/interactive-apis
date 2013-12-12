@@ -10,9 +10,6 @@ function changeExtensionStatus() {
 
 }
 
-
-
-
 //// ICON MANAGEMENT BASED ON iAPI PRESENCE IN SELECTED TAB
 
 var iAPIPresence = new Array();	// iAPIPresence[tab.id] tells whether the respective tab contains iAPIs ("yes") or not ("no")
@@ -49,17 +46,13 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
     }
     else if (msg.type === "extension_status") {
         sendResponse({ 'disable': this.extensionDisabled });   // send the extension status to the script
-    } else if (msg.type === "loadJSON") {
-        console.log("url:" + msg.url);
-
-        
-        
-        loadJSON(msg.url,
+    } else if (msg.type === "loadExternal") {
+        loadExtern(msg.url,
                  function (data) {
-                     sendResponse({ "dataJSON": data });
+                     sendResponse({ "data": data });
                  },
                  function (xhr) {
-                     sendResponse({ "errorJSON": xhr });
+                     sendResponse({ "error": xhr });
                  }
         );
         return true;
@@ -67,14 +60,14 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
 });
 
 
-function loadJSON(path, success, error)
+function loadExtern(path, success, error)
 {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function()
     {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                success(JSON.parse(xhr.responseText));
+                success(xhr.responseText);
             } else {
                 error(xhr);
             }
@@ -85,7 +78,6 @@ function loadJSON(path, success, error)
 }
 
 // Setup of event listeners for icon management
-
 // React when a new tab is created
 chrome.tabs.onCreated.addListener(function (tabId, changeInfo, tab) {
 
@@ -103,14 +95,11 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         scriptPresence[tabId] = "no";
         ScriptJs(tabId);
     }
-
 });
 
 // React when changing tab
 chrome.tabs.onActivated.addListener(function () {
-
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-
         ScriptJs(tabs[0].id);
     });
 });
