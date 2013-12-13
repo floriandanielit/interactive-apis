@@ -87,56 +87,9 @@ function scriptBody(disa) {
                 }
 
 
-
-                //SET MORE ATTRIBUTE FOR THIRDCHILD
-                //TODO
-                //ANIS
-                /*
-                getAttributeTags($(this).prop("id"), function (actualObj) {
-
-                    //stampMyObj(actualObj);
-
-                    getSourceData(actualObj, function (sourceObj) {
-                        //thirdchild = $("#iapi_menu div:nth-child(3)");
-                        //console.log(thirdchild.html());
-
-                        //REMOVE AFTER
-                        if (actualObj.type === "iapi") {
-                            stampMyObj(sourceObj);
-                            if (sourceObj.other.dataattribute.length > 0) {
-                                thirdchild.html('');
-                                thirdchild.html('More data:<br/>');
-                                thirdchild.css("display", "block");
-                            }
-                            else {
-                                thirdchild.css("display", "none");
-                            }
-                            console.log(sourceObj.other.dataattribute.length);
-                            for (var i = 0; i < sourceObj.other.dataattribute.length; i++) {
-                                var find = false;
-                                for (var j = 0; j < actualObj.other.dataattribute.length && find === false; j++) {
-                                    if (sourceObj.other.dataattribute[i].label === actualObj.other.dataattribute[j].label) {
-                                        find = true;
-                                    }
-                                }
-                                var newchi = '<input type="checkbox" name="more_data" value="' + sourceObj.other.dataattribute[i].label + '" >' + sourceObj.other.dataattribute[i].label + '<br/>';
-                                thirdchild.append(newchi);
-                                if (find === true) {
-                                    thirdchild.children("input").last().prop('checked', 'checked');
-                                }
-
-                            }
-                        }
-                        else {
-                            thirdchild.css("display", "none");
-                        }
-                    });
-                });*/
-                
-                
                 //SET MORE ATTRIBUTE FOR THIRDCHILD
                 //TODO GET SOURCE DATAATTRIBUTE
-                //FLORIAN
+                //
                 
                 getAttributeTags($(this).prop("id"), function (actualObj) {
 
@@ -297,6 +250,7 @@ function scriptBody(disa) {
                 //////////////////////////////////////////
                 if (sourcetype == "json") {
                     console.log("JSON->>>>>>>>>>>>");
+
                     extractJSON(urlsource, id, function (ret) {
                         console.log(ret);
                     });
@@ -308,8 +262,8 @@ function scriptBody(disa) {
                     //////////////////////////////////////////
                 else if (sourcetype == "rss") {
                     console.log("RSS->>>>>>>>>>>>");
-                    extractRSS(urlsource,id, function (ret) {
-                        console.log(ret);
+                    extractRSS(urlsource, id, function (ret) {
+                        log(ret);
                     });
                 }
 
@@ -318,9 +272,10 @@ function scriptBody(disa) {
                     //////////////////////////////////////////
                 else if (sourcetype == "xml") {
                     console.log("XML->>>>>>>>>>>>");
-                    //generateXML(urlsource, $(this));
+                        //extractXML(urlsource, id, function (ret) {
+                        //    console.log(ret);
+                        //});
                 }
-
 
                     //////////////////////////////////////////
                     //////////////IAPI
@@ -330,7 +285,6 @@ function scriptBody(disa) {
                     extractIAPI(iapiid, urlsource, function (datas) {
                         generate(datas, id);
                     });
-
                 }
             }
         });
@@ -397,7 +351,6 @@ function formattingDOM(id, tag) {
 //call sendMessageMiddleware with the current iapiid and the tag "more_data"
 //format
 //<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
-//TODO
 function hideShowDataattributeDOM(id, obj) {
     console.log("dataattribute :" + obj.type_dataattribute + " value:" + obj.value);
     if(obj.value){
@@ -415,55 +368,74 @@ function hideShowDataattributeDOM(id, obj) {
 //hide the dataAttribute
 //Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Title:Where">
 //After:<table class="iapi datasource:http://source sourcetype:iapi hide:Author:Title:Where">
-//TODO
 function hideDataattribute(id,type) {
     var YourFindElement = $(".iapi").filter("#" + id);
     var findHide = false;
     var tagtarg = YourFindElement.attr("class").split(" ");
     var tagtarg2;
-    for (i = 0; i < tagtarg.length && findHide === false; i++) {
+    var tagClass ="";
+    for (i = 0; i < tagtarg.length ; i++) {
         if (tagtarg[i].substr(0,5) === "hide:") {
             findHide = true;
             tagtarg[i] += ":" + type;
         }
+        if (i === 0)
+            tagClass += tagtarg[i];
+        else
+            tagClass += " " + tagtarg[i];
+        
         console.log("tag:"+tagtarg[i]);
     }
     
     if (findHide === false) {
         tagtarg2 = YourFindElement.attr("class");
         tagtarg2 += " hide:"+type;
+        tagClass = tagtarg2;
     }
-
-    console.log(tagtarg2);
+    
+    YourFindElement.attr("class",tagClass);
 }
 
 //show the dataAttribute
 //Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
 //After:<table class="iapi datasource:http://source sourcetype:iapi ">
-//TODO
 function showDataattribute(id,type) {
-    var YourFindElement = $(".iapi").filter("#" + id).get();
+    var YourFindElement = $(".iapi").filter("#" + id);
     var findHide = false;
+    var tagClass = "";
     var findDataAttribute = false;
-    $.each(YourFindElement, function (i, rowValue) {
-        var tagtarg = $(this).attr("class").split(" ");
-        for (i = 0; i < tagtarg.length && findHide === false; i++) {
-            if (tagtarg[i].substr(0, 5) === "hide:") {
-                findHide = true;
-                var arrayHideElement = tagtarg[i].substr(5).split(":");
-                for (var j = 0; j < arrayHideElement.length && findDataAttribute===false; j++) {
-                    if (arrayHideElement[j] === type) {
-                        console.log("TROVATO");
-                        findDataAttribute = true;
-                    }
+    var tagtarg = YourFindElement.attr("class").split(" ");
+    for (i = 0; i < tagtarg.length ; i++) {
+        if (tagtarg[i].substr(0, 5) === "hide:") {
+            findHide = true;
+            var arrayHideElement = tagtarg[i].substr(5).split(":");
+            if(arrayHideElement.length!==1)
+                tagClass += " "+tagtarg[i].substr(0, 4);
+            for (var j = 0; j < arrayHideElement.length; j++) {
+                if (arrayHideElement[j] === type) {
+                    findDataAttribute = true;
+                    tagClass.substr(0, tagClass.length - 1);
                 }
+                else {
+                    tagClass += ":"+arrayHideElement[j];
+                }
+
             }
         }
-        if (findHide === false)
-            console.log("ERROR");
-        if (findHide === false)
-            console.log("ERROR");
-    });
+        if(findDataAttribute===false){
+            if(i===0)
+                tagClass +=tagtarg[i];
+            else
+                tagClass += " " + tagtarg[i];
+        }
+
+        console.log("[" + i + "]" + tagClass);
+    }
+    YourFindElement.attr("class",tagClass);
+    if (findHide === false)
+        console.log("ERRORfindHide");
+    if (findDataAttribute === false)
+        console.log("ERRORfindDataAttribute");
 
 }
 
@@ -480,6 +452,25 @@ function saveTemplateDOM(id, tag) {
 //generate the dinamic title of iapi_menu
 function messageIapi_menu(id) {
 
+    var iapiDiv = $("#" + id);
+    var presenceDataSourceOrData = false;
+    var firstRow = iapiDiv.attr("class").split(" ");
+
+    for (i = 0; i < firstRow.length; i++) {
+        if (firstRow[i].slice(0, 11) == ("datasource:") || firstRow[i].slice(0, 5) == ("data:")) {
+            presenceDataSourceOrData = true;
+        }
+    }
+    if (presenceDataSourceOrData === true) {
+        return 'Page with interaction';
+        //console.log('Page with interaction);
+    
+    }
+
+
+    
+
+    /*//OLD 
     var iapiDiv = $("#" + id);
     var sourcetype;
     var urlsource;
@@ -541,67 +532,5 @@ function messageIapi_menu(id) {
             //console.log('Source page with ' + sourcetype.toUpperCase() + ' interaction at "' + urlsource +'"');
         }
 
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//get more data (used only in targetpage) and call relative parser (RSS, JSON, XML, IAPI)
-function getSourceData(obj, call) {
-
-    if (obj.type.toLowerCase() === "iapi") {
-        getDataFromIAPI(obj.url, obj.iapiid, function (r) {
-            call(r);
-        });
-    } else if (obj.type.toLowerCase() === "json") {
-        getDataFromJSON(obj.url, function (r) {
-            call(r);
-        });
-    } else if (obj.type.toLowerCase() === "rss") {
-        getDataFromRSS(obj.url, function (r) {
-            call(r);
-        });
-    } else if (obj.type.toLowerCase() === "xml") {
-        getDataFromXML(obj.url, function (r) {
-            call(r);
-        });
-    }
-}
-
-//relative parser (JSON) to get data (MyObject)
-//TODO
-//MUST COMPLETE THE FUNCTION (getDataFromJSON)
-function getDataFromJSON(url, callback) {
-    console.log("getDataFromJSON--->>>>");
-    callback("");
-}
-
-//relative parser (RSS) to get data (MyObject)
-//TODO
-//MUST COMPLETE THE FUNCTION (getDataFromRSS)
-function getDataFromRSS(url, callback) {
-    console.log("getDataFromRSS--->>>>");
-    callback("");
-}
-
-//relative parser (XML) to get data (MyObject)
-//TODO
-//MUST COMPLETE THE FUNCTION (getDataFromXML)
-function getDataFromXML(url, callback) {
-    console.log("getDataFromXML--->>>>");
-    callback("");
-}
-
-//relative parser (IAPI) to get data (MyObject)
-function getDataFromIAPI(url, iapiid, callback) {
-    console.log("getDataFromIAPI--->>>>");
-    $.get(url, function (data) {
-        var element = $("<Div>" + data + "</Div>").find('#' + iapiid, '.iapi'); // select the source
-        getAttributeTags(iapiid, function (re) {
-            callback(re);
-        });
-    });
+    }*/
 }
