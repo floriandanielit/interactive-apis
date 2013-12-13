@@ -23,26 +23,35 @@ function generate(data, idTemplate) {
     var txt = "";
     $.each(data, function (key, value) {
 
-        var subtemplate = template.find('[class*="dataitem:"]');  //get the dataitem
+        var subtemplate = template.find('[class*=data]');  //get the dataitem
 
         $.each(value, function (key, value) {
 
             //   subtemplate.prop('id',key);    //set an Id for the current..
-           var tmpChild = subtemplate.children();
+
+            var tmpChild = subtemplate.children();
 
             var i = 0;  // counter dipends on the object element (dataattribute of each dataitem)
-            $.each(value, function (key, value) {
-                $(tmpChild).eq(i).text(value);
-                i++;
+            for (var j = 0 ; j < 3; j++) {
+                console.log($(tmpChild).eq(j).html());
+                $(tmpChild).eq(j).html(function () {
 
-            });
+                    for (var key in value) {
 
+                        if ($(tmpChild).eq(j).attr("class").substr(14) === key)
+                            return value[key];
+                    }
+                });
+            }
+            i++;
             txt = txt.concat($(subtemplate)[0].outerHTML);
         });
 
     });
     template.find('[class*=data]').remove();
     $(template).append(txt);
+
+
 }
 
 function middlewareAction(msg,id, callback) {
