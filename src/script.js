@@ -263,7 +263,7 @@ function scriptBody(disa) {
                 else if (sourcetype == "rss") {
                     console.log("RSS->>>>>>>>>>>>");
                     extractRSS(urlsource, id, function (ret) {
-                        log(ret);
+                       console.log(ret);
                     });
                 }
 
