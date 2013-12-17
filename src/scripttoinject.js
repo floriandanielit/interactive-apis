@@ -1,57 +1,62 @@
 var idtarget="";
 var code = "";
 
-  function allowDrop(ev)
+function allowDrop(ev)
 {
-ev.preventDefault();
-idtarget=ev.target.id;
-//ev.dataTransfer.setData("id",idtarget);
-console.log(idtarget);
+    ev.preventDefault();
+    idtarget=ev.target.id;
+//ev.dataTransfer.setData("idtarget",idtarget);
+    console.log(idtarget);
 }
 //Funzione per definire cosa fare in caso di drag(non funziona)
-  function drag(ev,source)
-  {
-      getAttributeTags(ev.target.id, function (ret) {
+function drag(ev,source)
+{
+    getAttributeTags(ev.target.id, function (ret) {
 
-          //stampMyObj(ret);
+        //stampMyObj(ret);
 
-          ev.dataTransfer.setData("source", source);
-          ev.dataTransfer.setData("id", ev.target.id);
-          var j = JSON.stringify(ret);//pass my object in JSON format because dataTransfer support only string
-          ev.dataTransfer.setData("foo", j);
-          
-      });
-  }
+        ev.dataTransfer.setData("source", source);
+        ev.dataTransfer.setData("id", ev.target.id);
+        var j = JSON.stringify(ret);//pass my object in JSON format because dataTransfer support only string
+        ev.dataTransfer.setData("foo", j);
+
+    });
+}
 
 //Funzione per definire cosa fare in caso di drop(non funziona)
-  function drop(ev)
-  {
+function drop(ev)
+{
 
-      if (ev.dataTransfer) {
-          ev.preventDefault();
-          
-          var id = ev.dataTransfer.getData("id");
-          var ret = JSON.parse(ev.dataTransfer.getData("foo"));
-          var source = ev.dataTransfer.getData("source");
+    if (ev.dataTransfer) {
+        ev.preventDefault();
 
-          //stampMyObj(ret);
-          if (ret.type === "iapi") {
-              console.log("generate iapi");
-          } else if (ret.type === "json") {
-              console.log("generate json");
-          } else if (ret.type === "rss") {
-              console.log("generate rss");
-          }
-      }
-      else {
-          alert("Your browser does not support the dataTransfer object.");
-      }
+        var id = ev.dataTransfer.getData("id");
+        var ret = JSON.parse(ev.dataTransfer.getData("foo"));
+        var source = ev.dataTransfer.getData("source");
+        // var idtarget=ev.dataTransfer.getData("idtarget");
+        console.log("my idtarget is :  "+idtarget);
+        //stampMyObj(ret);
+        if (ret.type === "iapi") {
+            extractIAPI(id, source, function (datas) {
+                console.log("skjdhsa"+datas);
+                generate(datas, idtarget);
+            });
+            console.log("generate iapi");
+        } else if (ret.type === "json") {
+            console.log("generate json");
+        } else if (ret.type === "rss") {
+            console.log("generate rss");
+        }
+    }
+    else {
+        alert("Your browser does not support the dataTransfer object.");
+    }
 }
 
 //call parseSRC or parseTRG
 function getAttributeTags(iapiid, call) {
     var YourFindElement = $(".iapi").filter("#" + iapiid).get();
-    
+
     $.each(YourFindElement, function (i, rowValue) {
         var tagtarg = $(this).attr("class").split(" ");
 
@@ -75,7 +80,7 @@ function getAttributeTags(iapiid, call) {
             });
         }
     });
-    
+
 }
 
 //get datasource,iapiid,sourcetype
@@ -128,7 +133,7 @@ function parseSRC(YourFindElement,id, callback) {
 //get datasource,iapiid,sourcetype
 function parseTRG(YourFindElement, id, callback) {
     //console.log("PARSE_TRG");
-    
+
     $.each(YourFindElement, function (i, rowValue) {
         var tagtarg = $(this).attr("class").split(" ");
         var id = $(this).attr('id');
@@ -162,7 +167,7 @@ function parseTRG(YourFindElement, id, callback) {
             console.log("TODO");
             //TODO
         }
-        
+
         ///DEBUG
         //if (urlsource != undefined)
         //    console.log("url:" + urlsource);
@@ -175,7 +180,7 @@ function parseTRG(YourFindElement, id, callback) {
 
         callback(ret);
     });
-        
+
 
 }
 
@@ -223,8 +228,8 @@ function parseCommon(id,sourcetype) {
     var YourFindElement5 = YourFindElement2.find("[class*='dataitem:']");
     var YourFindElement4 = YourFindElement5.first().children("[class*='dataattribute:']");
     $.each(YourFindElement4, function (i, rowValue) {
-        
-       
+
+
         if ($(this).attr("class").slice(0, 14) == ("dataattribute:")) {
 
             var temp = $(this).attr("class").substr(14);//Author:auth or //Author

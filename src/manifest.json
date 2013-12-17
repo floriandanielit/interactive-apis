@@ -24,5 +24,6 @@
  "permissions": [	
  "management","webNavigation","webRequest","tabs", "storage","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"
   ],
-  "web_accessible_resources": ["lib/jquery-2.0.3.js","scripttoinject.js","parsers/*"]
+    "web_accessible_resources": ["lib/jquery-2.0.3.js",
+        "scripttoinject.js","parsers/*","libgen.js"]
 }

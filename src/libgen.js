@@ -49,7 +49,7 @@ function generate(data, idTemplate) {
 
 
                 for(var j=0 ;j<3;j++ ){
-                    console.log( $(tmpChild).eq(j).html());
+                    console.log( $(tmpChild).eq(j));
                     $(tmpChild).eq(j).html(function(){
 
 

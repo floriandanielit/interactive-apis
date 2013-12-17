@@ -139,6 +139,21 @@ function scriptBody(disa) {
         
         (document.head || document.documentElement).appendChild(sjq);
 
+
+        var k = document.createElement('script');
+        k.src = chrome.extension.getURL("parsers/iAPI.js");
+        k.onload = function () {
+            this.parentNode.removeChild(this);
+        };
+        (document.head || document.documentElement).appendChild(k);
+
+        var ks = document.createElement('script');
+        ks.src = chrome.extension.getURL("libgen.js");
+        ks.onload = function () {
+            this.parentNode.removeChild(this);
+        };
+        (document.head || document.documentElement).appendChild(ks);
+
         var s = document.createElement('script');
         s.src = chrome.extension.getURL("scripttoinject.js");
         s.onload = function () {
