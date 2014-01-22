@@ -7,20 +7,53 @@ function allowDrop(ev)
     idtarget=ev.target.id;
 //ev.dataTransfer.setData("idtarget",idtarget);
     console.log(idtarget);
+    ev.target.className = "over";
 }
+
 //Funzione per definire cosa fare in caso di drag(non funziona)
 function drag(ev,source)
 {
-    getAttributeTags(ev.target.id, function (ret) {
 
-        //stampMyObj(ret);
-
-        ev.dataTransfer.setData("source", source);
-        ev.dataTransfer.setData("id", ev.target.id);
-        var j = JSON.stringify(ret);//pass my object in JSON format because dataTransfer support only string
-        ev.dataTransfer.setData("foo", j);
-
+    ev.dataTransfer.setData("source", source);
+    ev.dataTransfer.setData("tagsource", $("#"+ev.target.id).prop("tagName"))
+    ev.dataTransfer.setData("id", ev.target.id);
+    hasIdTemplate(ev.target.id,function(msg){
+        if(msg !=="NOIDTEMPLATE")
+            ev.dataTransfer.setData("idtemplate", msg);
+        else
+            ev.dataTransfer.setData("idtemplate", msg);
     });
+    
+}
+
+function hasIdTemplate(id, call)
+{
+
+    var yourFindElement = $("#"+id);
+    var items = $(yourFindElement).find("[class*='dataitem:']")
+    var elementsItem = $(items).attr("class").split(" ");
+    var presenceIdtemplate=false;
+    var idTemplate;
+    for (var i = 0; i < elementsItem.length && presenceIdtemplate === false; i++) {
+        if (elementsItem[i].substr(0, 11) === "idTemplate:")
+        {
+            idTemplate = elementsItem[i].substr(11);
+            presenceIdtemplate = true;
+        }
+    }
+    if (presenceIdtemplate === true) {
+        call(idTemplate);
+    }
+    else
+    {
+        call("NOIDTEMPLATE");
+    }
+
+}
+
+function leave(ev)
+{
+    ev.target.className = "";
 }
 
 //Funzione per definire cosa fare in caso di drop(non funziona)
@@ -30,29 +63,129 @@ function drop(ev)
     if (ev.dataTransfer) {
         ev.preventDefault();
 
-        var id = ev.dataTransfer.getData("id");
-        var ret = JSON.parse(ev.dataTransfer.getData("foo"));
+        ev.target.className = "";
+        ///NEW
+        var idsource = ev.dataTransfer.getData("id");
+        var tagsource = ev.dataTransfer.getData("tagsource");
         var source = ev.dataTransfer.getData("source");
-        // var idtarget=ev.dataTransfer.getData("idtarget");
-        console.log("my idtarget is :  "+idtarget);
-        //stampMyObj(ret);
-        if (ret.type === "iapi") {
-            extractIAPI(id, source, function (datas) {
-                console.log("skjdhsa"+datas);
-                generate(datas, idtarget);
-            });
-            console.log("generate iapi");
-        } else if (ret.type === "json") {
-            console.log("generate json");
-        } else if (ret.type === "rss") {
-            console.log("generate rss");
+        var idTemplate;
+        if (ev.dataTransfer.getData("idtemplate") !== "NOIDTEMPLATE")
+        {
+            idTemplate = ev.dataTransfer.getData("idtemplate");
         }
+        console.log("idsource [" + idsource + "] + tagsource [" + tagsource + "] + source [" + source + "] + idtemplate [" + idTemplate + "]");
+
+        
+        console.log("IAPI PRESENCE");
+        loadAndInjectTemplate(idTemplate, ev.target.id, tagsource, function (ret) {
+
+                compileTemplate(source, idsource, ret, ev.target.id, function (ret2) {
+                    console.log("ret2:" + ret2);
+
+                    console.log("SCRIPTTOINJECT.JS:finish_inject_template the DOM");
+
+                    /*     sendMessageMiddleware("finish_inject_template", ev.target.id, function (ret) {
+                             console.log("finish_inject_template: " + ret);
+                         });*/
+                });
+        });
+        
+
     }
     else {
         alert("Your browser does not support the dataTransfer object.");
     }
 }
 
+function createTagiAPI(call) {
+
+    call("done create tag iAPI");
+}
+
+function loadaaaaTemplate() {
+
+
+}
+
+
+function loadAndInjectTemplate(idTemplate, idTarget, tagsource, callback) {
+
+    /*
+    $.get(chrome.extension.getURL('html/templates.html'), function (data) {
+        var template = $("<div>" + data + "</div>").find('#' + idTemplate);   //source template
+        var tmp = $(template).parent().prop("tagName");
+        if (tmp.toLowerCase() === "tbody")//table -tbody
+            tmp = $(tmp).parent().prop("tagName");
+        
+            sendMessageMiddleware("formatting", id, function (ret) {
+                console.log("formatting: " + ret);
+            });  
+    }); */
+
+    /*
+    if (idTemplate !== undefined)
+    {
+        $('#' + idTarget).load('../src/html/templates.html #'+idTemplate, function (ret) {
+            var subtemplate3 = $("<div>" + ret + "</div>").find("#"+idTemplate);
+        });
+
+    }
+    else
+    {
+        $('#' + idTarget).load('Template.html table', function (ret) {
+
+            var subtemplate3 = $("<div>" + ret + "</div>").find("#2D");
+            //console.log("il template e :"+subtemplate3);
+           
+            callback(subtemplate3);  //load and return the template to process it
+        });
+
+
+        //var urlTemplates = chrome.extension.getURL("html/templates.js");
+
+    }   */
+}
+
+function compileTemplate(source, idsource, ret, idtarget, callback) {
+
+    $.fn.replaceTag = function (newTagObj, keepProps) {
+        $this = this;
+        var i, len, $result = jQuery([]), $newTagObj = $(newTagObj);
+        len = $this.length;
+        for (i = 0; i < len; i++) {
+            $currentElem = $this.eq(i);
+            currentElem = $currentElem[0];
+            $newTag = $newTagObj.clone();
+            if (keepProps) {//{{{
+                newTag = $newTag[0];
+                newTag.className = currentElem.className;
+                $.extend(newTag.classList, currentElem.classList);
+                $.extend(newTag.attributes, currentElem.attributes);
+
+            }//}}}
+            $newTag.html(currentElem.innerHTML).replaceAll($currentElem);
+            $result.pushStack($newTag);
+        }
+
+        return this;
+    }
+
+    $("#" + idtarget).replaceTag("<" + parentnode + ">", true);
+    $(parentnode).attr("id", idtarget);
+    $(parentnode).html(template.parent().html());
+}
+
+//send a message to Middleware and wait a response
+//TODO
+function sendMessageMiddleware(action, id, call) {
+    console.log("call liben.js");
+        middlewareAction(action, id, function (ret) {
+            console.log("return from liben.js+ message:"+ret);
+            call(ret);
+        });
+}
+
+//OLD FUNCTIONS
 //call parseSRC or parseTRG
 function getAttributeTags(iapiid, call) {
     var YourFindElement = $(".iapi").filter("#" + iapiid).get();

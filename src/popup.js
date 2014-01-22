@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     linksHref();
     linksOption();
+    linksNewPage();
     typeInteraction();
     on_off();
 });
@@ -24,7 +25,14 @@ function linksHref() {
 // get the position of option.html page
 function linksOption() {
     $("#optionPage").click(function () {
-        chrome.tabs.create({ active: true, url: chrome.extension.getURL("html/options.html") });
+        BG.openTab(chrome.extension.getURL("html/options.html"));
+    });
+}
+
+// get the position of option.html page
+function linksNewPage() {
+    $("#newPage").click(function () {
+        BG.openTab(chrome.extension.getURL("html/newPage.html"));
     });
 }
 //set the status of chrome extension 

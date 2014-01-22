@@ -43,8 +43,7 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
             iAPIPresence[sender.tab.id] = msg.presence;	// memorize presence
             setIcon(sender.tab.id); // set icon accordingly	
         }
-    }
-    else if (msg.type === "extension_status") {
+    }else if (msg.type === "extension_status") {
         sendResponse({ 'disable': this.extensionDisabled });   // send the extension status to the script
     } else if (msg.type === "loadExternal") {
         loadExtern(msg.url,
@@ -57,8 +56,13 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
         );
         return true;
     }
+    else if (msg.type === "requestPageId") {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            sendResponse(tabs[0].id);
+        });
+        return true;
+    }
 });
-
 
 function loadExtern(path, success, error)
 {
@@ -107,6 +111,7 @@ chrome.tabs.onActivated.addListener(function () {
 // React when changing browser window
 chrome.windows.onFocusChanged.addListener(function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        console.log(tabs[0].id);
         ScriptJs(tabs[0].id);
     });
 
@@ -131,11 +136,13 @@ function ScriptJs(tabId) {
 
         chrome.tabs.executeScript(tabId, { file: 'jQuery.js' }, function () {
             chrome.tabs.executeScript(tabId, { file: 'libgen.js' }, function () {
-                chrome.tabs.executeScript(tabId, { file: 'script.js' }, function () {
+                chrome.tabs.executeScript(tabId, { file: 'scripttoinject.js' }, function () {
+                    chrome.tabs.executeScript(tabId, { file: 'script.js' }, function () {
 
 
-                    console.log('Successfully injected script into the page' + scriptPresence[tabId] + tabId);
+                        console.log('Successfully injected script into the page' + scriptPresence[tabId] + tabId);
 
+                    });
                 });
             });
         });

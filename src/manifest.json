@@ -11,19 +11,24 @@
     "default_icon": "img/icon_black.png",
 	"default_popup": "html/popup.html"
   },
+
+
 "content_scripts": [
-{
-"matches": ["http://*/*","https://*/*","file://*/*"],
-"js": ["lib/jquery-2.0.3.js","libgen.js","scripttoinject.js","parsers/iAPI.js","parsers/RSS.js","parsers/XML.js","parsers/JSON.js"]
-}
+	{
+	"matches": ["http://*/*","https://*/*","file://*/*"],
+	"css":        ["css/main.css"],
+	"js": ["lib/jquery-2.0.3.js","libgen.js","scripttoinject.js","parsers/iAPI.js","parsers/RSS.js","parsers/XML.js","parsers/JSON.js"]
+	}
 ],
+
+
+
 "background": {
        "scripts": ["background.js"]
   },
   "options_page": "html/options.html",
- "permissions": [	
- "management","webNavigation","webRequest","tabs", "storage","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"
-  ],
-    "web_accessible_resources": ["lib/jquery-2.0.3.js",
-        "scripttoinject.js","parsers/*","libgen.js"]
+	"permissions": [
+	"management","webNavigation","webRequest","tabs", "storage","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"],
+	"web_accessible_resources": [
+	"lib/jquery-2.0.3.js","scripttoinject.js","parsers/*","libgen.js","html/*"]
 }

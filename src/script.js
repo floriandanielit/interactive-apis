@@ -12,17 +12,12 @@ function scriptBody(disa) {
                         '<div id="iapi_menu" class="iapi_menu" style="background-color:black; padding: 3px; width: 200px;">' +
                            '<div style="font-size: 16px;font-weight: bold; color:white;"></div>' +
                            '<div style="font-size: 16px;font-weight: bold; color:white;">Formatting:<br/>' +
-
-                               '<input type="radio" name="format" value="table">Table<br/>' +
-                               '<input type="radio" name="format" value="list">List<br/>' +
-                               '<input type="radio" name="format" value="numlist">NumList<br/>' +
-
                            '</div>' +
                            '<div style="font-size: 16px;font-weight: bold; color:white;">More data:<br/>'+
                           ' </div>' +
                            '<div class="iapiactions"></div>' +
                            '<a href="#" style="color:white">For each...</a>' +
-                        '</div>'+
+                        '</div>' +
                        '</div>';
 
             
@@ -54,71 +49,112 @@ function scriptBody(disa) {
 
             }
             else {
-                secondchild = $("#iapi_menu div:nth-child(2)").css("display", "block");
-                //SET THE IAPI FORMATTING 
-                //console.log($("#iapi_menu :nth-child(2)").html());
 
+                var id = $(this).attr("id");
+                var items = $(this).find("[class*='dataitem:']")
+                var elementsItem = $(items).attr("class").split(" ");
+                var presenceIdtemplate=false;
+                var idTemplate;
+                for (var i = 0; i < elementsItem.length && presenceIdtemplate === false; i++) {
+                    //console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA:" + i + " = " + elementsItem[i]);
 
-
-                //SET SELECTED RADIOBUTTON FOR SECONCHILD
-                var tag = $(this).prop("tagName");
-                tag = tag.toLowerCase();
-                //console.log("tag: " + tag);
-                if (tag === "table") {
-
-                    //secondchild.children().filter("[value=table]").css("display", "none");
-                    //must hide text (Table)
-                    //secondchild.children().filter("[value=table]").next().hide();//hide <br/>
-                    //secondchild.children().filter("[value=numlist]").css("display", "block");
-                    //secondchild.children().filter("[value=list]").css("display", "block");
-
-                    secondchild.children().filter("[value=table]").prop('checked', 'checked');
-                } else if (tag === "ul") {
-                    //secondchild.children().filter("[value=list]").css("display", "none");
-                    //secondchild.children().filter("[value=numlist]").css("display", "block");
-                    //secondchild.children().filter("[value=table]").css("display", "block");
-
-                    secondchild.children().filter("[value=list]").prop('checked', 'checked');
-                } else if (tag === "ol") {
-                    //secondchild.children().filter("[value=numlist]").css("display", "none");
-                    //secondchild.children().filter("[value=table]").css("display", "block");
-                    //secondchild.children().filter("[value=list]").css("display", "block");
-                    secondchild.children().filter("[value=numlist]").prop('checked', 'checked');
+                    if (elementsItem[i].substr(0, 11) === "idTemplate:")
+                    {
+                        idTemplate = elementsItem[i].substr(11);
+                        presenceIdtemplate = true;
+                    }
                 }
+                if (presenceIdtemplate === false) {
+                    secondchild = $("#iapi_menu div:nth-child(2)").css("display", "none");
+                    thirdchild = $("#iapi_menu div:nth-child(3)").css("display", "none");
+                }
+                else
+                {
+                        //SET THE IAPI FORMATTING 
+                        //TODO must be checked atrual template
+                        getTemplateList(function (array) {
+
+                            secondchild = $("#iapi_menu div:nth-child(2)");
+
+                            if (array.length > 0) {
+                                secondchild.html('');
+                                secondchild.html('Formatting:<br/>');
+                                secondchild.css("display", "block");
+                            }
+                            else {
+                                secondchild.css("display", "none");
+                            }
+                            for (var i = 0; i < array.length; i++) {
+                                var newchi = '<input type="radio" class="idtemplate:' + array[i].key + '" value="' + array[i].value + '" >' + array[i].value + '<br/>';
+                                secondchild.append(newchi);
+                                if(array[i].key===idTemplate)
+                                    secondchild.children("input").last().prop('checked', 'checked');
+                            }
+                        });
 
 
-                //SET MORE ATTRIBUTE FOR THIRDCHILD
-                //TODO GET SOURCE DATAATTRIBUTE
-                //
-                
-                getAttributeTags($(this).prop("id"), function (actualObj) {
+                    //SET MORE ATTRIBUTE FOR THIRDCHILD
+                    //TODO GET SOURCE DATAATTRIBUTE Load from array ANIS
 
-                   //stampMyObj(actualObj);
+                    var arr = new Array();
+                    var parentNode = $(this);
+                    pageIdRequest(function (data) {
+                        //console.log("ssssssssssssssssssssssssssss" + JSON.parse(localStorage.getItem(data)));
 
-                   thirdchild = $("#iapi_menu div:nth-child(3)");
-                        if (actualObj.other.dataattribute.length > 0) {
-                            thirdchild.html('');
-                            thirdchild.html('More data:<br/>');
-                            thirdchild.css("display", "block");
+                        var tmp = JSON.parse(localStorage.getItem(data));
+
+                        tmp = tmp[id];
+
+                        
+                        if (tmp !== null) {
+                            
+                            getFirstRowKeyObject(tmp, function(arr){
+                                thirdchild = $("#iapi_menu div:nth-child(3)");
+
+                                if (arr.length > 0) {
+                                    thirdchild.html('');
+                                    thirdchild.html('More data:<br/>');
+                                    thirdchild.css("display", "block");
+                                }
+                                else {
+                                    thirdchild.css("display", "none");
+                                }
+                                for (var j = 0; j < arr.length ; j++) {
+                                    var newchi = '<input type="checkbox" name="more_data" value="' + arr[j] + '" >' + arr[j] + '<br/>';
+                                    thirdchild.append(newchi);
+                                    thirdchild.children("input").last().prop('checked', 'checked');
+                                }
+
+                                var arrAttr = parentNode.attr("class").split(" ");
+                                for (var i = 0; i < arrAttr.length; i++) {
+                                    console.log(arrAttr[i]);
+                                    if (arrAttr[i].substr(0, 5) === "hide:") {
+                                        var attribute = arrAttr[i].split(":");
+                                        for (var j = 1; j < attribute.length; j++) {
+                                            thirdchild.children('[value=' + attribute[j] + ']').prop('checked', false);
+                                        }
+                                    }
+
+                                }
+                            });
                         }
-                        else {
-                            thirdchild.css("display", "none");
-                        }
-                        for (var j = 0; j < actualObj.other.dataattribute.length ; j++) {
-                            var newchi = '<input type="checkbox" name="more_data" value="' + actualObj.other.dataattribute[j].label + '" >' + actualObj.other.dataattribute[j].label + '<br/>';
-                            thirdchild.append(newchi);
-                            thirdchild.children("input").last().prop('checked', 'checked');
-                        }
-                        for (var i = 0; i < actualObj.hide.length; i++) {
-                            thirdchild.children('[value=' + actualObj.hide[i] + ']').prop('checked',false);
-                        }
-                });
+                    });
+                }
             }
         });
 
         //SET CLICK STATUS FORMATTING
-        $("#iapi_menu div:nth-child(2)").children().click(function () {
-            formattingDOM($("#iapi_menu [class='getAll']").attr("id"), $(this).val());
+        $("#iapi_menu div:nth-child(2)").change(function (i) {
+            var values = $(i.target).attr("class").split(" ");
+            var idTemplate;
+            for (var i = 0; i < values.length; i++) {
+                if (values[i].substr(0, 11) === "idtemplate:")
+                {
+                    idTemplate = values[i].substr(11);
+                    break;
+                }
+            }
+            formattingDOM($("#iapi_menu [class='getAll']").attr("id"), idTemplate);
         });
 
         //SET CLICK STATUS MORE DATA
@@ -131,6 +167,7 @@ function scriptBody(disa) {
     //Qui controllo se ci sono iApi nella pagina e nel caso ci siano lo notifico all'utente
     if (document.getElementsByClassName("iapi").length > 0) {
 
+
         var sjq = document.createElement('script');
         sjq.src = chrome.extension.getURL("lib/jquery-2.0.3.js");
         sjq.onload = function () {
@@ -138,31 +175,31 @@ function scriptBody(disa) {
         };
         
         (document.head || document.documentElement).appendChild(sjq);
-
-
+        /*
         var k = document.createElement('script');
         k.src = chrome.extension.getURL("parsers/iAPI.js");
         k.onload = function () {
             this.parentNode.removeChild(this);
         };
         (document.head || document.documentElement).appendChild(k);
-
+          */
         var ks = document.createElement('script');
         ks.src = chrome.extension.getURL("libgen.js");
         ks.onload = function () {
             this.parentNode.removeChild(this);
         };
         (document.head || document.documentElement).appendChild(ks);
-
+        
         var s = document.createElement('script');
         s.src = chrome.extension.getURL("scripttoinject.js");
         s.onload = function () {
             this.parentNode.removeChild(this);
         };
         (document.head || document.documentElement).appendChild(s);
-
+          
         $(".iapi").attr("ondragover", "allowDrop(event)");
         $(".iapi").attr("ondrop", "drop(event)");
+        $(".iapi").attr("ondragleave", "leave(event)");
 
         //alert("Sono state individuate delle iapi nella pagina");
         chrome.extension.sendMessage({ "type": "iAPI presence", "presence": "yes" }, function () { });
@@ -185,7 +222,7 @@ function scriptBody(disa) {
         $.each(YourFindElement, function (i, rowValue) {
             var tagtarg = $(this).attr("class").split(" ");
             var id = $(this).attr('id');
-
+            console.log("idSCRIPOT:JS" + id);
             var urlsource;
             var sourcetype;
             var iapiid;
@@ -265,10 +302,10 @@ function scriptBody(disa) {
                 //////////////////////////////////////////
                 if (sourcetype == "json") {
                     console.log("JSON->>>>>>>>>>>>");
-
+                    
                     extractJSON(urlsource, id, function (ret) {
-                        console.log(ret);
-                    });
+                        generate(id);
+                    }); 
 
                 }
 
@@ -277,9 +314,9 @@ function scriptBody(disa) {
                     //////////////////////////////////////////
                 else if (sourcetype == "rss") {
                     console.log("RSS->>>>>>>>>>>>");
-                    extractRSS(urlsource, id, function (ret) {
+                    /*extractRSS(urlsource, id, function (ret) {
                        console.log(ret);
-                    });
+                    });*/
                 }
 
                     //////////////////////////////////////////
@@ -297,13 +334,31 @@ function scriptBody(disa) {
                     //////////////////////////////////////////
                 else if (sourcetype == "iapi") {
                     console.log("IAPI->>>>>>>>>>>>");
-                    extractIAPI(iapiid, urlsource, function (datas) {
-                        generate(datas, id);
+                    extractIAPI(iapiid, urlsource,id, function () {
+                        generate(id);
                     });
                 }
             }
         });
     }
+}
+
+function getFirstRowKeyObject(tmp, call) {
+    var arr = new Array();
+    $.each(tmp, function (key, value) {
+
+        $.each(value, function (key, value) {
+
+            arr.length = 0;
+            for (var key in value) {
+                //console.log("key =" + key);
+
+                arr.push(key);
+            }
+            call(arr);
+        });
+        return false;
+    });
 }
 
 //function: if is Srcpage return true else false (presence  "datasource:")
@@ -328,39 +383,135 @@ function isSrcPage(YourFindElement) {
 
     }
 
+//return all 2D templates array with(id and name) 
+function getTemplateList(callback) {
+    var array = new Array();
+
+    $.get(chrome.extension.getURL('html/templates.html'), function (data) {
+        var template = $("<div>" + data + "</div>").find('#2D');   //source template
+        var children = template.find("[id^='2D_']");
+        $.each(children, function (key, value) {
+            array.push({ "key": $(this).attr("id"), "value": $(this).attr("name") });
+        });
+        callback(array);
+    });
+}
+
 //send a message to Middleware and wait a response
 //TODO
 function sendMessageMiddleware(action,id,call) {
-    if (action === "formatting") {
-        console.log("call liben.js");
-        middlewareAction(action,id,function(ret){
+    middlewareAction(action,id,function(ret){
             console.log("return from liben.js");
             call(ret);
-        });
-    } else if (action === "more_data") {
-        console.log("call liben.js");
-        middlewareAction(action, id, function (ret) {
-            console.log("return from liben.js");
-            call(ret);
-        });
-    } else if (action === "save") {
-        console.log("call liben.js");
-        middlewareAction(action, id, function (ret) {
-            console.log("return from liben.js");
-            call(ret);
-        });
-    }
+    });
 }
 
 //call sendMessageMiddleware with the current iapiid and the tag "formatting"
 //TODO
-function formattingDOM(id, tag) {
+function formattingDOM(id, idTemplate) {
 
     console.log("SCRIPT.JS:format the DOM");
+    console.log("idtemplate:" + idTemplate);
 
-    sendMessageMiddleware("formatting", id, function (ret) {
-        console.log("formatting: "+ret);
+    $.get(chrome.extension.getURL('html/templates.html'), function (data) {
+        var template = $("<div>" + data + "</div>").find('#' + idTemplate);   //source template
+        var tmp = $(template).prop("tagName");
+
+        console.log("tagName" + tmp);
+
+        compileAndInjectTemplate(tmp, template, id,idTemplate, function (ret2) {
+
+        
+            /*sendMessageMiddleware("formatting", id, function (ret) {
+                console.log("formatting: " + ret);
+            });  */
+        });
     });
+}
+
+function compileAndInjectTemplate(parentnode, template, idtarget,idTemplate, callback) {
+
+    $.fn.replaceTag = function (newTagObj, keepProps) {
+        $this = this;
+        var i, len, $result = jQuery([]), $newTagObj = $(newTagObj);
+        len = $this.length;
+        for (i = 0; i < len; i++) {
+            $currentElem = $this.eq(i);
+            currentElem = $currentElem[0];
+            $newTag = $newTagObj.clone();
+            if (keepProps) {//{{{
+                newTag = $newTag[0];
+                newTag.className = currentElem.className;
+                $.extend(newTag.classList, currentElem.classList);
+                $.extend(newTag.attributes, currentElem.attributes);
+
+            }//}}}
+            $newTag.html(currentElem.innerHTML).replaceAll($currentElem);
+            $result.pushStack($newTag);
+        }
+
+        return this;
+    }
+
+    $("#" + idtarget).replaceTag("<" + parentnode + ">", true);
+    $(parentnode).attr("id", idtarget);
+    $(parentnode).html(template.html());
+
+
+    console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT:"+$(parentnode).html());
+
+
+    var temp = $(parentnode).children().filter("[class*='iapitemplate:item']");
+    
+    $(temp).addClass("idTemplate:" + idTemplate);
+
+
+
+    pageIdRequest(function (data) {
+        console.log("data:"+data);
+        var tmp = JSON.parse(localStorage.getItem(data));
+        tmp = tmp[idtarget];
+
+
+                
+        getFirstRowKeyObject(tmp, function (arr) {
+            for (var i = 0; i < arr.length; i++) {
+                console.log("DATA:" + arr[i]);
+            }
+            /*var dataattributeIterator = $(temp).children().filter("[class*='iapitemplate:dataattribute']");
+            var txt = "";
+            var txt2 = "";
+            //console.log("arr" + arr.length);
+            for (var i = 0; i < arr.length; i++) {  
+                var items = $(dataattributeIterator).children().attr("class").split(" ");
+
+
+                for (var j = 0; j < items.length; j++) {
+                    
+                    if(items[j].substr(0,14)==="dataattribute:")
+                    {
+                        var items2 = items[j].split(":");
+                        
+                        
+                        $(dataattributeIterator).children().attr("class", items2[0] + ":" + arr[i]);
+                        console.log($(dataattributeIterator).html());
+
+                    }
+                    else
+                    {
+                    }
+                }
+                txt += $(dataattributeIterator).html();
+                 
+            }
+            $(dataattributeIterator).find("[class*='dataattribute:']").remove();
+            $(dataattributeIterator).append(txt); */
+        });
+
+    });      
+
+
+    callback("done3");
 }
 
 //call sendMessageMiddleware with the current iapiid and the tag "more_data"
@@ -369,21 +520,31 @@ function formattingDOM(id, tag) {
 function hideShowDataattributeDOM(id, obj) {
     console.log("dataattribute :" + obj.type_dataattribute + " value:" + obj.value);
     if(obj.value){
-        showDataattribute(id,obj.type_dataattribute);
+        showDataattribute(id, obj.type_dataattribute, function () {
+            console.log("fineeeeeeeeeeeeeeeeeeeeeee");
+            console.log("SCRIPT.JS:hide/show element of the DOM");
+            sendMessageMiddleware("more_data", id, function (ret) {
+                console.log("more_data: " + ret);
+            });
+        });
     }else{
-        hideDataattribute(id,obj.type_dataattribute);
+        hideDataattribute(id, obj.type_dataattribute, function () {
+            console.log("fineeeeeeeeeeeeeeeeeeeeeee");
+            console.log("SCRIPT.JS:hide/show element of the DOM");
+            sendMessageMiddleware("more_data", id, function (ret) {
+                console.log("more_data: " + ret);
+            });
+            
+        });
     }
 
-    console.log("SCRIPT.JS:hide/show element of the DOM");
-    sendMessageMiddleware("more_data", id, function (ret) {
-        console.log("more_data: " + ret);
-    });
+    
 }
 
 //hide the dataAttribute
 //Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Title:Where">
 //After:<table class="iapi datasource:http://source sourcetype:iapi hide:Author:Title:Where">
-function hideDataattribute(id,type) {
+function hideDataattribute(id,type,call) {
     var YourFindElement = $(".iapi").filter("#" + id);
     var findHide = false;
     var tagtarg = YourFindElement.attr("class").split(" ");
@@ -399,7 +560,6 @@ function hideDataattribute(id,type) {
         else
             tagClass += " " + tagtarg[i];
         
-        console.log("tag:"+tagtarg[i]);
     }
     
     if (findHide === false) {
@@ -408,13 +568,14 @@ function hideDataattribute(id,type) {
         tagClass = tagtarg2;
     }
     
-    YourFindElement.attr("class",tagClass);
+    YourFindElement.attr("class", tagClass);
+    call("done");
 }
 
 //show the dataAttribute
 //Before:<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
 //After:<table class="iapi datasource:http://source sourcetype:iapi ">
-function showDataattribute(id,type) {
+function showDataattribute(id, type, call) {
     var YourFindElement = $(".iapi").filter("#" + id);
     var findHide = false;
     var tagClass = "";
@@ -444,7 +605,7 @@ function showDataattribute(id,type) {
                 tagClass += " " + tagtarg[i];
         }
 
-        console.log("[" + i + "]" + tagClass);
+        //console.log("[" + i + "]" + tagClass);
     }
     YourFindElement.attr("class",tagClass);
     if (findHide === false)
@@ -452,6 +613,7 @@ function showDataattribute(id,type) {
     if (findDataAttribute === false)
         console.log("ERRORfindDataAttribute");
 
+    call("done");
 }
 
 //call sendMessageMiddleware with the current iapiid and the tag "save"
@@ -469,83 +631,32 @@ function messageIapi_menu(id) {
 
     var iapiDiv = $("#" + id);
     var presenceDataSourceOrData = false;
-    var firstRow = iapiDiv.attr("class").split(" ");
+    var typeData;
+    var elementsClass = iapiDiv.attr("class").split(" ");
 
-    for (i = 0; i < firstRow.length; i++) {
-        if (firstRow[i].slice(0, 11) == ("datasource:") || firstRow[i].slice(0, 5) == ("data:")) {
+    for (i = 0; i < elementsClass.length && presenceDataSourceOrData === false; i++) {
+        if (elementsClass[i].substr(0, 11) == ("datasource:")) {
+            typeData = 'Page with interactions';
             presenceDataSourceOrData = true;
         }
+        else if (elementsClass[i].substr(0, 5) == ("data:")) {
+            typeData = elementsClass[i].substr(5);
+            presenceDataSourceOrData = true;
+        }
+
+
     }
     if (presenceDataSourceOrData === true) {
-        return 'Page with interaction';
+        return typeData;
         //console.log('Page with interaction);
     
-    }
-
+    } 
 
     
+}
 
-    /*//OLD 
-    var iapiDiv = $("#" + id);
-    var sourcetype;
-    var urlsource;
-    var iapiid;
-    var presenceDataSource = false;
-    var firstRow = iapiDiv.attr("class").split(" ");
-
-    for (i = 0; i < firstRow.length; i++) {
-        if (firstRow[i].slice(0, 11) == ("datasource:")) {
-            presenceDataSource = true;
-        }
-    }
-
-
-    if (presenceDataSource === true) {
-        for (i = 0; i < firstRow.length; i++) {
-            if (firstRow[i].slice(0, 11) == ("datasource:")) {
-                urlsource = firstRow[i].substr(11);
-            }
-            else if (firstRow[i].slice(0, 7) == ("iapiid:")) {
-                iapiid = firstRow[i].substr(7);
-            }
-            else if (firstRow[i].slice(0, 11) == ("sourcetype:")) {
-                sourcetype = firstRow[i].substr(11);
-            }
-        }
-        if (iapiid === undefined) {
-            return 'Target page with ' + sourcetype.toUpperCase() + ' interaction at <a href="' + urlsource + '">' + urlsource + '</a>';
-            //console.log('Target page with ' + sourcetype.toUpperCase() + ' interaction at "' + urlsource+'"');
-        }
-        else {
-            return 'Target page with ' + sourcetype.toUpperCase() + ' interaction at <a href="' + urlsource + '">' + urlsource + '</a>' + ' with id:' + iapiid;
-            //console.log('Target page with ' + sourcetype.toUpperCase() + ' interaction at "' + urlsource + '" with id:' + iapiid);
-        }
-    } else {
-        for (i = 0; i < firstRow.length; i++) {
-            if (firstRow[i].slice(0, 5) == ("json:")) {
-                sourcetype = firstRow[i].substr(0, 4);
-                urlsource = firstRow[i].substr(5);
-            }
-            else if (firstRow[i].slice(0, 4) == ("rss:")) {
-                sourcetype = firstRow[i].substr(0, 3);
-                urlsource = firstRow[i].substr(4);
-            }
-            else if (firstRow[i].slice(0, 4) == ("xml:")) {
-                sourcetype = firstRow[i].substr(0, 3);
-                urlsource = firstRow[i].substr(4);
-            }
-        }
-
-        if (sourcetype === undefined)
-            sourcetype = "iapi";
-
-        if (urlsource === undefined) {
-            return 'Page with ' + sourcetype.toUpperCase() + ' interaction';
-            //console.log('Page with ' + sourcetype.toUpperCase()+ ' interaction');
-        } else {
-            return 'Source page with ' + sourcetype.toUpperCase() + ' interaction at <a href="' + urlsource + '">' + urlsource + '</a>';
-            //console.log('Source page with ' + sourcetype.toUpperCase() + ' interaction at "' + urlsource +'"');
-        }
-
-    }*/
+function pageIdRequest(call) {
+    chrome.extension.sendMessage({ "type": "requestPageId" }, function (data) {
+        call(data);
+    });
 }

@@ -1,7 +1,11 @@
-function extractIAPI(iapiid, urlsource, call) {
+function extractIAPI(iapiid, urlsource,id, call) {
 
-
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
     var idObject = {};
+
+    
+
+
     var datas = new Array();  //array contains objects representing the extracted data
     $.get(urlsource, function (data) {
         var template = $("<div>" + data + "</div>").find('#' + iapiid);   //source template
@@ -24,10 +28,31 @@ function extractIAPI(iapiid, urlsource, call) {
 
 
         });
+        
+        req(function (idPage) {
+            var prewItems;
+            prewItems = JSON.parse(localStorage.getItem(idPage));
 
-        call(datas);
+            if (prewItems !== null) {
+                prewItems[id] = datas;
+                localStorage.setItem(idPage, JSON.stringify(prewItems));
 
-        idObject[iapiid] = datas;  //iapiid,data :each datas is associated with the id
+            }
+            else {
+                idObject[id] = datas;  //iapiid,data :each datas is associated with the id
+                localStorage.setItem(idPage, JSON.stringify(idObject));
+
+            }
+
+            call();
+
+        });
+        
     });
-    //localStorage(urlsource,idObect);   //  persist the data extracted of each iapi target !
+    
+}
+function req(call){
+    chrome.extension.sendMessage({ "type": "requestPageId" }, function (idPage) {
+        call(idPage);
+    });
 }
