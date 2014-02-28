@@ -1,10 +1,6 @@
-function extractIAPI(iapiid, urlsource,id, call) {
+function extractIAPI(iapiid, urlsource,id,idPage, call) {
 
-    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
     var idObject = {};
-
-    
-
 
     var datas = new Array();  //array contains objects representing the extracted data
     $.get(urlsource, function (data) {
@@ -29,7 +25,7 @@ function extractIAPI(iapiid, urlsource,id, call) {
 
         });
         
-        req(function (idPage) {
+        
             var prewItems;
             prewItems = JSON.parse(localStorage.getItem(idPage));
 
@@ -44,15 +40,7 @@ function extractIAPI(iapiid, urlsource,id, call) {
 
             }
 
-            call();
-
-        });
-        
+            call();        
     });
     
-}
-function req(call){
-    chrome.extension.sendMessage({ "type": "requestPageId" }, function (idPage) {
-        call(idPage);
-    });
 }

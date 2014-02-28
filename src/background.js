@@ -136,14 +136,14 @@ function ScriptJs(tabId) {
 
         chrome.tabs.executeScript(tabId, { file: 'jQuery.js' }, function () {
             chrome.tabs.executeScript(tabId, { file: 'libgen.js' }, function () {
-                chrome.tabs.executeScript(tabId, { file: 'scripttoinject.js' }, function () {
+                //chrome.tabs.executeScript(tabId, { file: 'scripttoinject.js' }, function () {
                     chrome.tabs.executeScript(tabId, { file: 'script.js' }, function () {
 
 
                         console.log('Successfully injected script into the page' + scriptPresence[tabId] + tabId);
 
                     });
-                });
+               // });
             });
         });
     } if (extensionDisabled === true && scriptPresence[tabId] === "yes") {

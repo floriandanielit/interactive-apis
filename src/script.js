@@ -56,7 +56,6 @@ function scriptBody(disa) {
                 var presenceIdtemplate=false;
                 var idTemplate;
                 for (var i = 0; i < elementsItem.length && presenceIdtemplate === false; i++) {
-                    //console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA:" + i + " = " + elementsItem[i]);
 
                     if (elementsItem[i].substr(0, 11) === "idTemplate:")
                     {
@@ -71,7 +70,7 @@ function scriptBody(disa) {
                 else
                 {
                         //SET THE IAPI FORMATTING 
-                        //TODO must be checked atrual template
+                        
                         getTemplateList(function (array) {
 
                             secondchild = $("#iapi_menu div:nth-child(2)");
@@ -93,23 +92,17 @@ function scriptBody(disa) {
                         });
 
 
-                    //SET MORE ATTRIBUTE FOR THIRDCHILD
-                    //TODO GET SOURCE DATAATTRIBUTE Load from array ANIS
-
                     var arr = new Array();
                     var parentNode = $(this);
                     pageIdRequest(function (data) {
-                        //console.log("ssssssssssssssssssssssssssss" + JSON.parse(localStorage.getItem(data)));
 
                         var tmp = JSON.parse(localStorage.getItem(data));
 
-                        tmp = tmp[id];
-
-                        
                         if (tmp !== null) {
                             
-                            getFirstRowKeyObject(tmp, function(arr){
-                                thirdchild = $("#iapi_menu div:nth-child(3)");
+                              tmp = tmp[id];
+                           		 getFirstRowKeyObject(tmp, function(arr){
+                                 thirdchild = $("#iapi_menu div:nth-child(3)");
 
                                 if (arr.length > 0) {
                                     thirdchild.html('');
@@ -164,9 +157,8 @@ function scriptBody(disa) {
         });
     }
 
-    //Qui controllo se ci sono iApi nella pagina e nel caso ci siano lo notifico all'utente
+	//CHeck whether the page contains iapi;s annotation
     if (document.getElementsByClassName("iapi").length > 0) {
-
 
         var sjq = document.createElement('script');
         sjq.src = chrome.extension.getURL("lib/jquery-2.0.3.js");
@@ -175,33 +167,25 @@ function scriptBody(disa) {
         };
         
         (document.head || document.documentElement).appendChild(sjq);
-        /*
-        var k = document.createElement('script');
-        k.src = chrome.extension.getURL("parsers/iAPI.js");
-        k.onload = function () {
-            this.parentNode.removeChild(this);
-        };
-        (document.head || document.documentElement).appendChild(k);
-          */
-        var ks = document.createElement('script');
-        ks.src = chrome.extension.getURL("libgen.js");
-        ks.onload = function () {
-            this.parentNode.removeChild(this);
-        };
-        (document.head || document.documentElement).appendChild(ks);
-        
+
+
         var s = document.createElement('script');
         s.src = chrome.extension.getURL("scripttoinject.js");
         s.onload = function () {
             this.parentNode.removeChild(this);
         };
-        (document.head || document.documentElement).appendChild(s);
-          
-        $(".iapi").attr("ondragover", "allowDrop(event)");
-        $(".iapi").attr("ondrop", "drop(event)");
+        (document.head || document.documentElement).appendChild(s); 
+          pageIdRequest(function(pageid){
+        $(".iapi").attr("ondragover", "allowDrop(event,"+pageid+")");
+          });
+
+        pageIdRequest(function(pageid){
+        $(".iapi").attr("ondrop", "drop(event,"+pageid+")");
+        });
+
         $(".iapi").attr("ondragleave", "leave(event)");
 
-        //alert("Sono state individuate delle iapi nella pagina");
+		//send a message to the backround to notify the presence of iapi/s 
         chrome.extension.sendMessage({ "type": "iAPI presence", "presence": "yes" }, function () { });
     }
     else {
@@ -210,19 +194,65 @@ function scriptBody(disa) {
 
     if (document.getElementsByClassName("iapi").length > 0) {
 
-        //Da qui in poi mi occupo di settare le variabili da passare alle funzioni di generazione del codice 
         var YourFindElement = $(".iapi").get();
         var stamp = document.getElementsByClassName("iapi")[0].innerHTML;
-
         lib = false
-        console.log("number execute---------------" + YourFindElement.length);
-
-        console.log(YourFindElement);
-
+      
         $.each(YourFindElement, function (i, rowValue) {
             var tagtarg = $(this).attr("class").split(" ");
             var id = $(this).attr('id');
-            console.log("idSCRIPOT:JS" + id);
+           
+        
+             if(localStorage.getItem(id)) {
+            
+			html = $.parseHTML( localStorage.getItem(id) );
+			StoredTemplate=$(html);			
+		 	$("#" + id).empty();
+		
+		         var replacementTag = StoredTemplate.prop("tagName");
+                 $("#" + id).each(function () {
+                 var outer = this.outerHTML;
+
+                 var regex = new RegExp('<' + this.tagName, 'i');
+                 var newTag = outer.replace(regex, '<' + replacementTag);
+
+                
+                 regex = new RegExp('</' + this.tagName + '>$', 'i');
+                 newTag = newTag.replace(regex, '</' + replacementTag + '>');
+               }); 
+
+          $("#" + id).contents().unwrap().wrap('<' + StoredTemplate.prop("tagName") + '/>');                             
+          $("#" + id).html(StoredTemplate.children().first());
+ 	      $("#" + id).addClass("iapi");
+                            
+            var source;
+            var iapiid;
+			var _ClassStoredTemplate = StoredTemplate.attr("class").split(" ");           
+            
+            for (i = 0; i < _ClassStoredTemplate.length; i++) {
+                if (_ClassStoredTemplate[i].slice(0, 11) == ("datasource:")) {
+                    source = _ClassStoredTemplate[i].substr(11);
+                   
+                }
+                else if (_ClassStoredTemplate[i].slice(0, 7) == ("iapiid:")) {
+                    iapiid = _ClassStoredTemplate[i].substr(7);
+                   
+                }
+               
+
+            }
+
+                            $("#" + id).addClass("datasource:" + source);
+                            $("#" + id).addClass("sourcetype:iapi");
+                            $("#" + id).addClass("iapiid:" + iapiid);
+					
+					 pageIdRequest(function (pageid) {
+                       extractIAPI(iapiid, source,id,pageid ,function () {
+                            generate(id,pageid);
+                        });
+                    });
+             }
+            
             var urlsource;
             var sourcetype;
             var iapiid;
@@ -230,19 +260,21 @@ function scriptBody(disa) {
             for (i = 0; i < tagtarg.length; i++) {
                 if (tagtarg[i].slice(0, 11) == ("datasource:")) {
                     urlsource = tagtarg[i].substr(11);
+                    
                 }
                 else if (tagtarg[i].slice(0, 7) == ("iapiid:")) {
                     iapiid = tagtarg[i].substr(7);
                 }
                 else if (tagtarg[i].slice(0, 11) == ("sourcetype:")) {
                     sourcetype = tagtarg[i].substr(11);
+                    
                 }
 
             }
 
             if (sourcetype == "iapi" && iapiid == undefined) {
                 console.log("ERROR: you must declare iapiid");
-                //TODO
+                
             }
 
 
@@ -261,31 +293,7 @@ function scriptBody(disa) {
                     }
                 });
 
-                //////////////////////////////////////////
-                //////////////DEBUG
-                //////////////////////////////////////////
-                /*console.log("YourFindElement2    :" + YourFindElement2);
-                console.log("urlsource    :" + urlsource);
-                if (iapiid != undefined)
-                    console.log("iapiid    :" + iapiid);
-                console.log("sourceType   :" + sourcetype);
-                console.log("iapitemplate   :" + iapitemplate);
-                console.log("id   :" + id);
-                */
-                /*
-                console.log("dataitem    :type: [" + dataitem.type + "] ref: [" + dataitem.ref + "] extref: [" + dataitem.extref + "]");
-                
-                if (sourcetype != "iapi") {
-                    for (var i = 0; i < dataattribute.length; i++) {
-                        console.log("attribute[" + i + "]    : type: [" + dataattribute[i].type + "] ref: [" + dataattribute[i].ref + "] extref: [" + dataattribute[i].extref + "]");
-                    }
-                } else {
-                    for (var i = 0; i < dataattribute.length; i++) {
-                        console.log("attribute[" + i + "]    : type: [" + dataattribute[i].type + "] ref: [" + dataattribute[i].ref + "]");
-                    }
-                }*/
-
-
+               
                 //////////////////////////////////////////
                 //////////////LoadTemplate()
                 //////////////////////////////////////////
@@ -302,9 +310,10 @@ function scriptBody(disa) {
                 //////////////////////////////////////////
                 if (sourcetype == "json") {
                     console.log("JSON->>>>>>>>>>>>");
-                    
-                    extractJSON(urlsource, id, function (ret) {
-                        generate(id);
+                    pageIdRequest(function(pageid){
+                        extractJSON(urlsource, id,pageid, function (ret) {
+                            generate(id,pageid);
+                        });
                     }); 
 
                 }
@@ -334,8 +343,10 @@ function scriptBody(disa) {
                     //////////////////////////////////////////
                 else if (sourcetype == "iapi") {
                     console.log("IAPI->>>>>>>>>>>>");
-                    extractIAPI(iapiid, urlsource,id, function () {
-                        generate(id);
+                    pageIdRequest(function (pageid) {
+                       extractIAPI(iapiid, urlsource,id,pageid ,function () {
+                            generate(id,pageid);
+                        });
                     });
                 }
             }
@@ -351,7 +362,7 @@ function getFirstRowKeyObject(tmp, call) {
 
             arr.length = 0;
             for (var key in value) {
-                //console.log("key =" + key);
+               
 
                 arr.push(key);
             }
@@ -360,8 +371,23 @@ function getFirstRowKeyObject(tmp, call) {
         return false;
     });
 }
+function getFirstRowKeyObject2(tmp, call) {
+    var arr = new Array();
+    $.each(tmp, function (key, value) {
+        $.each(value, function (key, value) {
+            arr.length = 0;
+            arr.push(key);
+            for (var key in value) {
+               arr.push(key);
+            }
+            call(arr);
+        });
+        return false;
+    });
+}
 
-//function: if is Srcpage return true else false (presence  "datasource:")
+
+//function:return true if the element is a source
 function isSrcPage(YourFindElement) {
        var tagtarg = YourFindElement.attr("class").split(" ");
 
@@ -383,7 +409,7 @@ function isSrcPage(YourFindElement) {
 
     }
 
-//return all 2D templates array with(id and name) 
+//return the list of all the templates (id and name)
 function getTemplateList(callback) {
     var array = new Array();
 
@@ -399,144 +425,133 @@ function getTemplateList(callback) {
 
 //send a message to Middleware and wait a response
 //TODO
-function sendMessageMiddleware(action,id,call) {
-    middlewareAction(action,id,function(ret){
+function sendMessageMiddleware(action,id,idPage,call) {
+    middlewareAction(action,id,idPage,function(ret){
             console.log("return from liben.js");
             call(ret);
     });
 }
 
-//call sendMessageMiddleware with the current iapiid and the tag "formatting"
-//TODO
+//call sendMessageMiddleware with the current iapiid and the "formatting" tag
+
 function formattingDOM(id, idTemplate) {
 
-    console.log("SCRIPT.JS:format the DOM");
-    console.log("idtemplate:" + idTemplate);
-
     $.get(chrome.extension.getURL('html/templates.html'), function (data) {
-        var template = $("<div>" + data + "</div>").find('#' + idTemplate);   //source template
-        var tmp = $(template).prop("tagName");
+        pageIdRequest(function (idPage) {
+            var template = $("<div>" + data + "</div>").find('#' + idTemplate);   //source template
+            compileAndInjectTemplate(template, id,idPage, function (ret2) {
 
-        console.log("tagName" + tmp);
+                $("#" + id).empty();
+		        var replacementTag = ret2.prop("tagName");
+                $("#" + id).each(function () {
+                    var outer = this.outerHTML;
+                    var regex = new RegExp('<' + this.tagName, 'i');
+                    var newTag = outer.replace(regex, '<' + replacementTag);
 
-        compileAndInjectTemplate(tmp, template, id,idTemplate, function (ret2) {
+                    regex = new RegExp('</' + this.tagName + '>', 'i');
+                    newTag = newTag.replace(regex, '</' + replacementTag + '>');
+                    
+                });
+                $("#" + id).contents().unwrap().wrap('<' + ret2.prop("tagName") + '><' + ret2.prop("tagName") + '/>');
+                    
+                $("#" + id).html(ret2.children().first());
+                $("#" + id).addClass("iapi");
+                
+                ////////////////////////////////////////////////////////////////////////
 
-        
-            /*sendMessageMiddleware("formatting", id, function (ret) {
-                console.log("formatting: " + ret);
-            });  */
+				localStorage.setItem(id, $('#' + id)[0].outerHTML);
+
+               sendMessageMiddleware("formatting", id, idPage, function (ret) {
+                        console.log("formatting: " + ret);
+               }); 
+            });
         });
     });
+   
 }
 
-function compileAndInjectTemplate(parentnode, template, idtarget,idTemplate, callback) {
+//Edit and process the template
+function compileAndInjectTemplate(ret, idtarget,idPage, callback) {
 
-    $.fn.replaceTag = function (newTagObj, keepProps) {
-        $this = this;
-        var i, len, $result = jQuery([]), $newTagObj = $(newTagObj);
-        len = $this.length;
-        for (i = 0; i < len; i++) {
-            $currentElem = $this.eq(i);
-            currentElem = $currentElem[0];
-            $newTag = $newTagObj.clone();
-            if (keepProps) {//{{{
-                newTag = $newTag[0];
-                newTag.className = currentElem.className;
-                $.extend(newTag.classList, currentElem.classList);
-                $.extend(newTag.attributes, currentElem.attributes);
+    var idTemplate;
+    var tmp = JSON.parse(localStorage.getItem(idPage));
+    tmp = tmp[idtarget];
+    getFirstRowKeyObject2(tmp, function (arr) {
+       
+        idTemplate = $(ret).attr("id");
+        $(ret).removeAttr('id');
+        $(ret).removeAttr("name");
 
-            }//}}}
-            $newTag.html(currentElem.innerHTML).replaceAll($currentElem);
-            $result.pushStack($newTag);
+        if ($(ret).prop("tagName").toLowerCase() === "table") {
+            ret = $(ret).children();
+            var ret2 = $(ret).children().first();
+            var titleAttribute = ret2.html();
+
+            for (var k = 2; k < arr.length; k++)
+                $(ret2).append(titleAttribute);
+
+            //set the j children with array keys
+            $(ret2).children().each(function (i) {
+                $(this).empty();
+                $(this).html("" + arr[i + 1]);
+                i++
+            });
         }
 
-        return this;
-    }
+        var dataitemIterator = $(ret).children().filter("[class*='iapitemplate:item']");
+        $(dataitemIterator).removeClass('dataitem:[label]');
+        $(dataitemIterator).addClass("dataitem:" + arr[0]);
+        arr.shift();
+        $(dataitemIterator).addClass("idTemplate:" + idTemplate);
 
-    $("#" + idtarget).replaceTag("<" + parentnode + ">", true);
-    $(parentnode).attr("id", idtarget);
-    $(parentnode).html(template.html());
+        var dataattributeIterator = $(dataitemIterator).children().filter("[class*='iapitemplate:attribute']");
+        $(dataattributeIterator).removeClass("iapitemplate:attribute");
+        var dataattribute = dataattributeIterator[0].outerHTML;
 
-
-    console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT:"+$(parentnode).html());
-
-
-    var temp = $(parentnode).children().filter("[class*='iapitemplate:item']");
-    
-    $(temp).addClass("idTemplate:" + idTemplate);
-
+        //insert j children 
+        for (var j = 1; j < arr.length; j++)
+            $(dataattributeIterator).parent().append(dataattribute);
 
 
-    pageIdRequest(function (data) {
-        console.log("data:"+data);
-        var tmp = JSON.parse(localStorage.getItem(data));
-        tmp = tmp[idtarget];
-
-
-                
-        getFirstRowKeyObject(tmp, function (arr) {
-            for (var i = 0; i < arr.length; i++) {
-                console.log("DATA:" + arr[i]);
-            }
-            /*var dataattributeIterator = $(temp).children().filter("[class*='iapitemplate:dataattribute']");
-            var txt = "";
-            var txt2 = "";
-            //console.log("arr" + arr.length);
-            for (var i = 0; i < arr.length; i++) {  
-                var items = $(dataattributeIterator).children().attr("class").split(" ");
-
-
-                for (var j = 0; j < items.length; j++) {
-                    
-                    if(items[j].substr(0,14)==="dataattribute:")
-                    {
-                        var items2 = items[j].split(":");
-                        
-                        
-                        $(dataattributeIterator).children().attr("class", items2[0] + ":" + arr[i]);
-                        console.log($(dataattributeIterator).html());
-
-                    }
-                    else
-                    {
-                    }
-                }
-                txt += $(dataattributeIterator).html();
-                 
-            }
-            $(dataattributeIterator).find("[class*='dataattribute:']").remove();
-            $(dataattributeIterator).append(txt); */
+        //set the j children with array keys
+        $(dataattributeIterator).parent().children().each(function () {
+            $(this).removeClass();
+            $(this).addClass("dataattribute:" + arr[0]);
+            arr.shift();
         });
 
-    });      
-
-
-    callback("done3");
+        //remove iterator dataattribute
+        var cnt = $(dataattributeIterator).contents();
+        $(dataattributeIterator).replaceWith(cnt);
+        if ($(ret).prop("tagName").toLowerCase() === "tbody") {
+            callback($(ret).parent());
+        }
+        else
+            callback(ret);
+    });
 }
-
 //call sendMessageMiddleware with the current iapiid and the tag "more_data"
 //format
 //<table class="iapi datasource:http://source sourcetype:iapi hide:Author">
 function hideShowDataattributeDOM(id, obj) {
-    console.log("dataattribute :" + obj.type_dataattribute + " value:" + obj.value);
-    if(obj.value){
-        showDataattribute(id, obj.type_dataattribute, function () {
-            console.log("fineeeeeeeeeeeeeeeeeeeeeee");
-            console.log("SCRIPT.JS:hide/show element of the DOM");
-            sendMessageMiddleware("more_data", id, function (ret) {
-                console.log("more_data: " + ret);
+
+    pageIdRequest(function (idPage) {
+
+        if (obj.value) {
+            showDataattribute(id, obj.type_dataattribute, function () {
+               
+                sendMessageMiddleware("more_data", id,idPage, function (ret) {
+                    console.log("more_data: " + ret);
+                });
             });
-        });
-    }else{
-        hideDataattribute(id, obj.type_dataattribute, function () {
-            console.log("fineeeeeeeeeeeeeeeeeeeeeee");
-            console.log("SCRIPT.JS:hide/show element of the DOM");
-            sendMessageMiddleware("more_data", id, function (ret) {
-                console.log("more_data: " + ret);
+        } else {
+            hideDataattribute(id, obj.type_dataattribute, function () {
+                sendMessageMiddleware("more_data", id,idPage, function (ret) {
+                    console.log("more_data: " + ret);
+                });
             });
-            
-        });
-    }
+        }
+    });
 
     
 }
@@ -605,7 +620,6 @@ function showDataattribute(id, type, call) {
                 tagClass += " " + tagtarg[i];
         }
 
-        //console.log("[" + i + "]" + tagClass);
     }
     YourFindElement.attr("class",tagClass);
     if (findHide === false)
@@ -620,13 +634,12 @@ function showDataattribute(id, type, call) {
 //TODO
 function saveTemplateDOM(id, tag) {
 
-    console.log("SCRIPT.JS:save the DOM");
     sendMessageMiddleware("save", id, function (ret) {
         console.log("save: " + ret);
     });
 }
 
-//generate the dinamic title of iapi_menu
+
 function messageIapi_menu(id) {
 
     var iapiDiv = $("#" + id);
@@ -647,14 +660,13 @@ function messageIapi_menu(id) {
 
     }
     if (presenceDataSourceOrData === true) {
-        return typeData;
-        //console.log('Page with interaction);
-    
+        return typeData;    
     } 
 
     
 }
 
+//send a message to the backround (request for the current page id)
 function pageIdRequest(call) {
     chrome.extension.sendMessage({ "type": "requestPageId" }, function (data) {
         call(data);
