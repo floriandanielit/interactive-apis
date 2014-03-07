@@ -521,8 +521,6 @@ function compileAndInjectTemplate(ret, idtarget,idPage, callback) {
         });
 
         //remove iterator dataattribute
-        var cnt = $(dataattributeIterator).contents();
-        $(dataattributeIterator).replaceWith(cnt);
         if ($(ret).prop("tagName").toLowerCase() === "tbody") {
             callback($(ret).parent());
         }

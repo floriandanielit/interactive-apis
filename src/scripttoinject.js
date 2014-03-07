@@ -134,7 +134,7 @@ function drop(ev,pageId)
 function loadTemplate(idTemplate, idTarget, tagsource,pageId, callback) {
 	
 $.ajax({
-    url: "http://127.0.0.1:8020/interactive-apis/src/html/templates.html",
+    url: "http://localhost:60481/src/html/templates.html",
     success : function (data) {
       function template(data){
       	if (idTemplate !== undefined){
@@ -236,8 +236,6 @@ function compileTemplate(source, idsource, ret, idtarget,pageId, callback) {
             }); 
 
               //remove iterator dataattribute
-            var cnt = $(dataattributeIterator).contents();
-            $(dataattributeIterator).replaceWith(cnt);
             if ($(ret).prop("tagName").toLowerCase() === "tbody") {
                 callback($(ret).parent());
             }
