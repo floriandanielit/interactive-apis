@@ -17,18 +17,19 @@
 	{
 	"matches": ["http://*/*","https://*/*","file://*/*"],
 	"css":        ["css/main.css"],
-	"js": ["lib/jquery-2.0.3.js","libgen.js","scripttoinject.js","parsers/iAPI.js","parsers/RSS.js","parsers/XML.js","parsers/JSON.js"]
+	"js": ["lib/jquery-2.0.3.js"]
 	}
 ],
 
 
 
 "background": {
-       "scripts": ["background.js"]
+  
+       "scripts": ["background.js","lib/jquery-2.0.3.js","parsers/iAPI.js","parsers/JSON.js"]
   },
   "options_page": "html/options.html",
 	"permissions": [
 	"management","webNavigation","webRequest","tabs", "storage","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"],
 	"web_accessible_resources": [
-	"lib/jquery-2.0.3.js","scripttoinject.js","parsers/*","libgen.js","html/*"]
+	"lib/jquery-2.0.3.js","EventHandler.js","editor.js","html/*"]
 }

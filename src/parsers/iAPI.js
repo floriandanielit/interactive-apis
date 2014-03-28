@@ -1,19 +1,18 @@
-function extractIAPI(iapiid, urlsource,id,idPage, call) {
 
+//Extract Data from the markeup based on the iapi annotation
+function extractIAPI(iapiid, urlsource, id, idPage, call) {
     var idObject = {};
+    var datas = new Array();
 
-    var datas = new Array();  //array contains objects representing the extracted data
+    //array contains objects representing the extracted data
     $.get(urlsource, function (data) {
-        var template = $("<div>" + data + "</div>").find('#' + iapiid);   //source template
-
+        var template = $("<div>" + data + "</div>").find('#' + iapiid);
         var dataItem = template.find("[class*='dataitem:']");
 
-
         $.each(dataItem, function (j, rowValue) {
-            //   var cla=pubs.attr("class").substr(9);
             var dataAttri = $(this).find("[class*='dataattribute:']");
-
             var dataatribute = {};
+
             $.each(dataAttri, function (i, rowValue) {
                 dataatribute[$(this).attr("class").substr(14)] = $(this).html();
             });
@@ -21,26 +20,13 @@ function extractIAPI(iapiid, urlsource,id,idPage, call) {
             var dataitem = {};
             dataitem[$(this).attr("class").substr(9)] = dataatribute;
             datas.push(dataitem);
-
-
         });
-        
-        
-            var prewItems;
-            prewItems = JSON.parse(localStorage.getItem(idPage));
 
-            if (prewItems !== null) {
-                prewItems[id] = datas;
-                localStorage.setItem(idPage, JSON.stringify(prewItems));
+        var pass_data = {
+            'id': id,
+            'value': datas
+        };
 
-            }
-            else {
-                idObject[id] = datas;  //iapiid,data :each datas is associated with the id
-                localStorage.setItem(idPage, JSON.stringify(idObject));
-
-            }
-
-            call();        
+        call(JSON.stringify(pass_data));
     });
-    
 }
