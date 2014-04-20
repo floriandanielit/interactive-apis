@@ -46,7 +46,16 @@ For more details, have a look at the [project wiki](https://github.com/florianda
 Contributing to this project
 -------------
 
-tbd
+Everybody who wants to contribute to this project is welcome. We keep the Master branch 
+of the code with stable results and require each contributor to work in an own branch
+and to make suitable Pull Requests for features they would like to be included in the 
+Master.
+
+Here some useful links to understand how Git works:
+
+* [GitHub Guides](https://guides.github.com/)
+* [Git Tutorials](https://www.atlassian.com/git)
+* [Git Cheatsheet](http://ndpsoftware.com/git-cheatsheet.html#loc=local_repo;)
 
 
 Installation and usage of the engine
