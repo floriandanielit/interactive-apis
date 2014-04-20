@@ -109,7 +109,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 		return true;
 	} else if (msg.type === "getExternal") {
 		// load an external(HTML, JSON)
-		loadExtern(msg.value.value, function(data) {
+		loadExtern(msg.value, function(data) {
 			sendResponse(data);
 		});
 
@@ -166,8 +166,8 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 			});
 		} else if (msg.value.sourceType.toLowerCase() === "json") {
 			// extract data from JSON file then store it
-			loadExtern(msg.value.urlsource, function(data) {
-				extractJSON(data, msg.value.idTarget, msg.value.pageId, function(data) {
+		    loadExtern(msg.value.urlsource, function (data) {
+		        extractJSON(data, msg.value.idTarget, msg.value.pageId, function(data) {
 					var prewItems;
 					var idObject = {};
 					prewItems = JSON.parse(localStorage.getItem(sender.tab.id));
@@ -184,7 +184,6 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 				});
 			});
 		}
-
 		return true;
 	}
 });
@@ -206,9 +205,11 @@ function loadExtern(path, success, error) {
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState === 4) {
-			if (xhr.status === 200) {
+		    if (xhr.status === 200) {
+		        console.log("Confirmed");
 				success(xhr.responseText);
 			} else {
+			    console.log("Error");
 				error(xhr);
 			}
 		}
