@@ -1,15 +1,9 @@
 ﻿var flag = true;
-var function1 = null;
-var function2 = null;
-var function3 = null;
-var function4 = null;
-var function5 = null;
-var function6 = null;
-var function7 = null;
+
 //listener for HTML5 messages from the ContentEngine
 window.addEventListener('message', function (event) {
     try {
-        console.log("editor::::::"+JSON.parse(event.data).action);
+        console.log("editor::::::" + JSON.parse(event.data).action);
         if (JSON.parse(event.data).action == "startIApiLayer" && flag) {
             flag = false;
             iapi_frame = document.getElementById('iapi_frame');
@@ -28,9 +22,18 @@ iapi_menu();
 function iapi_menu() {
     if (!document.getElementById("iapi_frame")) {
 
-        
+
         $(".iapi").attr("ondragleave", "leave(event)");
-        iapi_control = "<div id='iapi_frame' style='border: 3px solid black;display: none;'>" + '<div id="iapi_menu" class="iapi_menu" style="background-color:black; padding: 3px; width: 200px;">' + '<div style="font-size: 16px;font-weight: bold; color:white;"></div>' + '<div style="font-size: 16px;font-weight: bold; color:white;">Formatting:<br/>' + '</div>' + '<div style="font-size: 16px;font-weight: bold; color:white;">More data:<br/>' + ' </div>' + '<div class="iapiactions"></div>' + '<a href="#" style="color:white">For each...</a>' + '</div>' + '</div>';
+        iapi_control = "<div id='iapi_frame' style='border: 3px solid black;display: none; '>"
+            + '<div id="iapi_menu" class="iapi_menu" style="background-color:black; padding: 3px; width: 200px;">'
+            + '<div style="font-size: 16px;font-weight: bold; color:white;"></div>'
+            + '<div style="font-size: 16px;font-weight: bold; color:white;">Formatting:<br/></div>'
+            + '<div style="font-size: 16px;font-weight: bold; color:white;">More data:<br/></div>'
+            + '<div class="iapiactions"></div>'
+            + '<div style="color:white;cursor:pointer;text-decoration: underline">Filter</div>'
+            + '<a href="#" style="color:white">For each...</a>'
+            + '</div>'
+            + '</div>';
 
         $('body').append(iapi_control);
 
@@ -55,12 +58,14 @@ function iapi_menu() {
                 left: offset.left + $(this).width() - 3
             });
 
+
             $('#iapi_menu').children().first().html(messageIapi_menu($(this).attr("id")));
 
             //if it's Source page hide the Formatting options
             if (isSrcPage($(this)) === true) {
                 secondchild = $("#iapi_menu div:nth-child(2)").css("display", "none");
                 thirdchild = $("#iapi_menu div:nth-child(3)").css("display", "none");
+                thirdchild = $("#iapi_menu div:nth-child(5)").css("display", "none");
 
             } else {
 
@@ -79,6 +84,7 @@ function iapi_menu() {
                 if (presenceIdtemplate === false) {
                     secondchild = $("#iapi_menu div:nth-child(2)").css("display", "none");
                     thirdchild = $("#iapi_menu div:nth-child(3)").css("display", "none");
+                    thirdchild = $("#iapi_menu div:nth-child(5)").css("display", "none");
                 } else {
                     //SET THE IAPI FORMATTING OPTION
                     getTemplateList(function (array) {
@@ -183,6 +189,19 @@ function iapi_menu() {
             }
         });
 
+        //SET CLICK FILTER
+        $("#iapi_menu div:nth-child(5)").click(function () {
+            //alert("aaaaa");
+            var id = $("#iapi_menu [class='getAll']").attr("id");
+            console.log(id);
+            console.log($("#" + id).children(".info").css('visibility') === "hidden");
+            if ($("#" + id).children(".info").length === 0) {
+                doFilters(id);
+            } else {
+                cancelFilter(id);
+            }
+        });
+
         getPageId(function () {
 
             //Listener for the page ID
@@ -202,6 +221,115 @@ function iapi_menu() {
     }
 }
 
+
+function doFilters(id) {
+    offset = $("#" + id).offset();
+    console.log($("#" + id).children(".info"));
+
+    $("#iapi_frame").css('pointer-events', 'none');
+    filterBox = '<div class="info"></div>';
+    // + 'Filter Page...'
+    // + '<button id="button2" >Apply</button>'
+    // + '<button id="button1" >Cancel</button>'
+    // + '</div>'
+
+
+
+    $("#" + id).append(filterBox);
+
+    var arr = new Array();
+
+    getObject(function (tmp) {
+
+        if (tmp !== undefined) {
+            tmp = JSON.parse(tmp);
+            if (tmp !== null) {
+                tmp = tmp[id];
+
+                if (tmp !== undefined) {
+                    getFirstRowKeyObject(false, tmp, function (arr) {
+                        if (arr.length > 0) {
+                            var newchi = "<table><tbody>";
+                            $("#" + id).children(".info").append(newchi);
+                            var table = $("#" + id).children(".info").children("table").children("tbody");
+
+                            newchi = "";
+                            for (var j = 0; j < arr.length; j++) {
+                                newchi = '<tr><td><input type="checkbox" onclick="return false"  value="' + arr[j] + '" >' + arr[j] + '</td> '
+                                   + '<td><select id="operator' + j + '">'
+                                   + '<option value="=">=</option>'
+                                   + '<option value="+">+</option>'
+                                   + '<option value=">">></option>'
+                                   + '<option value="<"><</option>'
+                                   + '<option value="<="><=</option>'
+                                   + '<option value=">="><=</option>'
+                                   + '</select>'
+                                   + '</td>'
+                                   + '<td>'
+                                   + '<input type="text" name="input_text' + j + '"></input>'
+                                   + '</td>'
+                                   + '<td>'
+                                   + '<button type="text" name="addFilter' + j + '"  onclick="addFilter(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Add</button>'
+                                   + '</td>'
+                                   + '</tr>';
+                                $(table).append(newchi);
+                                $(table).children("tr").children("td").children("input").prop('checked', 'checked');
+                            }
+
+
+                        } else {
+                            filterBox = "ERROR! No Columns"
+                            $("#" + id).children(".info").append(filterBox);
+                        }
+
+                        var arrAttr = $("#" + id).attr("class").split(" ");
+                        for (var i = 0; i < arrAttr.length; i++) {
+
+                            if (arrAttr[i].substr(0, 5) === "hide:") {
+                                var attribute = arrAttr[i].split(":");
+
+                                for (var j = 1; j < attribute.length; j++) {
+                                    $("#" + id).children(".info").children("table").children("tbody").children("tr").each(function () {
+                                        $(this).children("td").each(function () {
+                                            $(this).children('[value=' + attribute[j] + ']').prop('checked', false);
+
+                                        });
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        filterBox = '<button onclick="prova(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Apply</button>'
+            + '<button onclick="prova2(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Cancel</button>';
+        $("#" + id).children(".info").append(filterBox);
+        var imgWidth = $("#" + id).width();
+        var imgHeight = $("#" + id).height();
+        var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+        $("#" + id).children(".info").fadeTo(0, 0.8);
+        $("#" + id).children(".info").css("width", (imgWidth) + "px");
+        $("#" + id).children(".info").css("height", (imgHeight) + "px");
+        $("#" + id).children(".info").css("top", offset.top + "px");
+        $("#" + id).children(".info").css("left", negImgWidth + "px");
+        $("#" + id).children(".info").css("visibility", "visible");
+
+        $("#" + id).children(".info").animate({ "left": offset.left }, 250);
+    });
+}
+
+function cancelFilter(id) {
+    var imgWidth = $("#" + id).width();
+    var imgHeight = $("#" + id).height();
+    var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+    $("#" + id).children(".info").animate({ "left": negImgWidth }, 250, function () {
+        $("#" + id).children(".info").remove();
+    });
+
+}
 // get the all dataattribute from the stored object
 function getFirstRowKeyObject(dataitem, tmp, call) {
     var arr = new Array();
@@ -500,6 +628,7 @@ function hideShowDataattributeDOM(id, obj) {
                 });
             });
         } else {
+            console.log(id + "_" + obj.type_dataattribute);
             hideDataattribute(id, obj.type_dataattribute, function () {
                 var tmp = $('#' + id).clone();
                 $(tmp).find("[class*='iapitemplate:item']").nextAll().remove();
@@ -600,6 +729,8 @@ function messageIapi_menu(id) {
     }
     if (presenceDataSourceOrData === true) {
         return typeData;
+    } else {
+        return "Empty iApi"
     }
 
 }

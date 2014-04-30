@@ -1,3 +1,15 @@
 ﻿.over {
 	background: #CCCCFF;
 }
+.wrap {
+    position: relative;
+    overflow: hidden;
+    display: block;
+}
+
+.info {
+    background: #000;
+    color: #FFF;
+    position: absolute;
+    visibility: hidden;
+}
