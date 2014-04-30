@@ -59,7 +59,6 @@ function leave(ev) {
 //Drop operation (event handler contains a set of parameters from the drag op)
 function drop(ev, pageId) {
 
-    ev.preventDefault();
     //get the datas from datatransfer
     var idsource = ev.dataTransfer.getData("id");
     var tagsource = ev.dataTransfer.getData("tagsource");
@@ -79,6 +78,107 @@ function drop(ev, pageId) {
     if (ev.dataTransfer.getData("idtemplate") !== "NOIDTEMPLATE") {
         idTemplate = ev.dataTransfer.getData("idtemplate");
     }
+
+
+    ////////////////////////DATA_INTEGRATION////////////////////////////////
+    /*
+    offset = $("#" + ev.target).offset();
+    console.log($("#" + ev.target).children(".info"));
+
+    //$("#iapi_frame").css('pointer-events', 'none');
+    filterBox = '<div class="info"></div>';
+    // + 'Filter Page...'
+    // + '<button id="button2" >Apply</button>'
+    // + '<button id="button1" >Cancel</button>'
+    // + '</div>'
+
+
+
+    $("#" + ev.target).append(filterBox);
+
+    var arr = new Array();
+
+    getObject(function (tmp) {
+
+        if (tmp !== undefined) {
+            tmp = JSON.parse(tmp);
+            if (tmp !== null) {
+                tmp = tmp[id];
+
+                if (tmp !== undefined) {
+                    getFirstRowKeyObject(false, tmp, function (arr) {
+                        if (arr.length > 0) {
+                            var newchi = "<table><tbody>";
+                            $("#" + ev.target).children(".info").append(newchi);
+                            var table = $("#" + ev.target).children(".info").children("table").children("tbody");
+
+                            newchi = "";
+                            for (var j = 0; j < arr.length; j++) {
+                                newchi = '<tr><td><input type="checkbox" onclick="return false"  value="' + arr[j] + '" >' + arr[j] + '</td> '
+                                   + '<td><select id="operator' + j + '">'
+                                   + '<option value="=">=</option>'
+                                   + '<option value="+">+</option>'
+                                   + '<option value=">">></option>'
+                                   + '<option value="<"><</option>'
+                                   + '<option value="<="><=</option>'
+                                   + '<option value=">="><=</option>'
+                                   + '</select>'
+                                   + '</td>'
+                                   + '<td>'
+                                   + '<input type="text" name="input_text' + j + '"></input>'
+                                   + '</td>'
+                                   + '<td>'
+                                   + '<button type="text" name="addFilter' + j + '"  onclick="addFilter(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Add</button>'
+                                   + '</td>'
+                                   + '</tr>';
+                                $(table).append(newchi);
+                                $(table).children("tr").children("td").children("input").prop('checked', 'checked');
+                            }
+
+
+                        } else {
+                            filterBox = "ERROR! No Columns"
+                            $("#" + ev.target).children(".info").append(filterBox);
+                        }
+
+                        var arrAttr = $("#" + ev.target).attr("class").split(" ");
+                        for (var i = 0; i < arrAttr.length; i++) {
+
+                            if (arrAttr[i].substr(0, 5) === "hide:") {
+                                var attribute = arrAttr[i].split(":");
+
+                                for (var j = 1; j < attribute.length; j++) {
+                                    $("#" + ev.target).children(".info").children("table").children("tbody").children("tr").each(function () {
+                                        $(this).children("td").each(function () {
+                                            $(this).children('[value=' + attribute[j] + ']').prop('checked', false);
+
+                                        });
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        filterBox = '<button onclick="prova(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Apply</button>'
+            + '<button onclick="prova2(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Cancel</button>';
+        $("#" + ev.target).children(".info").append(filterBox);
+        var imgWidth = $("#" + ev.target).width();
+        var imgHeight = $("#" + ev.target).height();
+        var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+        $("#" + ev.target).children(".info").fadeTo(0, 0.8);
+        $("#" + ev.target).children(".info").css("width", (imgWidth) + "px");
+        $("#" + ev.target).children(".info").css("height", (imgHeight) + "px");
+        $("#" + ev.target).children(".info").css("top", offset.top + "px");
+        $("#" + ev.target).children(".info").css("left", negImgWidth + "px");
+        $("#" + ev.target).children(".info").css("visibility", "visible");
+
+        $("#" + ev.target).children(".info").animate({ "left": offset.left }, 250);
+    });
+       */
+    ////////////////////////////////////////////////////////////////////////
 
     //load the page
     getPage(source, idtarget, function () {
@@ -274,7 +374,7 @@ function parseTRG(YourFindElement, id, call) {
 
 //Load template
 function loadTemplate(idTemplate, idTarget, tagsource, pageId, callback) {
-    getTemplateFile(function(data){
+    getTemplateFile(function (data) {
         function template(data) {
             if (idTemplate !== undefined) {
                 var template = $("<div>" + data + "</div>").find('#' + idTemplate);
@@ -636,7 +736,7 @@ function getStored(sourceType, iapiid, source, idtarget, pageId, call) {
 }
 
 // get the HTML page which contains a list of templates
-function getTemplateFile( call) {
+function getTemplateFile(call) {
     try {
         var pass_data = {
             'action': "getTEMPLATE"
@@ -655,5 +755,12 @@ function getTemplateFile( call) {
     } catch (e) {
         alert(e);
     }
-    
+
+}
+function addFilter(id) {
+    alert("click add" + id);
+} function prova(id) {
+    alert("apply" + id);
+} function prova2(id) {
+    alert("cancel" + id);
 }
