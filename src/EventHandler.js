@@ -1,10 +1,54 @@
 var idtarget = "";
 var code = "";
+var over = false;
+var overlay = false;
+
+
+var idsource;
+var tagsource;
+var source;
+var idTemplate;
+var annotation;
+var pageID;
+var eventDrop;
+
+
 
 function allowDrop(ev, pageId) {
     ev.preventDefault();
-    idtarget = ev.target.id;
-    $(ev.target).addClass("over");
+
+    if (!over) {
+        getParentIAPI(ev.target, function (parent) {
+
+            overlay = true;
+            offset = $(parent).offset();
+            idtarget = $(parent).prop('id');
+            console.log("id:" + idtarget);
+
+            filterBox = '<div class="info" style="pointer-events:none ; font-weight:bold; position:absolute;left:0;right:0;text-align: center;">Drop Here</div>'
+            eventDrop = ev;
+
+            $(parent).append(filterBox);
+
+            var imgWidth = $(parent).width();
+            var imgHeight = $(parent).height();
+            var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+            $(parent).children(".info").fadeTo(0, 0.8);
+            $(parent).children(".info").css("width", (imgWidth) + "px");
+            $(parent).children(".info").css("height", (imgHeight) + "px");
+            $(parent).children(".info").css("top", offset.top + "px");
+            $(parent).children(".info").css("left", negImgWidth + "px");
+            $(parent).children(".info").css("visibility", "visible");
+
+            $(parent).children(".info").animate({ "left": offset.left }, 250);
+
+        });
+    }
+    over = true;
+
+
+    //$(ev.target).addClass("over");
 
 
 
@@ -18,6 +62,7 @@ function drag(ev, source) {
     ev.dataTransfer.setData("tagsource", $("#" + ev.target.id).prop("tagName"));
     ev.dataTransfer.setData("id", ev.target.id);
     ev.dataTransfer.setData("classAttribute", $("#" + ev.target.id).attr("class"));
+
     hasIdTemplate(ev.target.id, function (msg) {
         if (msg !== "NOIDTEMPLATE")
             ev.dataTransfer.setData("idtemplate", msg);
@@ -53,18 +98,43 @@ function hasIdTemplate(id, call) {
 
 // leave iapi element
 function leave(ev) {
-    $(ev.target).removeClass("over");
+    if (over) {
+        getParentIAPI(ev.target, function (parent) {
+
+            console.log("uguali?:" + $(parent).prop('id') === idtarget);
+            console.log("attuale:" + $(parent).prop('id'));
+            console.log("vecchio:" + idtarget);
+
+            // if ($(parent).prop('id') !== idtarget) {
+            var imgWidth = $(parent).width();
+            var imgHeight = $(parent).height();
+            var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+            $(parent).children(".info").animate({ "left": negImgWidth }, 250, function () {
+                $(parent).children(".info").remove();
+                overlay = false;
+                over = false;
+            });
+            // }
+        });
+
+    }
+
+
+    //$(ev.target).removeClass("over");
 }
 
 //Drop operation (event handler contains a set of parameters from the drag op)
 function drop(ev, pageId) {
 
+    over = false;
+    ev.preventDefault();
+    //$(ev.target).removeClass("over");
     //get the datas from datatransfer
-    var idsource = ev.dataTransfer.getData("id");
-    var tagsource = ev.dataTransfer.getData("tagsource");
-    var source = ev.dataTransfer.getData("source");
-
-    var annotation;
+    idsource = ev.dataTransfer.getData("id");
+    tagsource = ev.dataTransfer.getData("tagsource");
+    source = ev.dataTransfer.getData("source");
+    pageID = pageId;
     var findHide = false;
     var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
     for (i = 0; i < tagtarg.length && findHide === false; i++) {
@@ -74,117 +144,70 @@ function drop(ev, pageId) {
         }
     }
 
-    var idTemplate;
+    idTemplate;
     if (ev.dataTransfer.getData("idtemplate") !== "NOIDTEMPLATE") {
         idTemplate = ev.dataTransfer.getData("idtemplate");
     }
 
 
-    ////////////////////////DATA_INTEGRATION////////////////////////////////
-    /*
-    offset = $("#" + ev.target).offset();
-    console.log($("#" + ev.target).children(".info"));
+    //////////////////////DATA_INTEGRATION//////////////////////////////
 
-    //$("#iapi_frame").css('pointer-events', 'none');
-    filterBox = '<div class="info"></div>';
-    // + 'Filter Page...'
-    // + '<button id="button2" >Apply</button>'
-    // + '<button id="button1" >Cancel</button>'
-    // + '</div>'
+    getParentIAPI(ev.target, function (parent) {
+        overlay = true;
+        offset = $(parent).offset();
+        $("#iapi_frame").css('pointer-events', 'none');
+        $(parent).find(".info").remove();
+        sameType(source, parent, function (same) {
 
-
-
-    $("#" + ev.target).append(filterBox);
-
-    var arr = new Array();
-
-    getObject(function (tmp) {
-
-        if (tmp !== undefined) {
-            tmp = JSON.parse(tmp);
-            if (tmp !== null) {
-                tmp = tmp[id];
-
-                if (tmp !== undefined) {
-                    getFirstRowKeyObject(false, tmp, function (arr) {
-                        if (arr.length > 0) {
-                            var newchi = "<table><tbody>";
-                            $("#" + ev.target).children(".info").append(newchi);
-                            var table = $("#" + ev.target).children(".info").children("table").children("tbody");
-
-                            newchi = "";
-                            for (var j = 0; j < arr.length; j++) {
-                                newchi = '<tr><td><input type="checkbox" onclick="return false"  value="' + arr[j] + '" >' + arr[j] + '</td> '
-                                   + '<td><select id="operator' + j + '">'
-                                   + '<option value="=">=</option>'
-                                   + '<option value="+">+</option>'
-                                   + '<option value=">">></option>'
-                                   + '<option value="<"><</option>'
-                                   + '<option value="<="><=</option>'
-                                   + '<option value=">="><=</option>'
-                                   + '</select>'
-                                   + '</td>'
-                                   + '<td>'
-                                   + '<input type="text" name="input_text' + j + '"></input>'
-                                   + '</td>'
-                                   + '<td>'
-                                   + '<button type="text" name="addFilter' + j + '"  onclick="addFilter(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Add</button>'
-                                   + '</td>'
-                                   + '</tr>';
-                                $(table).append(newchi);
-                                $(table).children("tr").children("td").children("input").prop('checked', 'checked');
-                            }
-
-
-                        } else {
-                            filterBox = "ERROR! No Columns"
-                            $("#" + ev.target).children(".info").append(filterBox);
-                        }
-
-                        var arrAttr = $("#" + ev.target).attr("class").split(" ");
-                        for (var i = 0; i < arrAttr.length; i++) {
-
-                            if (arrAttr[i].substr(0, 5) === "hide:") {
-                                var attribute = arrAttr[i].split(":");
-
-                                for (var j = 1; j < attribute.length; j++) {
-                                    $("#" + ev.target).children(".info").children("table").children("tbody").children("tr").each(function () {
-                                        $(this).children("td").each(function () {
-                                            $(this).children('[value=' + attribute[j] + ']').prop('checked', false);
-
-                                        });
-                                    });
-                                }
-                            }
-                        }
-                    });
-                }
+            //If they are the same type
+            if (same) {
+                filterBox = '<div class="info">'
+                    + 'Filter Page...'
+                    + '<button id="unionButtonST" onclick="STUnion()" >Union</button>'
+                    + '<button id="substituteButtonST" onclick="Substitute()">Substitute</button>'
+                    + '<button id="eliminateDuplicatesButtonST"  onclick="STEliminateDuplicates()">Eliminate Duplicates</button>'
+                    + '</div>'
             }
-        }
-        filterBox = '<button onclick="prova(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Apply</button>'
-            + '<button onclick="prova2(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Cancel</button>';
-        $("#" + ev.target).children(".info").append(filterBox);
-        var imgWidth = $("#" + ev.target).width();
-        var imgHeight = $("#" + ev.target).height();
-        var negImgWidth = imgWidth - imgWidth - imgWidth;
+                ////If they aren't the same type
+            else {
+                filterBox = '<div class="info">'
+                   + 'Filter Page...'
+                   + '<button id="unionButtonRestrictedDT" onclick="DTUnionRestricted()" >Union Restricted</button>'
+                   + '<button id="unionButtonExtendedDT" onclick="DTUnionExtended()" >Union Extended</button>'
+                   + '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
+                   + '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
+                   + '</div>'
+            }
 
-        $("#" + ev.target).children(".info").fadeTo(0, 0.8);
-        $("#" + ev.target).children(".info").css("width", (imgWidth) + "px");
-        $("#" + ev.target).children(".info").css("height", (imgHeight) + "px");
-        $("#" + ev.target).children(".info").css("top", offset.top + "px");
-        $("#" + ev.target).children(".info").css("left", negImgWidth + "px");
-        $("#" + ev.target).children(".info").css("visibility", "visible");
+            $(parent).append(filterBox);
 
-        $("#" + ev.target).children(".info").animate({ "left": offset.left }, 250);
+            var imgWidth = $(parent).width();
+            var imgHeight = $(parent).height();
+            var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+            $(parent).children(".info").fadeTo(0, 0.8);
+            $(parent).children(".info").css("width", (imgWidth) + "px");
+            $(parent).children(".info").css("height", (imgHeight) + "px");
+            $(parent).children(".info").css("top", offset.top + "px");
+            $(parent).children(".info").css("left", negImgWidth + "px");
+            $(parent).children(".info").css("visibility", "visible");
+
+            $(parent).children(".info").animate({ "left": offset.left }, 250);
+
+        });
     });
-       */
-    ////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+
+
+}
+
+function old(source, idsource, idtarget, tagsource, pageId, idTemplate, ev, callback) {
 
     //load the page
     getPage(source, idtarget, function () {
-
         // Draged element is a source or a target, then extract related data
         getTypeSource(source, document.URL, idsource, idtarget, function (urlsource, sourceType, iapiid, arr) {
+
 
             if (arr === undefined) {
                 arr = new Array();
@@ -259,12 +282,19 @@ function drop(ev, pageId) {
                     } catch (e) {
                         alert(e);
                     }
+                    callback();
 
                 });
             });
-
         });
     });
+}
+
+function getParentIAPI(tag, call) {
+    if (!$(tag).hasClass("iapi"))
+        getParentIAPI($(tag).parent(), call);
+    else
+        call(tag);
 }
 
 //get type of the Draged element
@@ -757,10 +787,107 @@ function getTemplateFile(call) {
     }
 
 }
+
+//Add filter button
 function addFilter(id) {
-    alert("click add" + id);
-} function prova(id) {
-    alert("apply" + id);
-} function prova2(id) {
-    alert("cancel" + id);
+    console.log("click add" + id[1] + "_" + idtarget);
+    //TODO
+}
+
+//Apply function button
+function apply(id) {
+    console.log("apply" + idtarget);
+    closeOverlay(idtarget);
+    //TODO
+}
+
+//Same type union
+function cancel(id) {
+    console.log("cancel" + idtarget);
+    closeOverlay(idtarget);
+    //TODO
+}
+
+//Same type union
+function STEliminateDuplicates() {
+    console.log("STEliminateDuplicates" + idtarget);
+}
+
+//Same type union
+function STUnion() {
+    console.log("STUnion" + idtarget);
+    //TODO
+}
+
+//Sobstitute the target with the source
+function Substitute() {
+    console.log("Substitute" + idtarget);
+    $("#" + idtarget).empty();
+    $("#" + idtarget).removeAttr("style");
+    $("#" + idtarget).removeAttr("class");
+    $("#" + idtarget).addClass("iapi");
+    old(source, idsource, idtarget, tagsource, pageID, idTemplate, eventDrop, function () {
+        closeOverlay(idtarget);
+    });
+}
+
+//Listener resize page, for redraw the overlay
+window.addEventListener('resize', function (event) {
+    if (overlay) {
+        var info = $("#" + idtarget).children(".info");
+        $(info).width($("#" + idtarget).width());
+        $(info).height($("#" + idtarget).height());
+        $("#" + idtarget).children(".info").remove();
+        $("#" + idtarget).append(info);
+    }
+});
+
+//Different type function Union Extended
+function DTUnionExtended() {
+    console.log("DTUnionExtended" + idtarget);
+    //TODO
+}
+
+//Different type function Union Extended
+function DTUnionRestricted() {
+    console.log("DTUnionRestricted" + idtarget);
+    //TODO
+}
+
+//Different type function join
+function DTJoin() {
+    console.log("DTUJoin" + idtarget);
+    //TODO
+}
+
+//Different type function join comparison
+function DTJoinComparison() {
+    console.log("DTJoinComparison" + idtarget);
+    //TODO
+}
+
+//Different type function join operator
+function DTJoinOperator() {
+    console.log("DTJoinOperator" + idtarget);
+    //TODO
+}
+//Close the overlayer with an animation 
+function closeOverlay(id) {
+    var imgWidth = $("#" + id).width();
+    var imgHeight = $("#" + id).height();
+    var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+    $("#" + id).children(".info").animate({ "left": negImgWidth }, 250, function () {
+        $("#" + id).children(".info").remove();
+        $("#iapi_frame").css('pointer-events', 'auto');
+
+    });
+
+}
+
+//Detect if the source and the target object are the same type
+function sameType(objSource, objTarget, callback) {
+
+    //TODO
+    callback(false);
 }
