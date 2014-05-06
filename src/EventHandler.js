@@ -801,7 +801,7 @@ function apply(id) {
     //TODO
 }
 
-//Same type union
+//Apply function button
 function cancel(id) {
     console.log("cancel" + idtarget);
     closeOverlay(idtarget);
@@ -856,23 +856,54 @@ function DTUnionRestricted() {
 
 //Different type function join
 function DTJoin() {
-    console.log("DTUJoin" + idtarget);
+    console.log("DTJoin" + idtarget);
+    closeOverlay(idtarget, function () {
+
+        offset = $("#"+idtarget).offset();
+        $("#iapi_frame").css('pointer-events', 'none');
+        $("#" + idtarget).find(".info").remove();
+        filterBox = '<div class="info">'
+                    + 'Type of join...'
+                    + '<button id="joinComparisonButton" onclick="DTJoinComparison()" >Join Comparison</button>'
+                    + '<button id="joinOperatorButton" onclick="DTJoinOperator()">Join Operator</button>'
+                    + '<button id="joinXXXButton"  onclick="DTJoinXXXX()">Join XXX</button>'
+                    + '</div>'
+
+        $("#" + idtarget).append(filterBox);
+
+        var imgWidth = $("#" + idtarget).width();
+        var imgHeight = $("#" + idtarget).height();
+        var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
+        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
+        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
+        $("#" + idtarget).children(".info").css("top", offset.top + "px");
+        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
+        $("#" + idtarget).children(".info").css("visibility", "visible");
+
+        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+    });
     //TODO
 }
 
 //Different type function join comparison
 function DTJoinComparison() {
     console.log("DTJoinComparison" + idtarget);
+    closeOverlay(idtarget, function () {
+    });
     //TODO
 }
 
 //Different type function join operator
 function DTJoinOperator() {
     console.log("DTJoinOperator" + idtarget);
+    closeOverlay(idtarget, function () {
+    });
     //TODO
 }
 //Close the overlayer with an animation 
-function closeOverlay(id) {
+function closeOverlay(id, call) {
     var imgWidth = $("#" + id).width();
     var imgHeight = $("#" + id).height();
     var negImgWidth = imgWidth - imgWidth - imgWidth;
@@ -880,6 +911,7 @@ function closeOverlay(id) {
     $("#" + id).children(".info").animate({ "left": negImgWidth }, 250, function () {
         $("#" + id).children(".info").remove();
         $("#iapi_frame").css('pointer-events', 'auto');
+        call();
 
     });
 
