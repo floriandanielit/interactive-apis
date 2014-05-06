@@ -90,10 +90,11 @@ window.addEventListener('message', function (e) {
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
-       if (JSON.parse(e.data).action === "getTEMPLATE") {
+        if (JSON.parse(e.data).action === "getTEMPLATE") {
             chrome.extension.sendMessage({
                 "type": "getExternal",
-                "value":  chrome.extension.getURL('html/templates.html')
+                "value": chrome.extension.getURL('html/templates.html')
+                
             }, function (data) {
                     var pass_data = {
                     'action': "loadTemplate",

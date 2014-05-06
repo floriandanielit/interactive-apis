@@ -65,7 +65,8 @@ function iapi_menu() {
             if (isSrcPage($(this)) === true) {
                 secondchild = $("#iapi_menu div:nth-child(2)").css("display", "none");
                 thirdchild = $("#iapi_menu div:nth-child(3)").css("display", "none");
-                thirdchild = $("#iapi_menu div:nth-child(5)").css("display", "none");
+                console.log("5:::::::::::" + $("#iapi_menu div:nth-child(5)").html());
+                $("#iapi_menu div:nth-child(5)").css("display", "none");
 
             } else {
 
@@ -84,8 +85,12 @@ function iapi_menu() {
                 if (presenceIdtemplate === false) {
                     secondchild = $("#iapi_menu div:nth-child(2)").css("display", "none");
                     thirdchild = $("#iapi_menu div:nth-child(3)").css("display", "none");
-                    thirdchild = $("#iapi_menu div:nth-child(5)").css("display", "none");
+                    $("#iapi_menu div:nth-child(5)").css("display", "none");
                 } else {
+
+                    //SET THE FILTER TEXT
+                    $("#iapi_menu div:nth-child(5)").css("display", "block");
+
                     //SET THE IAPI FORMATTING OPTION
                     getTemplateList(function (array) {
 
@@ -224,17 +229,9 @@ function iapi_menu() {
 
 function doFilters(id) {
     offset = $("#" + id).offset();
-    console.log($("#" + id).children(".info"));
-
+    
     $("#iapi_frame").css('pointer-events', 'none');
     filterBox = '<div class="info"></div>';
-    // + 'Filter Page...'
-    // + '<button id="button2" >Apply</button>'
-    // + '<button id="button1" >Cancel</button>'
-    // + '</div>'
-
-
-
     $("#" + id).append(filterBox);
 
     var arr = new Array();
@@ -302,8 +299,8 @@ function doFilters(id) {
                 }
             }
         }
-        filterBox = '<button onclick="prova(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Apply</button>'
-            + '<button onclick="prova2(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Cancel</button>';
+        filterBox = '<button onclick="apply(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Apply</button>'
+            + '<button onclick="cancel(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Cancel</button>';
         $("#" + id).children(".info").append(filterBox);
         var imgWidth = $("#" + id).width();
         var imgHeight = $("#" + id).height();
