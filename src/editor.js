@@ -3,7 +3,7 @@
 //listener for HTML5 messages from the ContentEngine
 window.addEventListener('message', function (event) {
     try {
-        console.log("editor::::::" + JSON.parse(event.data).action);
+        //console.log("editor::::::" + JSON.parse(event.data).action);
         if (JSON.parse(event.data).action == "startIApiLayer" && flag) {
             flag = false;
             iapi_frame = document.getElementById('iapi_frame');
@@ -44,8 +44,6 @@ function iapi_menu() {
         $('.iapi').on('mouseenter', function () {
             $('#iapi_frame').show();
 
-            getActions($(this).attr("class"), $(this).attr("id"));
-
             offset = $(this).offset();
             $('#iapi_frame').offset({
                 top: offset.top,
@@ -65,7 +63,6 @@ function iapi_menu() {
             if (isSrcPage($(this)) === true) {
                 secondchild = $("#iapi_menu div:nth-child(2)").css("display", "none");
                 thirdchild = $("#iapi_menu div:nth-child(3)").css("display", "none");
-                console.log("5:::::::::::" + $("#iapi_menu div:nth-child(5)").html());
                 $("#iapi_menu div:nth-child(5)").css("display", "none");
 
             } else {
@@ -158,6 +155,28 @@ function iapi_menu() {
                     });
                 }
             }
+
+            getActions($(this).attr("class"), $(this).attr("id"), function () {
+
+                getPageId(function () {
+
+                    //Listener for the page ID
+                    var flag = true;
+                    window.addEventListener('message', function (e) {
+                        try {
+                            if (JSON.parse(e.data).action === "pageidResponse" && flag) {
+                                flag = false;
+                                console.log("........EDITOR1....................");
+                                $(".iapi").attr("ondragover", "allowDrop(event," + JSON.parse(e.data).pageid + ")");
+                                $(".iapi").attr("ondrop", "drop(event," + JSON.parse(e.data).pageid + ")");
+                                //console.log($("#iapi_frame").children("#iapi_menu").children(".iapiactions").html());
+                                $("#iapi_frame").children("#iapi_menu").children(".iapiactions").children(".getAll").attr("ondragstart", "drag(event,document.URL," + JSON.parse(e.data).pageid + ")");
+                            }
+                        } catch (err) { }
+                    }, false);
+                });
+            });
+            
         });
 
         //SET CLICK STATUS FORMATTING
@@ -206,30 +225,13 @@ function iapi_menu() {
                 cancelFilter(id);
             }
         });
-
-        getPageId(function () {
-
-            //Listener for the page ID
-            var flag = true;
-            window.addEventListener('message', function (e) {
-                try {
-                    if (JSON.parse(e.data).action === "pageidResponse" && flag) {
-
-                        flag = false;
-                        $(".iapi").attr("ondragover", "allowDrop(event," + JSON.parse(e.data).pageid + ")");
-                        $(".iapi").attr("ondrop", "drop(event," + JSON.parse(e.data).pageid + ")");
-                    }
-                } catch (err) { }
-            }, false);
-        });
-
     }
 }
 
 
 function doFilters(id) {
     offset = $("#" + id).offset();
-    
+
     $("#iapi_frame").css('pointer-events', 'none');
     filterBox = '<div class="info"></div>';
     $("#" + id).append(filterBox);
@@ -732,8 +734,7 @@ function messageIapi_menu(id) {
 
 }
 
-function getActions(iapiclass, iapiid) {
-
+function getActions(iapiclass, iapiid,call) {
     codeactions = "";
     codeactions = codeactions.concat('<a class="getAll" id=' + iapiid + ' draggable="true" ondragstart="drag(event,document.URL)" href="?iapisource="+window.location.href+"&iapiid="+iapiid+"" style="color:white">Use data</a> <br/>');
     var classes = iapiclass.split(" ");
@@ -743,6 +744,7 @@ function getActions(iapiclass, iapiid) {
         }
     }
     $("div[class~=iapiactions]").html(codeactions);
+    call();
 }
 
 //get the External page

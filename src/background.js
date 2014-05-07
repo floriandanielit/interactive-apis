@@ -134,7 +134,19 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 		});
 
 		return true;
-	} else if (msg.type === "getStoredTemplate") {
+	}else if (msg.type === "pageIdFromURL") {
+	    // load the DOM object
+	    chrome.tabs.getAllInWindow(null, function (tabs) {
+	        for (var i = 0; i < tabs.length; i++) {
+	            console.log("url:" + tabs[i].url);
+	            console.log("message:" + msg.value);
+	            if (tabs[i].url === msg.value)
+	                sendResponse( tabs[i].id);
+	        }
+	    });
+
+	    return true;
+	}else if (msg.type === "getStoredTemplate") {
 		// load the DOM object
 		chrome.tabs.query({
 			active : true,
