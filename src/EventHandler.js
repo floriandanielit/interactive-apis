@@ -7,6 +7,7 @@ var overlay = false;
 var idsource;
 var tagsource;
 var source;
+var idsourcepage;
 var idTemplate;
 var annotation;
 var pageID;
@@ -56,19 +57,44 @@ function allowDrop(ev, pageId) {
 }
 
 //This function gather and set parameters that must be transfered in the drag operation
-function drag(ev, source) {
+function drag(ev, source, idPage) {
 
     ev.dataTransfer.setData("source", source);
     ev.dataTransfer.setData("tagsource", $("#" + ev.target.id).prop("tagName"));
     ev.dataTransfer.setData("id", ev.target.id);
     ev.dataTransfer.setData("classAttribute", $("#" + ev.target.id).attr("class"));
+    ev.dataTransfer.setData("idpagesource", idPage);
 
+    console.log("id____________________:" + idPage);
     hasIdTemplate(ev.target.id, function (msg) {
         if (msg !== "NOIDTEMPLATE")
             ev.dataTransfer.setData("idtemplate", msg);
         else
             ev.dataTransfer.setData("idtemplate", msg);
     });
+    /*getPageIdFromURL(source,function () {
+
+        //Listener for the page ID
+        var flag = true;
+        window.addEventListener('message', function (e) {
+            try {
+                if (JSON.parse(e.data).action === "pageidResponseFromURL" && flag) {
+
+                    flag = false;
+                    console.log(",,,,,,,,,,DRAG,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
+                    var id= JSON.parse(e.data).pageid;
+                    ev.dataTransfer.setData("idpagesource", id);
+                    hasIdTemplate(ev.target.id, function (msg) {
+                        if (msg !== "NOIDTEMPLATE")
+                            ev.dataTransfer.setData("idtemplate", msg);
+                        else
+                            ev.dataTransfer.setData("idtemplate", msg);
+                    });
+                    return true;
+                }
+            } catch (err) { }
+        }, false);
+    });   */
 
 }
 
@@ -134,6 +160,7 @@ function drop(ev, pageId) {
     idsource = ev.dataTransfer.getData("id");
     tagsource = ev.dataTransfer.getData("tagsource");
     source = ev.dataTransfer.getData("source");
+    idsourcepage = ev.dataTransfer.getData("idpagesource");
     pageID = pageId;
     var findHide = false;
     var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
@@ -143,11 +170,10 @@ function drop(ev, pageId) {
             annotation = tagtarg[i];
         }
     }
-
-    idTemplate;
     if (ev.dataTransfer.getData("idtemplate") !== "NOIDTEMPLATE") {
         idTemplate = ev.dataTransfer.getData("idtemplate");
     }
+
 
 
     //////////////////////DATA_INTEGRATION//////////////////////////////
@@ -170,12 +196,17 @@ function drop(ev, pageId) {
             }
                 ////If they aren't the same type
             else {
-                filterBox = '<div class="info">'
+               /* filterBox = '<div class="info">'
                    + 'Filter Page...'
-                   + '<button id="unionButtonRestrictedDT" onclick="DTUnionRestricted()" >Union Restricted</button>'
-                   + '<button id="unionButtonExtendedDT" onclick="DTUnionExtended()" >Union Extended</button>'
+                   + '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
                    + '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
                    + '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
+                   + '</div>'*/
+
+                filterBox = '<div class="info">'
+                   + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
+                   + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
+                   + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
                    + '</div>'
             }
 
@@ -797,25 +828,151 @@ function addFilter(id) {
 //Apply function button
 function apply(id) {
     console.log("apply" + idtarget);
-    closeOverlay(idtarget);
+    closeOverlay(function () {
+    });
     //TODO
 }
 
-//Apply function button
+//Cancel function button
 function cancel(id) {
     console.log("cancel" + idtarget);
-    closeOverlay(idtarget);
+    closeOverlay(function () { });
     //TODO
 }
 
-//Same type union
+//Same type Eliminate Duplicates
 function STEliminateDuplicates() {
     console.log("STEliminateDuplicates" + idtarget);
+    //TODO
 }
 
-//Same type union
+//Same type function Union
 function STUnion() {
     console.log("STUnion" + idtarget);
+    closeOverlay(function () {
+
+        offset = $("#" + idtarget).offset();
+        $("#iapi_frame").css('pointer-events', 'none');
+        $("#" + idtarget).find(".info").remove();
+        filterBox = '<div class="info">'
+                    + 'Type of Union...'
+                    + '<button id="unionRestrictedButtonST" onclick="STUnionRestricted()" >Restricted Union</button>'
+                    + '<button id="unionExtendedButtonST" onclick="STUnionExtended()" >Extended Union</button>'
+                    + '<button onclick="closeOverlay()">Cancel</button>'
+                    + '</div>'
+
+        $("#" + idtarget).append(filterBox);
+
+        var imgWidth = $("#" + idtarget).width();
+        var imgHeight = $("#" + idtarget).height();
+        var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
+        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
+        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
+        $("#" + idtarget).children(".info").css("top", offset.top + "px");
+        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
+        $("#" + idtarget).children(".info").css("visibility", "visible");
+
+        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+    });
+}
+
+//Same type function Union Extended
+function STUnionExtended() {
+    console.log("STUnionExtended" + idtarget);
+
+    console.log("STUnionAll");
+    console.log("idPageSource" + idsourcepage);
+    console.log("idSource" + idsource);
+    console.log("idPageTarget" + pageID);
+    console.log("idTarget" + idtarget);
+
+
+    getObject(idsourcepage, idsource, pageID, idtarget, function (first, second) {
+        console.log("first" + first);
+        console.log("second" + second);
+        if (first !== null && second !== null) {
+
+            ///////////              
+            console.log("first" + first);
+            console.log("second" + second);
+            var arrDifferentColumn = new Array();
+            var find = false;
+            try {
+                getFirstRowKeyObject(false, first, function (arr) {
+                    getFirstRowKeyObject(false, second, function (arr2) {
+                        for (var i = 0; i < arr.length; i++) {
+                            console.log("arr[" + i + "]_" + arr[i]);
+                            for (var j = 0; j < arr2.length; j++) {
+                                console.log("arr[" + j + "]_" + arr[j]);
+                                if (arr[i] === arr2[j])
+                                    find = true;
+                            }
+                            if (find) {
+                                arrDifferentColumn.push(arr[i]);
+                                find = false;
+                            }
+                        }
+                    });
+                });
+            } catch (er) {
+                console.log("There was an error:" + er);
+            }
+
+
+
+            closeOverlay(function () {
+                offset = $("#" + idtarget).offset();
+                $("#iapi_frame").css('pointer-events', 'none');
+                $("#" + idtarget).find(".info").remove();
+                if (arrDifferentColumn.length > 0) {
+                    filterBox = '<div class="info">'
+                                + 'Ci sono ' + arrDifferentColumn.length + ' colonne nella source page differenti dalla target'
+                                + 'e sono: '
+                    for (var i = 0; i < arrDifferentColumn.length; i++) {
+                        filterBox += "{" + arrDifferentColumn[i] + "} ";
+                    }
+                    filterBox += 'e verranno aggiunte'
+                        + '<button onclick="closeOverlay()">OK</button>'
+                        + '</div>'
+                }
+                else {
+
+                    filterBox = '<div class="info">'
+                                   + 'Non ci sono colonne in più nella source rispetto alla target'
+                                   + '<button onclick="closeOverlay()">OK</button>'
+                                   + '</div>'
+                }
+                $("#" + idtarget).append(filterBox);
+
+                var imgWidth = $("#" + idtarget).width();
+                var imgHeight = $("#" + idtarget).height();
+                var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+                $("#" + idtarget).children(".info").fadeTo(0, 0.8);
+                $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
+                $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
+                $("#" + idtarget).children(".info").css("top", offset.top + "px");
+                $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
+                $("#" + idtarget).children(".info").css("visibility", "visible");
+
+                $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+
+
+
+
+            });
+            ///////////
+        }
+    });
+
+    //TODO
+}
+
+//Same type function Union Extended
+function STUnionRestricted() {
+    console.log("STUnionRestricted" + idtarget);
     //TODO
 }
 
@@ -826,8 +983,17 @@ function Substitute() {
     $("#" + idtarget).removeAttr("style");
     $("#" + idtarget).removeAttr("class");
     $("#" + idtarget).addClass("iapi");
+
+    console.log("source:" + source);
+    console.log("idsource:" + idsource);
+    console.log("idtarget:" + idtarget);
+    console.log("tagsource:" + tagsource);
+    console.log("pageID:" + pageID);
+    console.log("idTemplate:" + idTemplate);
+    console.log("eventDrop:" + eventDrop);
+
     old(source, idsource, idtarget, tagsource, pageID, idTemplate, eventDrop, function () {
-        closeOverlay(idtarget);
+        closeOverlay();
     });
 }
 
@@ -841,6 +1007,38 @@ window.addEventListener('resize', function (event) {
         $("#" + idtarget).append(info);
     }
 });
+
+//Different type function Union
+function DTUnion() {
+    console.log("DTUnionExtended" + idtarget);
+    closeOverlay(function () {
+
+        offset = $("#" + idtarget).offset();
+        $("#iapi_frame").css('pointer-events', 'none');
+        $("#" + idtarget).find(".info").remove();
+        filterBox = '<div class="info">'
+                    + 'Type of Union...'
+                    + '<button id="unionRestrictedButtonDT" onclick="DTUnionRestricted()" >Restricted Union</button>'
+                    + '<button id="unionExtendedButtonDT" onclick="DTUnionExtended()" >Extended Union</button>'
+                    + '<button onclick="closeOverlay()">Cancel</button>'
+                    + '</div>'
+
+        $("#" + idtarget).append(filterBox);
+
+        var imgWidth = $("#" + idtarget).width();
+        var imgHeight = $("#" + idtarget).height();
+        var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
+        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
+        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
+        $("#" + idtarget).children(".info").css("top", offset.top + "px");
+        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
+        $("#" + idtarget).children(".info").css("visibility", "visible");
+
+        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+    });
+}
 
 //Different type function Union Extended
 function DTUnionExtended() {
@@ -857,9 +1055,9 @@ function DTUnionRestricted() {
 //Different type function join
 function DTJoin() {
     console.log("DTJoin" + idtarget);
-    closeOverlay(idtarget, function () {
+    closeOverlay(function () {
 
-        offset = $("#"+idtarget).offset();
+        offset = $("#" + idtarget).offset();
         $("#iapi_frame").css('pointer-events', 'none');
         $("#" + idtarget).find(".info").remove();
         filterBox = '<div class="info">'
@@ -881,7 +1079,6 @@ function DTJoin() {
         $("#" + idtarget).children(".info").css("top", offset.top + "px");
         $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
         $("#" + idtarget).children(".info").css("visibility", "visible");
-
         $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
     });
     //TODO
@@ -890,7 +1087,7 @@ function DTJoin() {
 //Different type function join comparison
 function DTJoinComparison() {
     console.log("DTJoinComparison" + idtarget);
-    closeOverlay(idtarget, function () {
+    closeOverlay(function () {
     });
     //TODO
 }
@@ -898,28 +1095,136 @@ function DTJoinComparison() {
 //Different type function join operator
 function DTJoinOperator() {
     console.log("DTJoinOperator" + idtarget);
-    closeOverlay(idtarget, function () {
+    closeOverlay(function () {
     });
     //TODO
 }
-//Close the overlayer with an animation 
-function closeOverlay(id, call) {
-    var imgWidth = $("#" + id).width();
-    var imgHeight = $("#" + id).height();
-    var negImgWidth = imgWidth - imgWidth - imgWidth;
 
-    $("#" + id).children(".info").animate({ "left": negImgWidth }, 250, function () {
-        $("#" + id).children(".info").remove();
-        $("#iapi_frame").css('pointer-events', 'auto');
-        call();
+//Different type function join operator
+function DTMatchColumnsManually() {
+    console.log("DTMatchColumnsManually" + idtarget);
+    closeOverlay(function () {
+
+
+        offset = $("#" + idtarget).offset();
+        $("#iapi_frame").css('pointer-events', 'none');
+        $("#" + idtarget).find(".info").remove();
+        filterBox = '<div class="info">'
+                    + 'Select columns... TEST TEST TEST TEST'
+                    + '<button onclick="closeOverlay()">OK</button>'
+                    + '</div>'
+
+        $("#" + idtarget).append(filterBox);
+
+        var imgWidth = $("#" + idtarget).width();
+        var imgHeight = $("#" + idtarget).height();
+        var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
+        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
+        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
+        $("#" + idtarget).children(".info").css("top", offset.top + "px");
+        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
+        $("#" + idtarget).children(".info").css("visibility", "visible");
+        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
 
     });
+    //TODO
+}
 
+//Different type function join operator
+function DTMatchColumnsAutomatically() {
+    console.log("DTMatchColumnsAutomatically" + idtarget);
+    closeOverlay(function () {
+
+
+        offset = $("#" + idtarget).offset();
+        $("#iapi_frame").css('pointer-events', 'none');
+        $("#" + idtarget).find(".info").remove();
+        filterBox = '<div class="info">'
+                    + 'Based on DBPedia.. The X column in the Source Object can be the Y column in teh Target Object'
+                    + '<button onclick="closeOverlay()">OK</button>'
+                    + '</div>'
+
+        $("#" + idtarget).append(filterBox);
+
+        var imgWidth = $("#" + idtarget).width();
+        var imgHeight = $("#" + idtarget).height();
+        var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
+        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
+        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
+        $("#" + idtarget).children(".info").css("top", offset.top + "px");
+        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
+        $("#" + idtarget).children(".info").css("visibility", "visible");
+        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+
+    });
+    //TODO
+}
+
+//Close the overlayer with an animation 
+function closeOverlay(call) {
+    var imgWidth = $("#" + idtarget).width();
+    var imgHeight = $("#" + idtarget).height();
+    var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+    $("#" + idtarget).children(".info").animate({ "left": negImgWidth }, 250, function () {
+        $("#" + idtarget).children(".info").remove();
+        $("#iapi_frame").css('pointer-events', 'auto');
+        call();
+    });
 }
 
 //Detect if the source and the target object are the same type
 function sameType(objSource, objTarget, callback) {
 
     //TODO
-    callback(false);
+    callback(true);
+}
+
+// get the stored object
+function getObject(idPageSource, idSource, idPageTarget, idTarget, call) {
+
+    try {
+        var pass_data = {
+            'action': "getObjects",
+            'idPageSource': idPageSource,
+            'idSource': idSource,
+            'idPageTarget': idPageTarget,
+            'idTarget': idTarget
+
+        };
+        console.log(pass_data);
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+        var flag = true;
+        window.addEventListener('message', function (event) {
+            if (JSON.parse(event.data).action == "getStoredObjects" && flag) {
+                flag = false;
+                call(JSON.parse(event.data).valueOne, JSON.parse(event.data).valueTwo);
+            }
+        });
+    } catch (e) {
+        alert(e);
+    }
+
+}
+
+
+function getFirstRowKeyObject(dataitem, tmp, call) {
+    var arr = new Array();
+    $.each(tmp, function (key, value) {
+        $.each(value, function (key, value) {
+            arr.length = 0;
+            if (dataitem === true)
+                arr.push(key);
+            for (var key in value) {
+                arr.push(key);
+            }
+            call(arr);
+        });
+        return false;
+    });
 }

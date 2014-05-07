@@ -7,7 +7,7 @@ chrome.extension.sendMessage({
 
 // listeners to intercept the editor.js messages (request)
 window.addEventListener('message', function (e) {
-    console.log(JSON.parse(e.data).action)
+    //console.log(JSON.parse(e.data).action)
     try {
         if (JSON.parse(e.data).action === "getExternal") {
             // if the request from the inject scripts is "getExternal",
@@ -73,6 +73,23 @@ window.addEventListener('message', function (e) {
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
+        if (JSON.parse(e.data).action === "getObjects") {
+            // if the request from the inject scripts is "getObject",
+            // retrieve data from the localStorage
+            getSpecificStoredObject(JSON.parse(e.data).idPageSource, JSON.parse(e.data).idSource, function (data1) {
+                console.log("data1" + data1);
+                getSpecificStoredObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, function (data2) {
+                    console.log("data2" + data2);
+
+                    var pass_data = {
+                        'action': "getStoredObjects",
+                        'valueOne': data1,
+                        'valueTwo': data2
+                    };
+                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                });
+            });
+        }
        if (JSON.parse(e.data).idTemp !== undefined) {
             chrome.extension.sendMessage({
                 "type": "StoreTemplate",
@@ -89,8 +106,7 @@ window.addEventListener('message', function (e) {
                 };
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
-        }
-        if (JSON.parse(e.data).action === "getTEMPLATE") {
+        } if (JSON.parse(e.data).action === "getTEMPLATE") {
             chrome.extension.sendMessage({
                 "type": "getExternal",
                 "value": chrome.extension.getURL('html/templates.html')
@@ -358,6 +374,19 @@ function getStoredTemplate(call) {
 function pageIdRequest(call) {
     chrome.extension.sendMessage({
         "type": "requestPageId"
+    }, function (data) {
+        call(data);
+    });
+}
+
+
+
+//get stored object of a specific page id and a specific tag id
+function getSpecificStoredObject(idPage, idTag, call) {
+    chrome.extension.sendMessage({
+        "type": "getSpecificStoredObject",
+        "PageID": idPage,
+        "TagID": idTag
     }, function (data) {
         call(data);
     });
