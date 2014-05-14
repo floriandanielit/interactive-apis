@@ -13,3 +13,55 @@
     position: absolute;
     visibility: hidden;
 }
+#iapi_annotator_window {
+	position : fixed;
+	width : 400px;
+	height : 250px;
+	border : 1px solid #ccc;
+	z-index : 2147483647; /* max z-index possible */
+	right : 50px;
+	bottom : 50px;
+	background-color : #f1f1f1;
+	box-shadow : 0px 0px 10px #888888;
+	font-family : Verdana; sans-serif; serif;
+	font-size : 13px;
+	color : #000;
+	text-align : center;
+}
+
+#iapi_annotator_window a {
+	display : block;
+	unicode-bidi : embed;
+	padding : 6px 10px 0 10px;
+	box-sizing : content-box;
+	text-decoration : none;
+	line-height : 128%;
+}
+
+#iapi_annotator_window fieldset {
+	border: 0;
+}
+
+#annotator_window_bar {
+	position : top left;
+	width : 400px;
+	height : 30px;
+	border-bottom : 1px solid #ccc;
+	box-sizing : initial;
+}
+
+#annotator_window_content {
+	padding : 10px;
+	width : 380px;
+	height : 168px;
+	border-bottom : 1px solid #ccc;
+	box-sizing : initial;
+}
+
+#annotator_window_previous {
+	float : left;
+}
+
+#annotator_window_next {
+	float : right;
+}

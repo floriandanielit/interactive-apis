@@ -248,33 +248,26 @@ function doFilters(id) {
                 if (tmp !== undefined) {
                     getFirstRowKeyObject(false, tmp, function (arr) {
                         if (arr.length > 0) {
-                            var newchi = "<table><tbody>";
+                            var newchi = "<div>";
                             $("#" + id).children(".info").append(newchi);
-                            var table = $("#" + id).children(".info").children("table").children("tbody");
+                            var table = $("#" + id).children(".info").children("div");
 
                             newchi = "";
+                            newchi = '<select id="columns">'
                             for (var j = 0; j < arr.length; j++) {
-                                newchi = '<tr><td><input type="checkbox" onclick="return false"  value="' + arr[j] + '" >' + arr[j] + '</td> '
-                                   + '<td><select id="operator' + j + '">'
-                                   + '<option value="=">=</option>'
-                                   + '<option value="+">+</option>'
-                                   + '<option value=">">></option>'
-                                   + '<option value="<"><</option>'
-                                   + '<option value="<="><=</option>'
-                                   + '<option value=">="><=</option>'
-                                   + '</select>'
-                                   + '</td>'
-                                   + '<td>'
-                                   + '<input type="text" name="input_text' + j + '"></input>'
-                                   + '</td>'
-                                   + '<td>'
-                                   + '<button type="text" name="addFilter' + j + '"  onclick="addFilter(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Add</button>'
-                                   + '</td>'
-                                   + '</tr>';
-                                $(table).append(newchi);
-                                $(table).children("tr").children("td").children("input").prop('checked', 'checked');
+                                newchi += '<option value="' + arr[j] + '" >' + arr[j] + '</option>'
                             }
-
+                            newchi+= '</select><select id="operator' + j + '">'
+                           + '<option value="=">=</option>'
+                           + '<option value="+">+</option>'
+                           + '<option value=">">></option>'
+                           + '<option value="<"><</option>'
+                           + '<option value="<="><=</option>'
+                           + '<option value=">="><=</option>'
+                           + '</select>'
+                           + '<input type="text" name="input_text"></input>'
+                           + '<button type="text" name="addFilter"  onclick="prova()">Add</button>';
+                            $(table).append(newchi);
 
                         } else {
                             filterBox = "ERROR! No Columns"
@@ -288,11 +281,10 @@ function doFilters(id) {
                                 var attribute = arrAttr[i].split(":");
 
                                 for (var j = 1; j < attribute.length; j++) {
-                                    $("#" + id).children(".info").children("table").children("tbody").children("tr").each(function () {
-                                        $(this).children("td").each(function () {
-                                            $(this).children('[value=' + attribute[j] + ']').prop('checked', false);
+                                    console.log($("#" + id).children(".info").children("div").children("#columns").html());
+                                    $("#" + id).children(".info").children("div").children("#columns").each(function () {
+                                        $(this).children('[value=' + attribute[j] + ']').css("background-color","red");
 
-                                        });
                                     });
                                 }
                             }
@@ -317,6 +309,11 @@ function doFilters(id) {
 
         $("#" + id).children(".info").animate({ "left": offset.left }, 250);
     });
+}
+
+function prova() {
+    alert("sssss");
+
 }
 
 function cancelFilter(id) {

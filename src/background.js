@@ -134,18 +134,6 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 		});
 
 		return true;
-	}else if (msg.type === "pageIdFromURL") {
-	    // load the DOM object
-	    chrome.tabs.getAllInWindow(null, function (tabs) {
-	        for (var i = 0; i < tabs.length; i++) {
-	            console.log("url:" + tabs[i].url);
-	            console.log("message:" + msg.value);
-	            if (tabs[i].url === msg.value)
-	                sendResponse( tabs[i].id);
-	        }
-	    });
-
-	    return true;
 	}else if (msg.type === "getStoredTemplate") {
 		// load the DOM object
 		chrome.tabs.query({
@@ -158,6 +146,13 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 		});
 
 		return true;
+	} else if (msg.type === "getSpecificStoredObject") {
+	    // load the DOM object
+	    getStoredObject(msg.PageID, function (data) {
+                sendResponse(data);
+	        });
+
+	    return true;
 	} else if (msg.type === "Extract") {
 		// Get the extract data and save in the localStorage the object
 		if (msg.value.sourceType.toLowerCase() === "iapi") {
