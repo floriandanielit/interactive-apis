@@ -74,13 +74,26 @@ window.addEventListener('message', function (e) {
             });
         }
         if (JSON.parse(e.data).action === "getObjects") {
+            console.log("EnterContentEngine.js");
             // if the request from the inject scripts is "getObject",
             // retrieve data from the localStorage
-            getSpecificStoredObject(JSON.parse(e.data).idPageSource, JSON.parse(e.data).idSource, function (data1) {
-                console.log("data1" + data1);
-                getSpecificStoredObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, function (data2) {
-                    console.log("data2" + data2);
+            getSpecificStoredObject(JSON.parse(e.data).idPageSource, function (data1) {
+                data1 = JSON.parse(data1);
+                try {
+                    var idsource = JSON.parse(e.data).idSource;
+                    data1 = data1[idsource];
+                } catch (er) {
+                    data1 = null;
+                }
 
+                getSpecificStoredObject(JSON.parse(e.data).idPageTarget, function (data2) {
+                    data2 = JSON.parse(data2);
+                    try {
+                        var idtarget = JSON.parse(e.data).idTarget;
+                        data2 = data2[idtarget];
+                    } catch (er) {
+                        data2 = null;
+                    }
                     var pass_data = {
                         'action': "getStoredObjects",
                         'valueOne': data1,
@@ -90,7 +103,7 @@ window.addEventListener('message', function (e) {
                 });
             });
         }
-       if (JSON.parse(e.data).idTemp !== undefined) {
+        if (JSON.parse(e.data).idTemp !== undefined) {
             chrome.extension.sendMessage({
                 "type": "StoreTemplate",
                 "value": JSON.parse(e.data)
@@ -110,9 +123,9 @@ window.addEventListener('message', function (e) {
             chrome.extension.sendMessage({
                 "type": "getExternal",
                 "value": chrome.extension.getURL('html/templates.html')
-                
+
             }, function (data) {
-                    var pass_data = {
+                var pass_data = {
                     'action': "loadTemplate",
                     'value': data
                 };
@@ -121,16 +134,16 @@ window.addEventListener('message', function (e) {
         } if (JSON.parse(e.data).action === "getTEMPLATEeditor") {
             chrome.extension.sendMessage({
                 "type": "getExternal",
-                "value":  chrome.extension.getURL('html/templates.html')
-           }, function (data) {
-               var pass_data = {
+                "value": chrome.extension.getURL('html/templates.html')
+            }, function (data) {
+                var pass_data = {
                     'action': "loadTemplateEditor",
                     'value': data
                 };
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
-       
+
     }
     catch (err) {
 
@@ -379,14 +392,12 @@ function pageIdRequest(call) {
     });
 }
 
-
-
 //get stored object of a specific page id and a specific tag id
-function getSpecificStoredObject(idPage, idTag, call) {
+function getSpecificStoredObject(idPage, call) {
+    //console.log("Ret:" + idPage);
     chrome.extension.sendMessage({
         "type": "getSpecificStoredObject",
-        "PageID": idPage,
-        "TagID": idTag
+        "PageID": idPage
     }, function (data) {
         call(data);
     });

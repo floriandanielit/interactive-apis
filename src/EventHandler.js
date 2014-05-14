@@ -5,10 +5,8 @@ var overlay = false;
 
 
 var idsource;
-var tagsource;
 var source;
 var idsourcepage;
-var idTemplate;
 var annotation;
 var pageID;
 var eventDrop;
@@ -17,7 +15,6 @@ var eventDrop;
 
 function allowDrop(ev, pageId) {
     ev.preventDefault();
-
     if (!over) {
         getParentIAPI(ev.target, function (parent) {
 
@@ -60,18 +57,12 @@ function allowDrop(ev, pageId) {
 function drag(ev, source, idPage) {
 
     ev.dataTransfer.setData("source", source);
-    ev.dataTransfer.setData("tagsource", $("#" + ev.target.id).prop("tagName"));
     ev.dataTransfer.setData("id", ev.target.id);
     ev.dataTransfer.setData("classAttribute", $("#" + ev.target.id).attr("class"));
     ev.dataTransfer.setData("idpagesource", idPage);
 
     console.log("id____________________:" + idPage);
-    hasIdTemplate(ev.target.id, function (msg) {
-        if (msg !== "NOIDTEMPLATE")
-            ev.dataTransfer.setData("idtemplate", msg);
-        else
-            ev.dataTransfer.setData("idtemplate", msg);
-    });
+
     /*getPageIdFromURL(source,function () {
 
         //Listener for the page ID
@@ -127,9 +118,9 @@ function leave(ev) {
     if (over) {
         getParentIAPI(ev.target, function (parent) {
 
-            console.log("uguali?:" + $(parent).prop('id') === idtarget);
-            console.log("attuale:" + $(parent).prop('id'));
-            console.log("vecchio:" + idtarget);
+            //console.log("uguali?:" + $(parent).prop('id') === idtarget);
+            //console.log("attuale:" + $(parent).prop('id'));
+            //console.log("vecchio:" + idtarget);
 
             // if ($(parent).prop('id') !== idtarget) {
             var imgWidth = $(parent).width();
@@ -158,10 +149,20 @@ function drop(ev, pageId) {
     //$(ev.target).removeClass("over");
     //get the datas from datatransfer
     idsource = ev.dataTransfer.getData("id");
-    tagsource = ev.dataTransfer.getData("tagsource");
     source = ev.dataTransfer.getData("source");
     idsourcepage = ev.dataTransfer.getData("idpagesource");
     pageID = pageId;
+
+
+    /////////TEST////////
+    pageID = 35;
+    idsourcepage = 57;
+    idsource = "PRIMO";
+
+    /////////////////////
+
+    console.log("..........SOURCE.............." + idsourcepage);
+    console.log("..........TARGET.............." + pageID);
     var findHide = false;
     var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
     for (i = 0; i < tagtarg.length && findHide === false; i++) {
@@ -170,70 +171,104 @@ function drop(ev, pageId) {
             annotation = tagtarg[i];
         }
     }
-    if (ev.dataTransfer.getData("idtemplate") !== "NOIDTEMPLATE") {
-        idTemplate = ev.dataTransfer.getData("idtemplate");
-    }
-
-
 
     //////////////////////DATA_INTEGRATION//////////////////////////////
+    sameType(source, parent, function (same) {
 
-    getParentIAPI(ev.target, function (parent) {
-        overlay = true;
-        offset = $(parent).offset();
-        $("#iapi_frame").css('pointer-events', 'none');
-        $(parent).find(".info").remove();
-        sameType(source, parent, function (same) {
+        //If they are the same type
+        if (same) {
+            MainOverlayST();
+        }
+            ////If they aren't the same type
+        else {
+            //filterBox = '<div class="info">'
+            //   + 'Filter Page...'
+            //   + '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
+            //   + '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
+            //   + '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
+            //   + '</div>'
+            MainOverlayDT();
 
-            //If they are the same type
-            if (same) {
-                filterBox = '<div class="info">'
-                    + 'Filter Page...'
-                    + '<button id="unionButtonST" onclick="STUnion()" >Union</button>'
-                    + '<button id="substituteButtonST" onclick="Substitute()">Substitute</button>'
-                    + '<button id="eliminateDuplicatesButtonST"  onclick="STEliminateDuplicates()">Eliminate Duplicates</button>'
-                    + '</div>'
-            }
-                ////If they aren't the same type
-            else {
-               /* filterBox = '<div class="info">'
-                   + 'Filter Page...'
-                   + '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
-                   + '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
-                   + '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
-                   + '</div>'*/
 
-                filterBox = '<div class="info">'
-                   + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
-                   + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
-                   + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
-                   + '</div>'
-            }
-
-            $(parent).append(filterBox);
-
-            var imgWidth = $(parent).width();
-            var imgHeight = $(parent).height();
-            var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-            $(parent).children(".info").fadeTo(0, 0.8);
-            $(parent).children(".info").css("width", (imgWidth) + "px");
-            $(parent).children(".info").css("height", (imgHeight) + "px");
-            $(parent).children(".info").css("top", offset.top + "px");
-            $(parent).children(".info").css("left", negImgWidth + "px");
-            $(parent).children(".info").css("visibility", "visible");
-
-            $(parent).children(".info").animate({ "left": offset.left }, 250);
-
-        });
+        }
     });
     /////////////////////////////////////////////////
+    ////////////////////NEW//////////////////////////
+    /*
+   getObject(idsourcepage, idsource, pageID, idtarget, function (first, second) {
+       ///////////              
+       console.log("first_________________________________________________________" + first);
+       console.log("second_________________________________________________________" + second);
+       var arrDifferentColumn = new Array();
+       try {
+           getFirstRowKeyObject(true, first, function (arr) {
+               getFirstRowKeyObject(true, second, function (arr2) {
 
+
+                   sameType(first, second, function (same) {
+
+                       offset = $(parent).offset();
+                       $("#iapi_frame").css('pointer-events', 'none');
+                       $(parent).find(".info").remove();
+
+
+
+                       //If they are the same type
+                       if (same) {
+                           filterBox = '<div class="info">'
+                               + 'Filter Page...'
+                               + '<button id="unionButtonST" onclick="STUnion()" >Union</button>'
+                               + '<button id="substituteButtonST" onclick="Substitute()">Substitute</button>'
+                               + '<button id="eliminateDuplicatesButtonST"  onclick="STEliminateDuplicates()">Eliminate Duplicates</button>'
+                               + '</div>'
+                       }
+                           ////If they aren't the same type
+                       else {
+                           //filterBox = '<div class="info">'
+                           // + 'Filter Page...'
+                           // + '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
+                           // + '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
+                           // + '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
+                           // + '</div>'
+
+                           filterBox = '<div class="info">'
+                              + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
+                              + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
+                              + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
+                              + '</div>'
+                       }
+
+                       $(parent).append(filterBox);
+
+                       var imgWidth = $(parent).width();
+                       var imgHeight = $(parent).height();
+                       var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+                       $(parent).children(".info").fadeTo(0, 0.8);
+                       $(parent).children(".info").css("width", (imgWidth) + "px");
+                       $(parent).children(".info").css("height", (imgHeight) + "px");
+                       $(parent).children(".info").css("top", offset.top + "px");
+                       $(parent).children(".info").css("left", negImgWidth + "px");
+                       $(parent).children(".info").css("visibility", "visible");
+
+                       $(parent).children(".info").animate({ "left": offset.left }, 250);
+
+                   });
+               });
+           });
+       } catch (er) {
+           console.log("There was an error:" + er);
+       }
+       ///////////
+
+   }); */
+
+    /////////////////////////////////////////////////
 
 }
 
-function old(source, idsource, idtarget, tagsource, pageId, idTemplate, ev, callback) {
-
+function old(source, idsource, idtarget, pageId, ev, callback) {
+    var idTemplate;
     //load the page
     getPage(source, idtarget, function () {
         // Draged element is a source or a target, then extract related data
@@ -245,76 +280,83 @@ function old(source, idsource, idtarget, tagsource, pageId, idTemplate, ev, call
                 arr.length = 0;
             }
 
-            loadTemplate(idTemplate, ev.target.id, tagsource, pageId, function (ret) {
-                compileTemplate(urlsource, idsource, ret, ev.target.id, pageId, arr, sourceType, iapiid, function (ret2, hideArr) {
-                    $("#" + idtarget).empty();
-                    var replacementTag = ret2.prop("tagName");
 
-                    var $a = $("#" + idtarget);
-                    var aid = $a.attr('id');
-                    $a.replaceWith('<' + replacementTag + ' id="' + aid + '"></' + replacementTag + '>');
-                    $("#" + idtarget).html(ret2.html());
 
-                    //get the annotation (hide:#:#:#) from the source
-                    if (annotation !== undefined)
-                        $("#" + idtarget).addClass(annotation);
-                    else {
+            hasIdTemplate(idtarget, function (msg) {
+                if (msg !== "NOIDTEMPLATE")
+                    idTemplate = msg;
 
-                        if (hideArr !== undefined && hideArr.length !== 0) {
-                            var hideString = "hide:";
-                            for (var i = 0; i < hideArr.length; i++) {
-                                if (i === hideArr.length - 1)
-                                    hideString += hideArr[i];
-                                else
-                                    hideString += hideArr[i] + ":";
+                loadTemplate(idTemplate, $("#" + idtarget).prop("tagName"), function (ret) {
+                    console.log("ret:" + $(ret).html());
+                    compileTemplate(urlsource, idsource, ret, ev.target.id, pageId, arr, sourceType, iapiid, function (ret2, hideArr) {
+                        $("#" + idtarget).empty();
+                        var replacementTag = ret2.prop("tagName");
+                        var $a = $("#" + idtarget);
+                        var aid = $a.attr('id');
+                        $a.replaceWith('<' + replacementTag + ' id="' + aid + '"></' + replacementTag + '>');
+                        $("#" + idtarget).html(ret2.html());
+
+                        //get the annotation (hide:#:#:#) from the source
+                        if (annotation !== undefined)
+                            $("#" + idtarget).addClass(annotation);
+                        else {
+
+                            if (hideArr !== undefined && hideArr.length !== 0) {
+                                var hideString = "hide:";
+                                for (var i = 0; i < hideArr.length; i++) {
+                                    if (i === hideArr.length - 1)
+                                        hideString += hideArr[i];
+                                    else
+                                        hideString += hideArr[i] + ":";
+                                }
+                                $("#" + idtarget).addClass(hideString);
                             }
-                            $("#" + idtarget).addClass(hideString);
                         }
-                    }
-                    $("#" + idtarget).addClass("iapi");
-                    $("#" + idtarget).addClass("datasource:" + urlsource);
-                    if (urlsource !== source)
-                        $("#" + idtarget).addClass("provenance:" + source);
-                    $("#" + idtarget).addClass("sourcetype:" + sourceType.toLowerCase());
-                    if (sourceType.toLowerCase() === "iapi")
-                        $("#" + idtarget).addClass("iapiid:" + iapiid);
+                        $("#" + idtarget).addClass("iapi");
+                        $("#" + idtarget).addClass("datasource:" + urlsource);
+                        if (urlsource !== source)
+                            $("#" + idtarget).addClass("provenance:" + source);
+                        $("#" + idtarget).addClass("sourcetype:" + sourceType.toLowerCase());
+                        if (sourceType.toLowerCase() === "iapi")
+                            $("#" + idtarget).addClass("iapiid:" + iapiid);
 
-                    //Rendering
-                    //send messages to middleware
-                    try {
+                        //Rendering
+                        //send messages to middleware
+                        try {
 
-                        var pass_data = {
-                            'action': "generate",
-                            'id': idtarget,
-                            'pageId': pageId
-                        };
-                        window.postMessage(JSON.stringify(pass_data), window.location.href);
-                    } catch (e) {
-                        alert(e);
-                    }
+                            var pass_data = {
+                                'action': "generate",
+                                'id': idtarget,
+                                'pageId': pageId
+                            };
+                            window.postMessage(JSON.stringify(pass_data), window.location.href);
+                        } catch (e) {
+                            alert(e);
+                        }
 
-                    //Store template
-                    try {
+                        //Store template
+                        try {
 
-                        var pass_data = {
-                            'idTemp': idtarget,
-                            'value': $('#' + idtarget)[0].outerHTML
-                        };
-                        window.postMessage(JSON.stringify(pass_data), window.location.href);
-                    } catch (e) {
-                        alert(e);
-                    }
-                    try {
+                            var pass_data = {
+                                'idTemp': idtarget,
+                                'value': $('#' + idtarget)[0].outerHTML
+                            };
+                            window.postMessage(JSON.stringify(pass_data), window.location.href);
+                        } catch (e) {
+                            alert(e);
+                        }
+                        try {
 
-                        var pass_data = {
-                            'action': "startIApiLayer"
-                        };
-                        window.postMessage(JSON.stringify(pass_data), window.location.href);
-                    } catch (e) {
-                        alert(e);
-                    }
-                    callback();
+                            var pass_data = {
+                                'action': "startIApiLayer"
+                            };
+                            window.postMessage(JSON.stringify(pass_data), window.location.href);
+                        } catch (e) {
+                            alert(e);
+                        }
+                        callback();
 
+                    });
                 });
             });
         });
@@ -434,7 +476,7 @@ function parseTRG(YourFindElement, id, call) {
 }
 
 //Load template
-function loadTemplate(idTemplate, idTarget, tagsource, pageId, callback) {
+function loadTemplate(idTemplate, tagtarget, callback) {
     getTemplateFile(function (data) {
         function template(data) {
             if (idTemplate !== undefined) {
@@ -442,7 +484,7 @@ function loadTemplate(idTemplate, idTarget, tagsource, pageId, callback) {
                 return template;
             } else {
                 var template = $("<div>" + data + "</div>").find("#2D");
-                template = $(template).children().filter(tagsource).first();
+                template = $(template).children().filter(tagtarget).first();
 
                 return template;
             }
@@ -840,6 +882,29 @@ function cancel(id) {
     //TODO
 }
 
+//Create and Display main Overlay Same Type
+function MainOverlayST() {
+    closeOverlay(function () {
+        AnimationOverlay('<div class="info">'
+               + 'Filter Page...'
+               + '<button id="unionButtonST" onclick="STUnion()" >Union</button>'
+               + '<button id="substituteButtonST" onclick="Substitute()">Substitute</button>'
+               + '<button id="eliminateDuplicatesButtonST"  onclick="STEliminateDuplicates()">Eliminate Duplicates</button>'
+               + '</div>');
+    });
+}
+
+//Create and Display main Overlay Dfferent Type
+function MainOverlayDT() {
+    closeOverlay(function () {
+        AnimationOverlay('<div class="info">'
+                      + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
+                      + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
+                      + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
+                      + '</div>');
+    });
+}
+
 //Same type Eliminate Duplicates
 function STEliminateDuplicates() {
     console.log("STEliminateDuplicates" + idtarget);
@@ -850,31 +915,13 @@ function STEliminateDuplicates() {
 function STUnion() {
     console.log("STUnion" + idtarget);
     closeOverlay(function () {
-
-        offset = $("#" + idtarget).offset();
-        $("#iapi_frame").css('pointer-events', 'none');
-        $("#" + idtarget).find(".info").remove();
-        filterBox = '<div class="info">'
+        AnimationOverlay('<div class="info">'
                     + 'Type of Union...'
                     + '<button id="unionRestrictedButtonST" onclick="STUnionRestricted()" >Restricted Union</button>'
                     + '<button id="unionExtendedButtonST" onclick="STUnionExtended()" >Extended Union</button>'
                     + '<button onclick="closeOverlay()">Cancel</button>'
-                    + '</div>'
-
-        $("#" + idtarget).append(filterBox);
-
-        var imgWidth = $("#" + idtarget).width();
-        var imgHeight = $("#" + idtarget).height();
-        var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
-        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
-        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
-        $("#" + idtarget).children(".info").css("top", offset.top + "px");
-        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
-        $("#" + idtarget).children(".info").css("visibility", "visible");
-
-        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+                    + '<button onclick="MainOverlayST()">Back</button>'
+                    + '</div>')
     });
 }
 
@@ -890,8 +937,6 @@ function STUnionExtended() {
 
 
     getObject(idsourcepage, idsource, pageID, idtarget, function (first, second) {
-        console.log("first" + first);
-        console.log("second" + second);
         if (first !== null && second !== null) {
 
             ///////////              
@@ -923,11 +968,9 @@ function STUnionExtended() {
 
 
             closeOverlay(function () {
-                offset = $("#" + idtarget).offset();
-                $("#iapi_frame").css('pointer-events', 'none');
-                $("#" + idtarget).find(".info").remove();
+                var filterBox = "";
                 if (arrDifferentColumn.length > 0) {
-                    filterBox = '<div class="info">'
+                    filterBox += '<div class="info">'
                                 + 'Ci sono ' + arrDifferentColumn.length + ' colonne nella source page differenti dalla target'
                                 + 'e sono: '
                     for (var i = 0; i < arrDifferentColumn.length; i++) {
@@ -944,24 +987,7 @@ function STUnionExtended() {
                                    + '<button onclick="closeOverlay()">OK</button>'
                                    + '</div>'
                 }
-                $("#" + idtarget).append(filterBox);
-
-                var imgWidth = $("#" + idtarget).width();
-                var imgHeight = $("#" + idtarget).height();
-                var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-                $("#" + idtarget).children(".info").fadeTo(0, 0.8);
-                $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
-                $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
-                $("#" + idtarget).children(".info").css("top", offset.top + "px");
-                $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
-                $("#" + idtarget).children(".info").css("visibility", "visible");
-
-                $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
-
-
-
-
+                AnimationOverlay(filterBox);
             });
             ///////////
         }
@@ -973,9 +999,12 @@ function STUnionExtended() {
 //Same type function Union Extended
 function STUnionRestricted() {
     console.log("STUnionRestricted" + idtarget);
+    closeOverlay(function () {
+    });
     //TODO
 }
 
+///////////COMMON////////////
 //Sobstitute the target with the source
 function Substitute() {
     console.log("Substitute" + idtarget);
@@ -987,68 +1016,42 @@ function Substitute() {
     console.log("source:" + source);
     console.log("idsource:" + idsource);
     console.log("idtarget:" + idtarget);
-    console.log("tagsource:" + tagsource);
     console.log("pageID:" + pageID);
-    console.log("idTemplate:" + idTemplate);
     console.log("eventDrop:" + eventDrop);
-
-    old(source, idsource, idtarget, tagsource, pageID, idTemplate, eventDrop, function () {
+    old(source, idsource, idtarget, pageID, eventDrop, function () {
         closeOverlay();
     });
 }
-
-//Listener resize page, for redraw the overlay
-window.addEventListener('resize', function (event) {
-    if (overlay) {
-        var info = $("#" + idtarget).children(".info");
-        $(info).width($("#" + idtarget).width());
-        $(info).height($("#" + idtarget).height());
-        $("#" + idtarget).children(".info").remove();
-        $("#" + idtarget).append(info);
-    }
-});
+///////////////////////////
 
 //Different type function Union
 function DTUnion() {
     console.log("DTUnionExtended" + idtarget);
     closeOverlay(function () {
 
-        offset = $("#" + idtarget).offset();
-        $("#iapi_frame").css('pointer-events', 'none');
-        $("#" + idtarget).find(".info").remove();
-        filterBox = '<div class="info">'
+        AnimationOverlay('<div class="info">'
                     + 'Type of Union...'
                     + '<button id="unionRestrictedButtonDT" onclick="DTUnionRestricted()" >Restricted Union</button>'
                     + '<button id="unionExtendedButtonDT" onclick="DTUnionExtended()" >Extended Union</button>'
                     + '<button onclick="closeOverlay()">Cancel</button>'
-                    + '</div>'
-
-        $("#" + idtarget).append(filterBox);
-
-        var imgWidth = $("#" + idtarget).width();
-        var imgHeight = $("#" + idtarget).height();
-        var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
-        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
-        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
-        $("#" + idtarget).children(".info").css("top", offset.top + "px");
-        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
-        $("#" + idtarget).children(".info").css("visibility", "visible");
-
-        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+                    + '<button onclick="MainOverlayDT()">Back</button>'
+                    + '</div>');
     });
 }
 
 //Different type function Union Extended
 function DTUnionExtended() {
     console.log("DTUnionExtended" + idtarget);
+    closeOverlay(function () {
+    });
     //TODO
 }
 
 //Different type function Union Extended
 function DTUnionRestricted() {
     console.log("DTUnionRestricted" + idtarget);
+    closeOverlay(function () {
+    });
     //TODO
 }
 
@@ -1057,29 +1060,12 @@ function DTJoin() {
     console.log("DTJoin" + idtarget);
     closeOverlay(function () {
 
-        offset = $("#" + idtarget).offset();
-        $("#iapi_frame").css('pointer-events', 'none');
-        $("#" + idtarget).find(".info").remove();
-        filterBox = '<div class="info">'
+        AnimationOverlay('<div class="info">'
                     + 'Type of join...'
                     + '<button id="joinComparisonButton" onclick="DTJoinComparison()" >Join Comparison</button>'
                     + '<button id="joinOperatorButton" onclick="DTJoinOperator()">Join Operator</button>'
                     + '<button id="joinXXXButton"  onclick="DTJoinXXXX()">Join XXX</button>'
-                    + '</div>'
-
-        $("#" + idtarget).append(filterBox);
-
-        var imgWidth = $("#" + idtarget).width();
-        var imgHeight = $("#" + idtarget).height();
-        var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
-        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
-        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
-        $("#" + idtarget).children(".info").css("top", offset.top + "px");
-        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
-        $("#" + idtarget).children(".info").css("visibility", "visible");
-        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+                    + '</div>');
     });
     //TODO
 }
@@ -1106,28 +1092,10 @@ function DTMatchColumnsManually() {
     closeOverlay(function () {
 
 
-        offset = $("#" + idtarget).offset();
-        $("#iapi_frame").css('pointer-events', 'none');
-        $("#" + idtarget).find(".info").remove();
-        filterBox = '<div class="info">'
+        AnimationOverlay('<div class="info">'
                     + 'Select columns... TEST TEST TEST TEST'
                     + '<button onclick="closeOverlay()">OK</button>'
-                    + '</div>'
-
-        $("#" + idtarget).append(filterBox);
-
-        var imgWidth = $("#" + idtarget).width();
-        var imgHeight = $("#" + idtarget).height();
-        var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
-        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
-        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
-        $("#" + idtarget).children(".info").css("top", offset.top + "px");
-        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
-        $("#" + idtarget).children(".info").css("visibility", "visible");
-        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
-
+                    + '</div>');
     });
     //TODO
 }
@@ -1136,32 +1104,18 @@ function DTMatchColumnsManually() {
 function DTMatchColumnsAutomatically() {
     console.log("DTMatchColumnsAutomatically" + idtarget);
     closeOverlay(function () {
-
-
-        offset = $("#" + idtarget).offset();
-        $("#iapi_frame").css('pointer-events', 'none');
-        $("#" + idtarget).find(".info").remove();
-        filterBox = '<div class="info">'
+        AnimationOverlay('<div class="info">'
                     + 'Based on DBPedia.. The X column in the Source Object can be the Y column in teh Target Object'
                     + '<button onclick="closeOverlay()">OK</button>'
-                    + '</div>'
-
-        $("#" + idtarget).append(filterBox);
-
-        var imgWidth = $("#" + idtarget).width();
-        var imgHeight = $("#" + idtarget).height();
-        var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-        $("#" + idtarget).children(".info").fadeTo(0, 0.8);
-        $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
-        $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
-        $("#" + idtarget).children(".info").css("top", offset.top + "px");
-        $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
-        $("#" + idtarget).children(".info").css("visibility", "visible");
-        $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
-
+                    + '</div>');
     });
     //TODO
+}
+
+//Advanced// REquestDBPedia
+function RequestOnDBPedia() {
+
+
 }
 
 //Close the overlayer with an animation 
@@ -1173,14 +1127,54 @@ function closeOverlay(call) {
     $("#" + idtarget).children(".info").animate({ "left": negImgWidth }, 250, function () {
         $("#" + idtarget).children(".info").remove();
         $("#iapi_frame").css('pointer-events', 'auto');
-        call();
+        if (call !== undefined)
+            call();
     });
+}
+
+function AnimationOverlay(Content) {
+    offset = $("#" + idtarget).offset();
+    $("#iapi_frame").css('pointer-events', 'none');
+    $("#" + idtarget).find(".info").remove();
+    filterBox = Content;
+
+    $("#" + idtarget).append(filterBox);
+
+    var imgWidth = $("#" + idtarget).width();
+    var imgHeight = $("#" + idtarget).height();
+    var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+    $("#" + idtarget).children(".info").fadeTo(0, 0.8);
+    $("#" + idtarget).children(".info").css("width", (imgWidth) + "px");
+    $("#" + idtarget).children(".info").css("height", (imgHeight) + "px");
+    $("#" + idtarget).children(".info").css("top", offset.top + "px");
+    $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
+    $("#" + idtarget).children(".info").css("visibility", "visible");
+
+    $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
+
 }
 
 //Detect if the source and the target object are the same type
 function sameType(objSource, objTarget, callback) {
-
-    //TODO
+    /*var find = false;
+    var count;
+    for (var i = 0; i < objSource.length; i++) {
+        console.log("arr[" + i + "]_" + objSource[i]);
+        for (var j = 0; j < objTarget.length; j++) {
+            console.log("arr[" + j + "]_" + objSource[j]);
+            if (objSource[i] === objTarget[j])
+                find = true;
+        }
+        if (find) {
+            count++;
+            arrDifferentColumn.push(objSource[i]);
+            find = false;
+        }
+    }
+    if (count === objSource.length)
+        callback(true);
+    else   */
     callback(true);
 }
 
@@ -1196,7 +1190,6 @@ function getObject(idPageSource, idSource, idPageTarget, idTarget, call) {
             'idTarget': idTarget
 
         };
-        console.log(pass_data);
         window.postMessage(JSON.stringify(pass_data), window.location.href);
 
         var flag = true;
@@ -1211,7 +1204,6 @@ function getObject(idPageSource, idSource, idPageTarget, idTarget, call) {
     }
 
 }
-
 
 function getFirstRowKeyObject(dataitem, tmp, call) {
     var arr = new Array();
@@ -1228,3 +1220,14 @@ function getFirstRowKeyObject(dataitem, tmp, call) {
         return false;
     });
 }
+
+//Listener resize page, for redraw the overlay
+window.addEventListener('resize', function (event) {
+    if (overlay) {
+        var info = $("#" + idtarget).children(".info");
+        $(info).width($("#" + idtarget).width());
+        $(info).height($("#" + idtarget).height());
+        $("#" + idtarget).children(".info").remove();
+        $("#" + idtarget).append(info);
+    }
+});

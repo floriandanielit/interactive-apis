@@ -1,5 +1,7 @@
 //Extract Data from JSON file
 function extractJSON(data, iapiid, idPage, call) {
+
+
     var idObject = {};
     var datas = new Array();
     var values;

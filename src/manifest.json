@@ -1,8 +1,8 @@
 {
-"name": "iAPI runtime middleware",
-"version": "0.1.0",
+"name": "iAPI middleware2",
+"version": "0.1",
 "manifest_version": 2,
-"description": "Runtime environment for UI-oriented computing with iAPI support",
+"description": "Description",
         "icons": {
                  "128":"img/logo.png" 
         }, 
