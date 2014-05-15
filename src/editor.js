@@ -176,7 +176,7 @@ function iapi_menu() {
                     }, false);
                 });
             });
-            
+
         });
 
         //SET CLICK STATUS FORMATTING
@@ -217,8 +217,6 @@ function iapi_menu() {
         $("#iapi_menu div:nth-child(5)").click(function () {
             //alert("aaaaa");
             var id = $("#iapi_menu [class='getAll']").attr("id");
-            console.log(id);
-            console.log($("#" + id).children(".info").css('visibility') === "hidden");
             if ($("#" + id).children(".info").length === 0) {
                 doFilters(id);
             } else {
@@ -247,32 +245,27 @@ function doFilters(id) {
 
                 if (tmp !== undefined) {
                     getFirstRowKeyObject(false, tmp, function (arr) {
-                        if (arr.length > 0) {
-                            var newchi = "<div>";
-                            $("#" + id).children(".info").append(newchi);
-                            var table = $("#" + id).children(".info").children("div");
+                        var newchi = "<div>";
+                        $("#" + id).children(".info").append(newchi);
+                        var table = $("#" + id).children(".info").children("div");
 
-                            newchi = "";
-                            newchi = '<select id="columns">'
-                            for (var j = 0; j < arr.length; j++) {
-                                newchi += '<option value="' + arr[j] + '" >' + arr[j] + '</option>'
-                            }
-                            newchi+= '</select><select id="operator' + j + '">'
-                           + '<option value="=">=</option>'
-                           + '<option value="+">+</option>'
-                           + '<option value=">">></option>'
-                           + '<option value="<"><</option>'
-                           + '<option value="<="><=</option>'
-                           + '<option value=">="><=</option>'
-                           + '</select>'
-                           + '<input type="text" name="input_text"></input>'
-                           + '<button type="text" name="addFilter"  onclick="prova()">Add</button>';
-                            $(table).append(newchi);
-
-                        } else {
-                            filterBox = "ERROR! No Columns"
-                            $("#" + id).children(".info").append(filterBox);
+                        newchi = "";
+                        newchi = '<select class="iapicolumns">'
+                        for (var j = 0; j < arr.length; j++) {
+                            newchi += '<option value="' + arr[j] + '" >' + arr[j] + '</option>'
                         }
+                        newchi += '</select><select>'
+                       + '<option value="=">=</option>'
+                       + '<option value=">">></option>'
+                       + '<option value="<"><</option>'
+                       + '<option value="<="><=</option>'
+                       + '<option value=">=">>=</option>'
+                       + '</select>'
+                       + '<input type="text" name="input_text"></input>'
+                       + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
+                        $(table).append(newchi);
+
+
 
                         var arrAttr = $("#" + id).attr("class").split(" ");
                         for (var i = 0; i < arrAttr.length; i++) {
@@ -281,9 +274,9 @@ function doFilters(id) {
                                 var attribute = arrAttr[i].split(":");
 
                                 for (var j = 1; j < attribute.length; j++) {
-                                    console.log($("#" + id).children(".info").children("div").children("#columns").html());
-                                    $("#" + id).children(".info").children("div").children("#columns").each(function () {
-                                        $(this).children('[value=' + attribute[j] + ']').css("background-color","red");
+                                    console.log($("#" + id).children(".info").children("div").children(".iapicolumns").html());
+                                    $("#" + id).children(".info").children("div").children(".iapicolumns").each(function () {
+                                        $(this).children('[value=' + attribute[j] + ']').css("background-color", "red");
 
                                     });
                                 }
@@ -293,8 +286,8 @@ function doFilters(id) {
                 }
             }
         }
-        filterBox = '<button onclick="apply(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Apply</button>'
-            + '<button onclick="cancel(' + $("#iapi_menu [class='getAll']").attr("id") + ')">Cancel</button>';
+        filterBox = '<button onclick="apply()">Apply</button>'
+            + '<button onclick="cancel()">Cancel</button>';
         $("#" + id).children(".info").append(filterBox);
         var imgWidth = $("#" + id).width();
         var imgHeight = $("#" + id).height();
@@ -731,7 +724,7 @@ function messageIapi_menu(id) {
 
 }
 
-function getActions(iapiclass, iapiid,call) {
+function getActions(iapiclass, iapiid, call) {
     codeactions = "";
     codeactions = codeactions.concat('<a class="getAll" id=' + iapiid + ' draggable="true" ondragstart="drag(event,document.URL)" href="?iapisource="+window.location.href+"&iapiid="+iapiid+"" style="color:white">Use data</a> <br/>');
     var classes = iapiclass.split(" ");
