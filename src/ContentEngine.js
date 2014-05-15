@@ -61,6 +61,15 @@ window.addEventListener('message', function (e) {
             pageId = JSON.parse(e.data).pageId;
             generate(idTargte, pageId, function () {
             });
+        } if (JSON.parse(e.data).action === "filters") {
+            pageIdRequest(function(pageid){
+                getStoredObject(function (data) {
+                    doFilter(data, JSON.parse(e.data).values, JSON.parse(e.data).id, function () {
+                        generate(JSON.parse(e.data).id,pageid,function(){
+                        });
+                    });
+                });
+            });
         }
         if (JSON.parse(e.data).action === "getObject") {
             // if the request from the inject scripts is "getObject",
@@ -69,7 +78,7 @@ window.addEventListener('message', function (e) {
                 var pass_data = {
                     'action': "getStored",
                     'value': data
-                };
+            };
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
@@ -149,6 +158,12 @@ window.addEventListener('message', function (e) {
 
     }
 }, false);
+
+
+function doFilter(localObject,filters,id,call) {
+
+    call();
+}
 
 //the Middleware script
 function middleware(disa, iAPILayerDisable) {
@@ -402,3 +417,4 @@ function getSpecificStoredObject(idPage, call) {
         call(data);
     });
 }
+

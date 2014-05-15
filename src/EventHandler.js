@@ -2,6 +2,7 @@ var idtarget = "";
 var code = "";
 var over = false;
 var overlay = false;
+var filters = new Array();
 
 
 var idsource;
@@ -10,6 +11,7 @@ var idsourcepage;
 var annotation;
 var pageID;
 var eventDrop;
+var numRemoveFilter = 0;
 
 
 
@@ -861,15 +863,201 @@ function getTemplateFile(call) {
 
 }
 
+//Remove the filter in the Overlay
+function removeFilter(position) {
+    console.log("click remove" + position);
+    var id = $("#iapi_menu [class='getAll']").attr("id");
+    idtarget = id;
+    for (var i = position; i < numRemoveFilter; i++) {
+        console.log("iiiiii:" + i);
+        $("#" + id).children(".info").children("div:eq(" + i + ")").children("button").each(function () {
+            console.log("i:" + i + "_" + $(this)[0].outerHTML);
+            if ($(this).attr("name") === "Update" || $(this).attr("name") === "Remove") {
+                var name = $(this).attr("name").substr(0, $(this).attr("name").length);
+                name += "" + i - 1;
+                $(this).attr("name", name);
+                var value = $(this).attr("value").substr(0, $(this).attr("value").length - 1);
+                value += "" + i - 1;
+                $(this).attr("value", value);
+                var onclick = $(this).attr("onclick").substr(0, $(this).attr("onclick").length - 2);
+                onclick += "" + i - 1 + ")";
+                $(this).attr("onclick", onclick);
+            }
+        });
+    }
+    $("#" + id).children(".info").children("div:eq(" + position + ")").remove();
+    filters.splice(position, 1);
+    numRemoveFilter--;
+}
+
+//Update the filter in the Overlay
+function updateFilter(position) {
+    console.log("click update" + position);
+    var id = $("#iapi_menu [class='getAll']").attr("id");
+    idtarget = id;
+    getFilterAtIndex(position, id, function (column, operator, value) {
+        animationUpdateFilter(position, id, function () {
+            console.log("column:" + column + "_" + operator + "_" + value);
+            var ob = {};
+            obj = { "column": column, "operator": operator, "value": value };
+            filters[position] = obj;
+        });
+    });
+}
+
+//TODO
+//Animation after Update (binking)
+function animationUpdateFilter(position, id, call) {
+    
+}
+
+//Extract the values of the filter in a determinate position ("0" to "numRemoveFilter")
+function getFilterAtIndex(index, id, call) {
+    var operator = null;
+    var column = null;
+    var value = null;
+
+    $("#" + id).children(".info").children("div:eq(" + index + ")").children().each(function () {
+        if ($(this).prop("tagName").toLowerCase() !== "button") {
+            if ($(this).prop("tagName").toLowerCase() === "select") {
+                if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=") {
+                    column = $(this).children().filter(":selected").attr("value");
+                }
+                else
+                    operator = $(this).children("option:selected").attr("value");
+            }
+            else {
+                value = $(this).val();
+                if (column !== null && value !== null && operator !== null) {
+                    call(column, value, operator);
+                }
+            }
+        }
+    });
+
+}
+
 //Add filter button
-function addFilter(id) {
-    console.log("click add" + id[1] + "_" + idtarget);
-    //TODO
+function addFilter() {
+    console.log("click add");
+    var id = $("#iapi_menu [class='getAll']").attr("id");
+    idtarget = id;
+
+    var filter = {};
+    var columns = new Array();
+    var columnsHide = new Array();
+    var column = null;
+    var operator = null;
+    var value = null;
+
+
+    getSelected(function () {
+
+        console.log("_____________________________________________");
+        filter = { "column": column, "operator": operator, "value": value };
+        filters.push(filter);
+
+        //MODIFY PREV FILTER
+        var prev = $("#" + id).children(".info").children("div").last().before();
+
+        $(prev).children("button").remove();
+        var removeButton = '<button type="text" name="Update" value="Update' + numRemoveFilter + '" onclick="updateFilter(' + numRemoveFilter + ')">Update</button>'
+                          + '<button type="text" name="Remove" value="Remove' + numRemoveFilter + '" onclick="removeFilter(' + numRemoveFilter + ')">Remove</button>';
+
+        $(prev).append(removeButton);
+        numRemoveFilter++;
+
+        //ADD NEW FILTER
+        var newchi = "<div>";
+        $("#" + id).children(".info").children("button").first().before(newchi);
+        var table = $("#" + id).children(".info").children("div").last();
+
+        newchi = "";
+        newchi = '<select class="iapicolumns">'
+        for (var j = 0; j < columns.length; j++) {
+            newchi += '<option value="' + columns[j] + '" >' + columns[j] + '</option>'
+        }
+        newchi += '</select><select >'
+       + '<option value="=">=</option>'
+       + '<option value=">">></option>'
+       + '<option value="<"><</option>'
+       + '<option value="<="><=</option>'
+       + '<option value=">=">>=</option>'
+       + '</select>'
+       + '<input type="text" name="input_text"></input>'
+       + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
+        $(table).append(newchi);
+
+
+        for (var j = 0; j < columnsHide.length; j++) {
+            //console.log($("#" + id).children(".info").children("div").last().children(".iapicolumns").html());
+            $("#" + id).children(".info").children("div").last().children(".iapicolumns").each(function () {
+                $(this).children('[value=' + columnsHide[j] + ']').css("background-color", "red");
+
+            });
+        }
+
+        columnsHide.length = 0;
+        columns.length = 0;
+        column = null;
+
+    });
+
+
+    function getSelected(call) {
+        $("#" + id).children(".info").children("div").last().children().each(function () {
+            if ($(this).prop("tagName").toLowerCase() !== "button") {
+                if ($(this).prop("tagName").toLowerCase() === "select") {
+                    if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=") {
+                        $(this).children().each(function () {
+                            if ($(this).css('backgroundColor') === "rgb(255, 0, 0)")
+                                columnsHide.push($(this).attr("value"));
+
+                            columns.push($(this).attr("value"));
+                            if ($(this).prop("selected") === true) {
+                                column = $(this).attr("value");
+                            }
+
+                        });
+                    }
+                    else
+                        operator = $(this).children("option:selected").attr("value");
+                }
+                else {
+                    value = $(this).val();
+                    if (column !== null && value !== null && operator !== null) {
+                        call();
+                    }
+                }
+            }
+        });
+    }
 }
 
 //Apply function button
-function apply(id) {
-    console.log("apply" + idtarget);
+function apply() {
+    var id = $("#iapi_menu [class='getAll']").attr("id");
+    idtarget = id;
+    console.log("apply" + id);
+
+    ////////////////////////////////////////
+
+    try {
+        var pass_data = {
+            'action': "filters",
+            'values': filters,
+            'id': id
+
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+    } catch (e) {
+        alert(e);
+    }
+
+    ////////////////////////////////////////
+
+    filters.length = 0;
+    numRemoveFilter = 0;
     closeOverlay(function () {
     });
     //TODO
@@ -877,7 +1065,12 @@ function apply(id) {
 
 //Cancel function button
 function cancel(id) {
-    console.log("cancel" + idtarget);
+    console.log("Cancel");
+    var id = $("#iapi_menu [class='getAll']").attr("id");
+    idtarget = id;
+    numRemoveFilter = 0;
+    filters.length = 0;
+
     closeOverlay(function () { });
     //TODO
 }
@@ -1118,7 +1311,7 @@ function RequestOnDBPedia() {
 
 }
 
-//Close the overlayer with an animation 
+//Close the overlayer with an animation (fadeOUT)
 function closeOverlay(call) {
     var imgWidth = $("#" + idtarget).width();
     var imgHeight = $("#" + idtarget).height();
@@ -1132,6 +1325,7 @@ function closeOverlay(call) {
     });
 }
 
+//Amimate the Overlay (fadeIN)
 function AnimationOverlay(Content) {
     offset = $("#" + idtarget).offset();
     $("#iapi_frame").css('pointer-events', 'none');
@@ -1178,7 +1372,7 @@ function sameType(objSource, objTarget, callback) {
     callback(true);
 }
 
-// get the stored object
+//Get the stored object
 function getObject(idPageSource, idSource, idPageTarget, idTarget, call) {
 
     try {
@@ -1205,6 +1399,7 @@ function getObject(idPageSource, idSource, idPageTarget, idTarget, call) {
 
 }
 
+//Get the titles of columns
 function getFirstRowKeyObject(dataitem, tmp, call) {
     var arr = new Array();
     $.each(tmp, function (key, value) {
