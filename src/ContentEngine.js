@@ -54,19 +54,50 @@ window.addEventListener('message', function (e) {
                     e.source.postMessage(JSON.stringify(pass_data), e.origin);
                 });
             });
-        }
-        if (JSON.parse(e.data).action === "generate") {
+        } if (JSON.parse(e.data).action === "STUnion") {
+            getSpecificStoredObject(JSON.parse(e.data).idPageSource, function (data1) {
+                data1 = JSON.parse(data1);
+                try {
+                    var idsource = JSON.parse(e.data).idSource;
+                    data1 = data1[idsource];
+                } catch (er) {
+                    data1 = null;
+                }
+                getSpecificStoredObject(JSON.parse(e.data).idPageTarget, function (data2) {
+                    data2 = JSON.parse(data2);
+                    try {
+                        var idtarget = JSON.parse(e.data).idTarget;
+                        data2 = data2[idtarget];
+                    } catch (er) {
+                        data2 = null;
+                    }
+                    if (JSON.parse(e.data).subAction === "Extended") {
+                        STUnionExtended(data1, data2, function (resultObj) {
+                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
+                                //Send to eventHandler if I would generate dinamic Message
+                            });
+                        });
+                    } else if (JSON.parse(e.data).subAction === "Restricted") {
+                        STUnionRestricted(data1, data2, function (resultObj) {
+                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
+                                //Send to eventHandler if I would generate dinamic Message
+                            });
+                        });
+                    }
+                });
+            });
+        } if (JSON.parse(e.data).action === "generate") {
             //  execute the  generate
             idTargte = JSON.parse(e.data).id;
             pageId = JSON.parse(e.data).pageId;
             generate(idTargte, pageId, function () {
             });
         } if (JSON.parse(e.data).action === "filters") {
-            pageIdRequest(function(pageid){
+            pageIdRequest(function (pageid) {
                 getStoredObject(function (data) {
                     doFilter(data, JSON.parse(e.data).values, JSON.parse(e.data).id, function () {
-                        generate(JSON.parse(e.data).id,pageid,function(){
-                        });
+                        /*generate(JSON.parse(e.data).id, pageid, function () {
+                        }); */
                     });
                 });
             });
@@ -78,14 +109,12 @@ window.addEventListener('message', function (e) {
                 var pass_data = {
                     'action': "getStored",
                     'value': data
-            };
+                };
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
-        if (JSON.parse(e.data).action === "getObjects") {
+        if (JSON.parse(e.data).action === "getSame") {
             console.log("EnterContentEngine.js");
-            // if the request from the inject scripts is "getObject",
-            // retrieve data from the localStorage
             getSpecificStoredObject(JSON.parse(e.data).idPageSource, function (data1) {
                 data1 = JSON.parse(data1);
                 try {
@@ -103,12 +132,15 @@ window.addEventListener('message', function (e) {
                     } catch (er) {
                         data2 = null;
                     }
-                    var pass_data = {
-                        'action': "getStoredObjects",
-                        'valueOne': data1,
-                        'valueTwo': data2
-                    };
-                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+
+                    console.log("data1:" + data1);
+                    SameType(data1, data2, function (same) {
+                        var pass_data = {
+                            'action': "getSameObjects",
+                            'same': same
+                        };
+                        e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                    });
                 });
             });
         }
@@ -159,8 +191,76 @@ window.addEventListener('message', function (e) {
     }
 }, false);
 
+//Controls if the source and the target object are the same tipe
+function SameType(objSource, objTarget, call) {
+    call(false);
+}
 
-function doFilter(localObject,filters,id,call) {
+function STUnionExtended(objSource, objTarget, call) {
+    //getObject(idsourcepage, idsource, pageID, idtarget, function (first, second) {
+    //    if (first !== null && second !== null) {
+
+    //        ///////////              
+    //        console.log("first" + first);
+    //        console.log("second" + second);
+    //        var arrDifferentColumn = new Array();
+    //        var find = false;
+    //        try {
+    //            getFirstRowKeyObject(false, first, function (arr) {
+    //                getFirstRowKeyObject(false, second, function (arr2) {
+    //                    for (var i = 0; i < arr.length; i++) {
+    //                        console.log("arr[" + i + "]_" + arr[i]);
+    //                        for (var j = 0; j < arr2.length; j++) {
+    //                            console.log("arr[" + j + "]_" + arr[j]);
+    //                            if (arr[i] === arr2[j])
+    //                                find = true;
+    //                        }
+    //                        if (find) {
+    //                            arrDifferentColumn.push(arr[i]);
+    //                            find = false;
+    //                        }
+    //                    }
+    //                });
+    //            });
+    //        } catch (er) {
+    //            console.log("There was an error:" + er);
+    //        }
+
+
+
+    //        closeOverlay(function () {
+    //            var filterBox = "";
+    //            if (arrDifferentColumn.length > 0) {
+    //                filterBox += '<div class="info">'
+    //                            + 'Ci sono ' + arrDifferentColumn.length + ' colonne nella source page differenti dalla target'
+    //                            + 'e sono: '
+    //                for (var i = 0; i < arrDifferentColumn.length; i++) {
+    //                    filterBox += "{" + arrDifferentColumn[i] + "} ";
+    //                }
+    //                filterBox += 'e verranno aggiunte'
+    //                    + '<button onclick="closeOverlay()">OK</button>'
+    //                    + '</div>'
+    //            }
+    //            else {
+
+    //                filterBox = '<div class="info">'
+    //                               + 'Non ci sono colonne in più nella source rispetto alla target'
+    //                               + '<button onclick="closeOverlay()">OK</button>'
+    //                               + '</div>'
+    //            }
+    //            AnimationOverlay(filterBox);
+    //        });
+    //        ///////////
+    //    }
+    //});
+    call();
+}
+
+function STUnionRestricted(objSource, objTarget, call) {
+    call();
+}
+
+function doFilter(localObject, filters, id, call) {
 
     call();
 }
@@ -389,6 +489,18 @@ function getStoredObject(call) {
     });
 }
 
+//Save object
+function saveSpecificObject(idPage, idTag, obj, call) {
+    chrome.extension.sendMessage({
+        "type": "saveSpecificObject",
+        "idPage": idPage,
+        "idTag": idTag,
+        "obj": obj
+    }, function (data) {
+        call(data);
+    });
+}
+
 //fetch stored templates
 function getStoredTemplate(call) {
     chrome.extension.sendMessage({
@@ -417,4 +529,3 @@ function getSpecificStoredObject(idPage, call) {
         call(data);
     });
 }
-

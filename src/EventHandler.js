@@ -175,25 +175,38 @@ function drop(ev, pageId) {
     }
 
     //////////////////////DATA_INTEGRATION//////////////////////////////
-    sameType(source, parent, function (same) {
-
-        //If they are the same type
-        if (same) {
-            MainOverlayST();
-        }
-            ////If they aren't the same type
-        else {
-            //filterBox = '<div class="info">'
-            //   + 'Filter Page...'
-            //   + '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
-            //   + '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
-            //   + '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
-            //   + '</div>'
-            MainOverlayDT();
 
 
-        }
-    });
+    //Rendering
+    //send messages to middleware
+    try {
+        var pass_data = {
+            'action': "getSame",
+            'idPageSource': idsourcepage,
+            'idSource': idsource,
+            'idPageTarget': pageID,
+            'idTarget': idtarget
+
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+        var flag = true;
+        window.addEventListener('message', function (event) {
+            if (JSON.parse(event.data).action == "getSameObjects" && flag) {
+                flag = false;
+                if (JSON.parse(event.data).same) {
+                    MainOverlayST();
+                }
+                    ////If they aren't the same type
+                else {
+                    MainOverlayDT();
+                }
+            }
+        });
+    } catch (e) {
+        alert(e);
+    }
+
     /////////////////////////////////////////////////
     ////////////////////NEW//////////////////////////
     /*
@@ -217,27 +230,11 @@ function drop(ev, pageId) {
 
                        //If they are the same type
                        if (same) {
-                           filterBox = '<div class="info">'
-                               + 'Filter Page...'
-                               + '<button id="unionButtonST" onclick="STUnion()" >Union</button>'
-                               + '<button id="substituteButtonST" onclick="Substitute()">Substitute</button>'
-                               + '<button id="eliminateDuplicatesButtonST"  onclick="STEliminateDuplicates()">Eliminate Duplicates</button>'
-                               + '</div>'
+                           MainOverlayST();
                        }
                            ////If they aren't the same type
                        else {
-                           //filterBox = '<div class="info">'
-                           // + 'Filter Page...'
-                           // + '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
-                           // + '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
-                           // + '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
-                           // + '</div>'
-
-                           filterBox = '<div class="info">'
-                              + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
-                              + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
-                              + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
-                              + '</div>'
+                           MainOverlayDT();
                        }
 
                        $(parent).append(filterBox);
@@ -908,7 +905,7 @@ function updateFilter(position) {
 //TODO
 //Animation after Update (binking)
 function animationUpdateFilter(position, id, call) {
-    
+
 }
 
 //Extract the values of the filter in a determinate position ("0" to "numRemoveFilter")
@@ -1121,79 +1118,62 @@ function STUnion() {
 //Same type function Union Extended
 function STUnionExtended() {
     console.log("STUnionExtended" + idtarget);
-
     console.log("STUnionAll");
     console.log("idPageSource" + idsourcepage);
     console.log("idSource" + idsource);
     console.log("idPageTarget" + pageID);
     console.log("idTarget" + idtarget);
 
+    /*try {
+        var pass_data = {
+            'action': "STUnion",
+            'subaction': "Extended",
+            'idPageSource': idsourcepage,
+            'idSource': idsource,
+            'idPageTarget': pageID,
+            'idTarget': idtarget
 
-    getObject(idsourcepage, idsource, pageID, idtarget, function (first, second) {
-        if (first !== null && second !== null) {
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
 
-            ///////////              
-            console.log("first" + first);
-            console.log("second" + second);
-            var arrDifferentColumn = new Array();
-            var find = false;
-            try {
-                getFirstRowKeyObject(false, first, function (arr) {
-                    getFirstRowKeyObject(false, second, function (arr2) {
-                        for (var i = 0; i < arr.length; i++) {
-                            console.log("arr[" + i + "]_" + arr[i]);
-                            for (var j = 0; j < arr2.length; j++) {
-                                console.log("arr[" + j + "]_" + arr[j]);
-                                if (arr[i] === arr2[j])
-                                    find = true;
-                            }
-                            if (find) {
-                                arrDifferentColumn.push(arr[i]);
-                                find = false;
-                            }
-                        }
-                    });
-                });
-            } catch (er) {
-                console.log("There was an error:" + er);
-            }
+    } catch (e) {
+        alert(e);
+    }
 
-
-
-            closeOverlay(function () {
-                var filterBox = "";
-                if (arrDifferentColumn.length > 0) {
-                    filterBox += '<div class="info">'
-                                + 'Ci sono ' + arrDifferentColumn.length + ' colonne nella source page differenti dalla target'
-                                + 'e sono: '
-                    for (var i = 0; i < arrDifferentColumn.length; i++) {
-                        filterBox += "{" + arrDifferentColumn[i] + "} ";
-                    }
-                    filterBox += 'e verranno aggiunte'
-                        + '<button onclick="closeOverlay()">OK</button>'
-                        + '</div>'
-                }
-                else {
-
-                    filterBox = '<div class="info">'
-                                   + 'Non ci sono colonne in più nella source rispetto alla target'
-                                   + '<button onclick="closeOverlay()">OK</button>'
-                                   + '</div>'
-                }
-                AnimationOverlay(filterBox);
-            });
-            ///////////
-        }
-    });
-
+    closeOverlay(function () {
+    });  */
     //TODO
 }
 
 //Same type function Union Extended
 function STUnionRestricted() {
     console.log("STUnionRestricted" + idtarget);
+    console.log("STUnionAll");
+    console.log("idPageSource" + idsourcepage);
+    console.log("idSource" + idsource);
+    console.log("idPageTarget" + pageID);
+    console.log("idTarget" + idtarget);
+
+    /*try {
+        var pass_data = {
+            'action': "STUnion",
+            'subaction': "Restricted",
+            'idPageSource': idsourcepage,
+            'idSource': idsource,
+            'idPageTarget': pageID,
+            'idTarget': idtarget
+
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+    } catch (e) {
+        alert(e);
+    }
+
+
+
     closeOverlay(function () {
-    });
+    });*/
     //TODO
 }
 
@@ -1346,56 +1326,6 @@ function AnimationOverlay(Content) {
     $("#" + idtarget).children(".info").css("visibility", "visible");
 
     $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
-
-}
-
-//Detect if the source and the target object are the same type
-function sameType(objSource, objTarget, callback) {
-    /*var find = false;
-    var count;
-    for (var i = 0; i < objSource.length; i++) {
-        console.log("arr[" + i + "]_" + objSource[i]);
-        for (var j = 0; j < objTarget.length; j++) {
-            console.log("arr[" + j + "]_" + objSource[j]);
-            if (objSource[i] === objTarget[j])
-                find = true;
-        }
-        if (find) {
-            count++;
-            arrDifferentColumn.push(objSource[i]);
-            find = false;
-        }
-    }
-    if (count === objSource.length)
-        callback(true);
-    else   */
-    callback(true);
-}
-
-//Get the stored object
-function getObject(idPageSource, idSource, idPageTarget, idTarget, call) {
-
-    try {
-        var pass_data = {
-            'action': "getObjects",
-            'idPageSource': idPageSource,
-            'idSource': idSource,
-            'idPageTarget': idPageTarget,
-            'idTarget': idTarget
-
-        };
-        window.postMessage(JSON.stringify(pass_data), window.location.href);
-
-        var flag = true;
-        window.addEventListener('message', function (event) {
-            if (JSON.parse(event.data).action == "getStoredObjects" && flag) {
-                flag = false;
-                call(JSON.parse(event.data).valueOne, JSON.parse(event.data).valueTwo);
-            }
-        });
-    } catch (e) {
-        alert(e);
-    }
 
 }
 
