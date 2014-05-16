@@ -86,6 +86,46 @@ window.addEventListener('message', function (e) {
                     }
                 });
             });
+        }
+        if (JSON.parse(e.data).action === "STJoin") {
+            getSpecificStoredObject(JSON.parse(e.data).idPageSource, function (data1) {
+                data1 = JSON.parse(data1);
+                try {
+                    var idsource = JSON.parse(e.data).idSource;
+                    data1 = data1[idsource];
+                } catch (er) {
+                    data1 = null;
+                }
+                getSpecificStoredObject(JSON.parse(e.data).idPageTarget, function (data2) {
+                    data2 = JSON.parse(data2);
+                    try {
+                        var idtarget = JSON.parse(e.data).idTarget;
+                        data2 = data2[idtarget];
+                    } catch (er) {
+                        data2 = null;
+                    }
+                    if (JSON.parse(e.data).subAction === "Comparison") {
+                        STJoinComparison(data1, data2, function (resultObj) {
+                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
+                                //Send to eventHandler if I would generate dinamic Message
+                            });
+                        });
+                    } else if (JSON.parse(e.data).subAction === "Operator") {
+                        STJoinOperator(data1, data2, function (resultObj) {
+                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
+                                //Send to eventHandler if I would generate dinamic Message
+                            });
+                        });
+                    }
+                    else if (JSON.parse(e.data).subAction === "Attributes") {
+                        STJoinAttributes(data1, data2, function (resultObj) {
+                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
+                                //Send to eventHandler if I would generate dinamic Message
+                            });
+                        });
+                    }
+                });
+            });
         } if (JSON.parse(e.data).action === "generate") {
             //  execute the  generate
             idTargte = JSON.parse(e.data).id;
@@ -193,7 +233,7 @@ window.addEventListener('message', function (e) {
 
 //Controls if the source and the target object are the same tipe
 function SameType(objSource, objTarget, call) {
-    call(false);
+    call(true);
 }
 
 function STUnionExtended(objSource, objTarget, call) {
@@ -205,7 +245,18 @@ function STUnionRestricted(objSource, objTarget, call) {
 }
 
 function doFilter(localObject, filters, id, call) {
+    call();
+}
 
+function STJoinComparison(objSource, objTarget, call) {
+    call();
+}
+
+function STJoinAttributes(objSource, objTarget, call) {
+    call();
+}
+
+function STJoinOperator(objSource, objTarget, call) {
     call();
 }
 

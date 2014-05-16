@@ -1078,7 +1078,8 @@ function MainOverlayST() {
                + 'Filter Page...'
                + '<button id="unionButtonST" onclick="STUnion()" >Union</button>'
                + '<button id="substituteButtonST" onclick="Substitute()">Substitute</button>'
-               + '<button id="eliminateDuplicatesButtonST"  onclick="STEliminateDuplicates()">Eliminate Duplicates</button>'
+               + '<button id="joinButtonST"  onclick="STJoin()">Join</button>'
+               + '<button onclick="closeOverlay()">Cancel</button>'
                + '</div>');
     });
 }
@@ -1090,13 +1091,92 @@ function MainOverlayDT() {
                       + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
                       + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
                       + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
+                      + '<button onclick="closeOverlay()">Cancel</button>'
                       + '</div>');
     });
 }
 
-//Same type Eliminate Duplicates
-function STEliminateDuplicates() {
-    console.log("STEliminateDuplicates" + idtarget);
+//Same type Join
+function STJoin() {
+    console.log("STJoin" + idtarget);
+    closeOverlay(function () {
+        AnimationOverlay('<div class="info">'
+                    + 'Type of Join...'
+                    + '<button id="unionRestrictedButtonST" onclick="STUnionRestricted()" >Restricted Union</button>'
+                    + '<button id="unionExtendedButtonST" onclick="STUnionExtended()" >Extended Union</button>'
+                    + '<button onclick="closeOverlay()">Cancel</button>'
+                    + '<button onclick="MainOverlayST()">Back</button>'
+                    + '</div>')
+    });
+    //TODO
+}
+
+//Same type function join operator
+function STJoinOperator() {
+    console.log("STJoinOperator" + idtarget);
+    try {
+        var pass_data = {
+            'action': "STJoin",
+            'subaction': "Operator",
+            'idPageSource': idsourcepage,
+            'idSource': idsource,
+            'idPageTarget': pageID,
+            'idTarget': idtarget
+
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+    } catch (e) {
+        alert(e);
+    }
+    closeOverlay(function () {
+    });
+    //TODO
+}
+
+//Same type function join attributes
+function STJoinAttributes() {
+    console.log("STJoinAttributes" + idtarget);
+    try {
+        var pass_data = {
+            'action': "STJoin",
+            'subaction': "Attributes",
+            'idPageSource': idsourcepage,
+            'idSource': idsource,
+            'idPageTarget': pageID,
+            'idTarget': idtarget
+
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+    } catch (e) {
+        alert(e);
+    }
+    closeOverlay(function () {
+    });
+    //TODO
+}
+
+//Same type function join comparison
+function STJoinComparison() {
+    console.log("STJoinComparison" + idtarget);
+    try {
+        var pass_data = {
+            'action': "STJoin",
+            'subaction': "Comparison",
+            'idPageSource': idsourcepage,
+            'idSource': idsource,
+            'idPageTarget': pageID,
+            'idTarget': idtarget
+
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+    } catch (e) {
+        alert(e);
+    }
+    closeOverlay(function () {
+    });
     //TODO
 }
 
@@ -1105,12 +1185,13 @@ function STUnion() {
     console.log("STUnion" + idtarget);
     closeOverlay(function () {
         AnimationOverlay('<div class="info">'
-                    + 'Type of Union...'
-                    + '<button id="unionRestrictedButtonST" onclick="STUnionRestricted()" >Restricted Union</button>'
-                    + '<button id="unionExtendedButtonST" onclick="STUnionExtended()" >Extended Union</button>'
+                    + 'Type of join...'
+                    + '<button id="joinComparisonButtonST" onclick="STJoinComparison()" >Join Comparison</button>'
+                    + '<button id="joinOperatorButtonST" onclick="STJoinOperator()">Join Operator</button>'
+                    + '<button id="joinAttributesButtonST"  onclick="STJoinAttributes()">Join Attributes</button>'
                     + '<button onclick="closeOverlay()">Cancel</button>'
                     + '<button onclick="MainOverlayST()">Back</button>'
-                    + '</div>')
+                    + '</div>');
     });
 }
 
@@ -1123,7 +1204,7 @@ function STUnionExtended() {
     console.log("idPageTarget" + pageID);
     console.log("idTarget" + idtarget);
 
-    /*try {
+    try {
         var pass_data = {
             'action': "STUnion",
             'subaction': "Extended",
@@ -1140,7 +1221,7 @@ function STUnionExtended() {
     }
 
     closeOverlay(function () {
-    });  */
+    });
     //TODO
 }
 
@@ -1153,7 +1234,7 @@ function STUnionRestricted() {
     console.log("idPageTarget" + pageID);
     console.log("idTarget" + idtarget);
 
-    /*try {
+    try {
         var pass_data = {
             'action': "STUnion",
             'subaction': "Restricted",
@@ -1172,7 +1253,7 @@ function STUnionRestricted() {
 
 
     closeOverlay(function () {
-    });*/
+    });
     //TODO
 }
 
@@ -1234,9 +1315,11 @@ function DTJoin() {
 
         AnimationOverlay('<div class="info">'
                     + 'Type of join...'
-                    + '<button id="joinComparisonButton" onclick="DTJoinComparison()" >Join Comparison</button>'
-                    + '<button id="joinOperatorButton" onclick="DTJoinOperator()">Join Operator</button>'
-                    + '<button id="joinXXXButton"  onclick="DTJoinXXXX()">Join XXX</button>'
+                    + '<button id="joinComparisonButtonDT" onclick="DTJoinComparison()" >Join Comparison</button>'
+                    + '<button id="joinOperatorButtonDT" onclick="DTJoinOperator()">Join Operator</button>'
+                    + '<button id="joinAttributesButtonDT"  onclick="DTJoinAttributes()">Join Attributes</button>'
+                    + '<button onclick="closeOverlay()">Cancel</button>'
+                    + '<button onclick="MainOverlayDT()">Back</button>'
                     + '</div>');
     });
     //TODO
@@ -1253,6 +1336,14 @@ function DTJoinComparison() {
 //Different type function join operator
 function DTJoinOperator() {
     console.log("DTJoinOperator" + idtarget);
+    closeOverlay(function () {
+    });
+    //TODO
+}
+
+//Different type function join attributes
+function DTJoinAttributes() {
+    console.log("DTJoinAttributes" + idtarget);
     closeOverlay(function () {
     });
     //TODO
@@ -1286,8 +1377,6 @@ function DTMatchColumnsAutomatically() {
 
 //Advanced// REquestDBPedia
 function RequestOnDBPedia() {
-
-
 }
 
 //Close the overlayer with an animation (fadeOUT)
@@ -1323,9 +1412,7 @@ function AnimationOverlay(Content) {
     $("#" + idtarget).children(".info").css("top", offset.top + "px");
     $("#" + idtarget).children(".info").css("left", negImgWidth + "px");
     $("#" + idtarget).children(".info").css("visibility", "visible");
-
     $("#" + idtarget).children(".info").animate({ "left": offset.left }, 250);
-
 }
 
 //Get the titles of columns
