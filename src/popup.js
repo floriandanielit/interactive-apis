@@ -22,6 +22,7 @@ function linksHref() {
             };
         })();
     }
+    
 }
 
 // get the position of option.html page
