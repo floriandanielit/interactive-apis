@@ -197,62 +197,6 @@ function SameType(objSource, objTarget, call) {
 }
 
 function STUnionExtended(objSource, objTarget, call) {
-    //getObject(idsourcepage, idsource, pageID, idtarget, function (first, second) {
-    //    if (first !== null && second !== null) {
-
-    //        ///////////              
-    //        console.log("first" + first);
-    //        console.log("second" + second);
-    //        var arrDifferentColumn = new Array();
-    //        var find = false;
-    //        try {
-    //            getFirstRowKeyObject(false, first, function (arr) {
-    //                getFirstRowKeyObject(false, second, function (arr2) {
-    //                    for (var i = 0; i < arr.length; i++) {
-    //                        console.log("arr[" + i + "]_" + arr[i]);
-    //                        for (var j = 0; j < arr2.length; j++) {
-    //                            console.log("arr[" + j + "]_" + arr[j]);
-    //                            if (arr[i] === arr2[j])
-    //                                find = true;
-    //                        }
-    //                        if (find) {
-    //                            arrDifferentColumn.push(arr[i]);
-    //                            find = false;
-    //                        }
-    //                    }
-    //                });
-    //            });
-    //        } catch (er) {
-    //            console.log("There was an error:" + er);
-    //        }
-
-
-
-    //        closeOverlay(function () {
-    //            var filterBox = "";
-    //            if (arrDifferentColumn.length > 0) {
-    //                filterBox += '<div class="info">'
-    //                            + 'Ci sono ' + arrDifferentColumn.length + ' colonne nella source page differenti dalla target'
-    //                            + 'e sono: '
-    //                for (var i = 0; i < arrDifferentColumn.length; i++) {
-    //                    filterBox += "{" + arrDifferentColumn[i] + "} ";
-    //                }
-    //                filterBox += 'e verranno aggiunte'
-    //                    + '<button onclick="closeOverlay()">OK</button>'
-    //                    + '</div>'
-    //            }
-    //            else {
-
-    //                filterBox = '<div class="info">'
-    //                               + 'Non ci sono colonne in più nella source rispetto alla target'
-    //                               + '<button onclick="closeOverlay()">OK</button>'
-    //                               + '</div>'
-    //            }
-    //            AnimationOverlay(filterBox);
-    //        });
-    //        ///////////
-    //    }
-    //});
     call();
 }
 
