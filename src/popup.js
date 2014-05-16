@@ -4,32 +4,35 @@
 var BG = chrome.extension.getBackgroundPage();
 
 
+// set event handlers for menu entries
 $(document).ready(function() {
 
+   	// add toggle handlers to environment switches
    	$(".switch").each(function(index) {
 		  $(this).click(function() {
 				toggleSwitch($(this).parent().attr("id"));
 			});
 		});   
  
+		// if engine or editor are enabled, toggle to green (default is red)
 		if (BG.extensionDisabled == false)
 			$("#engine div").toggle();
 		if (BG.iApiLayerDisabled == false)
 			$("#editor div").toggle();
 		
-		//add event handlers that open links in a new tab
+		// add event handlers to links to open them in a new tab
 		$("a").each(function(index) {
 		  $(this).click(function() {
 			  BG.openTab($(this).attr("href"));
 			});
 		});   
 
-    //add event handler to open options page
+    // add event handler to open options page
     $("#optionPage").click(function () {
         BG.openTab(chrome.extension.getURL("html/options.html"));
     });
 
-    //add event handler to open a new page
+    // add event handler to open a new page
     $("#newPage").click(function () {
         BG.openTab(chrome.extension.getURL("html/newPage.html"));
     });
@@ -37,6 +40,7 @@ $(document).ready(function() {
 });
 
 
+// switch on/off logic for environments
 function toggleSwitch (env) {
 		  
 		switch(env) {
@@ -71,6 +75,6 @@ function toggleSwitch (env) {
 		    
 		}
 		
-    window.close();//close the popup.html page
+    window.close(); // close the popup
 	
 }
