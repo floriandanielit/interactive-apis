@@ -20,10 +20,12 @@ $(document).ready(function() {
 		if (BG.iApiLayerDisabled == false)
 			$("#editor div").toggle();
 		
-		// add event handlers to links to open them in a new tab
-		$("a").each(function(index) {
+		// turn links into menu entries with external link icon
+		$(".link").each(function(index) {
+			var href = $(this).find("a").attr("href");
+			$(this).html("<img src='../img/external.gif'/> " + $(this).find("a").html());
 		  $(this).click(function() {
-			  BG.openTab($(this).attr("href"));
+			  BG.openTab(href);
 			});
 		});   
 
