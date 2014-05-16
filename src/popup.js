@@ -1,17 +1,37 @@
-﻿var BG = chrome.extension.getBackgroundPage();
+﻿
+// connection with background page
+var BG = chrome.extension.getBackgroundPage();
+
 
 // Run our script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
-    linksHref();
-    linksOption();
-    linksNewPage();
+	
+		//add event handlers that open links in a new tab
+		$("a").each(function(index) {
+		  $(this).click(function() {
+			  BG.openTab($(this).attr("href"));
+			});
+		});   
+
+    //add event handler to open options page
+    $("#optionPage").click(function () {
+        BG.openTab(chrome.extension.getURL("html/options.html"));
+    });
+
+    //add event handler to open a new page
+    $("#newPage").click(function () {
+        BG.openTab(chrome.extension.getURL("html/newPage.html"));
+    });
+
     typeInteraction();
     on_off();
     on_off_IApiLayer();
 });
 
+/*
 //validate all <a href=".."> and the BackGroundPage open a new page
 function linksHref() {
+	
     var links = document.getElementsByTagName("a");
     for (var i = 0; i < links.length; i++) {
         (function () {
@@ -23,6 +43,7 @@ function linksHref() {
         })();
     }
     
+ 
 }
 
 // get the position of option.html page
@@ -38,6 +59,7 @@ function linksNewPage() {
         BG.openTab(chrome.extension.getURL("html/newPage.html"));
     });
 }
+*/
 
 //set the status of chrome extension 
 function on_off() {
