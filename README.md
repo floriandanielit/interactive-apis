@@ -14,6 +14,22 @@ All software of the project is **free and open-source**, as specified by the ter
 of the [BSD license](https://github.com/floriandanielit/interactive-apis/blob/master/LICENSE.txt).
 
 
+Features and requirements
+---------
+
+### Features
+
+* Injects interactive, graphical controls for iAPI manipulation
+* Drag and drop reuse of data
+* (tbd) Drag and drop cloning of user interfaces
+* (tbd) Automation of form interactions
+* (tbd) JavaScript library for iAPI reuse
+
+### Requirements
+
+* Google Chrome web browser (tested with version 31 for Mac or version XX for Win)
+
+
 iAPI reference specification
 ----------
 The purpose of this project is the implementation of an engine for iAPIs that is 
@@ -21,26 +37,6 @@ compliant with the specification of the [iAPI HTML annotation format]
 (http://www.w3.org/community/interative-apis/wiki/Main_Page). The specification is developed and 
 maintained by the [W3C Interactive APIs Community Group](http://www.w3.org/community/interative-apis/).
 The Group is open, participation is free, and contributions are welcome from everyone.
-
-
-Features and requirements
----------
-
-### Features
-
-* Identifies iAPIs in web pages and injects suitable interactive, graphical controls
-* Fetches data from iAPIs in remote web pages and renders them inside a local page
-* Drag and drop reuse of data between iAPIs in different pages
-* Engine can easily be switched on/off
-
-### Requirements
-
-* Google Chrome web browser (tested with version 31 for Mac or version XX for Win)
-
-
-Architecture, design and roadmap
------------
-For more details, have a look at the [project wiki](https://github.com/floriandanielit/interactive-apis/wiki).
 
 
 Contributing to this project
@@ -56,9 +52,3 @@ Here some useful links to understand how Git works:
 * [GitHub Guides](https://guides.github.com/)
 * [Git Tutorials](https://www.atlassian.com/git)
 * [Git Cheatsheet](http://ndpsoftware.com/git-cheatsheet.html#loc=local_repo;)
-
-
-Installation and usage of the engine
-----------------
-
-tbd
