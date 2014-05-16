@@ -3,45 +3,51 @@
 	
 <head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>iAPI support</title>
-    
-    <link rel="stylesheet" type="text/css" href="../css/popup.css"/>
-    
+    <title>iAPI extension popup</title>    
+    <link rel="stylesheet" type="text/css" href="../css/popup.css"/>   
 		<script src="../lib/jquery-2.0.3.js"></script>
 		<script src="../popup.js"></script>
 </head>
 
 <body>
 	
-    <div id="wrapper">
-        <div id="menu-items">
+  <div id="wrapper">
         	
-            <div id="titletext">
-                <img src="../img/logo.png" width="32px" />
-            </div>
-            
-            <div id="on_off" class="menu-entry" style="display: block;"></div>
-            <div id="typeInteraction"  style="display: none;"></div>
-            
-            <div class="separator" style="display: block;"></div>
-            <div id="on_off_IApiLayer" class="menu-entry" style="display: block;"></div>
-            
-            <div class="separator" style="display: block;"></div>
-            <div id="optionPage" class="menu-entry" style="display: block;">Options</div>
-            <div id="newPage" class="menu-entry" style="display: block;">Create new page</div>
-            
-            <div class="separator" style="display: block;"></div>
-        </div>
+		<div id="titletext">
+		    <img src="../img/logo.png" width="32px" />
+		</div>           
+		 
+		 
+		<div class="separator" style="display: block;"></div>
+		
+		<div id="engine">
+			<div class="menu-entry switch" style="color:red">Engine switched off (click to enable)</div>
+			<div class="menu-entry switch" style="color:green; display:none;">Engine switched on (click to disable)</div>
+		</div>		
+		<div id="editor">
+			<div class="menu-entry switch" style="color:red">Editor switched off (click to enable)</div>
+			<div class="menu-entry switch" style="color:green; display:none;">Editor switched on (click to disable)</div>
+		</div>		
+		<div id="annotator">
+			<div class="menu-entry switch" style="color:red">Annotator switched off (click to enable)</div>
+			<div class="menu-entry switch" style="color:green; display:none;">Annotator switched on (click to disable)</div>
+		</div>
+		
+		           
+		<div class="separator" style="display: block;"></div>
+		
+		<div id="optionPage" class="menu-entry" style="display: block;">Options</div>
+		<div id="newPage" class="menu-entry" style="display: block;">Create new page</div>
+		
+		
+		<div class="separator" style="display: block;"></div>
         
-        <div>
-        	GitHub repositories:<br/>
-					<ul>
-						<li><a href="https://github.com/floriandanielit/interactive-apis">Engine</a></li>
-						<li><a href="https://github.com/floriandanielit/iapi-automator">Automator</a></li>
-						<li><a href="https://github.com/floriandanielit/iapi-annotator">Annotator</a></li>
-					</ul>
-        </div>
+  	<p>GitHub repositories:</p>
+		- <a href="https://github.com/floriandanielit/interactive-apis">Engine</a><br/>
+		-	<a href="https://github.com/floriandanielit/iapi-automator">Automator</a><br/>
+		-	<a href="https://github.com/floriandanielit/iapi-annotator">Annotator</a><br/>
         
-   </div>
+	</div>
+     
 </body>
 </html>
