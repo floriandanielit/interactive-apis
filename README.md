@@ -1,7 +1,7 @@
 iAPI Engine
 ================
 
-The goal of this project is to jointly develop an **in-browser engine for interactive APIs** ([iAPIs]
+The goal of this project is to develop an **in-browser engine for interactive APIs** ([iAPIs]
 (http://www.w3.org/community/interative-apis/)). The engine comes in the form 
 of a **Google Chrome extension** able to parse iAPI annotations, to render graphical 
 controls for them, to interpret user interactions as programming instructions, 
