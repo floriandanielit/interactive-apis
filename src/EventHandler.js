@@ -866,9 +866,7 @@ function removeFilter(position) {
     var id = $("#iapi_menu [class='getAll']").attr("id");
     idtarget = id;
     for (var i = position; i < numRemoveFilter; i++) {
-        console.log("iiiiii:" + i);
         $("#" + id).children(".info").children("div:eq(" + i + ")").children("button").each(function () {
-            console.log("i:" + i + "_" + $(this)[0].outerHTML);
             if ($(this).attr("name") === "Update" || $(this).attr("name") === "Remove") {
                 var name = $(this).attr("name").substr(0, $(this).attr("name").length);
                 name += "" + i - 1;
@@ -894,7 +892,6 @@ function updateFilter(position) {
     idtarget = id;
     getFilterAtIndex(position, id, function (column, operator, value) {
         animationUpdateFilter(position, id, function () {
-            console.log("column:" + column + "_" + operator + "_" + value);
             var ob = {};
             obj = { "column": column, "operator": operator, "value": value };
             filters[position] = obj;
@@ -905,7 +902,7 @@ function updateFilter(position) {
 //TODO
 //Animation after Update (binking)
 function animationUpdateFilter(position, id, call) {
-
+    call();
 }
 
 //Extract the values of the filter in a determinate position ("0" to "numRemoveFilter")
@@ -926,7 +923,7 @@ function getFilterAtIndex(index, id, call) {
             else {
                 value = $(this).val();
                 if (column !== null && value !== null && operator !== null) {
-                    call(column, value, operator);
+                    call(column, operator, value);
                 }
             }
         }
@@ -950,7 +947,6 @@ function addFilter() {
 
     getSelected(function () {
 
-        console.log("_____________________________________________");
         filter = { "column": column, "operator": operator, "value": value };
         filters.push(filter);
 
@@ -987,7 +983,6 @@ function addFilter() {
 
 
         for (var j = 0; j < columnsHide.length; j++) {
-            //console.log($("#" + id).children(".info").children("div").last().children(".iapicolumns").html());
             $("#" + id).children(".info").children("div").last().children(".iapicolumns").each(function () {
                 $(this).children('[value=' + columnsHide[j] + ']').css("background-color", "red");
 
@@ -1036,7 +1031,11 @@ function apply() {
     var id = $("#iapi_menu [class='getAll']").attr("id");
     idtarget = id;
     console.log("apply" + id);
+    /*
+    for (var i = 0; i < filters.length; i++) {
+        console.log("filters:" + i + "_column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
 
+    } */
     ////////////////////////////////////////
 
     try {

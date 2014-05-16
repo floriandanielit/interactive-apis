@@ -80,7 +80,7 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
         });
         return true;
 
-    }else if (msg.type === "getStoredObject") {
+    } else if (msg.type === "getStoredObject") {
         // load the Stord object
         getStoredObject(sender.tab.id, function (data) {
             sendResponse(data);
