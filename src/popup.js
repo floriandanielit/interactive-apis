@@ -7,8 +7,8 @@ var BG = chrome.extension.getBackgroundPage();
 // set event handlers for menu entries
 $(document).ready(function() {
 
-   	// add toggle handlers to environment switches
-   	$(".switch").each(function(index) {
+   	// add toggle handlers to switches
+   	$(".switch > div").each(function(index) {
 		  $(this).click(function() {
 				toggleSwitch($(this).parent().attr("id"));
 			});
@@ -42,21 +42,24 @@ $(document).ready(function() {
 });
 
 
-// switch on/off logic for environments
+// internal on/off logic of switches
+// switches are identified by their id in the popup.html
 function toggleSwitch (env) {
 		  
 		switch(env) {
+		
 			
 		case "engine":
 		
-				BG.changeExtensionStatus();//in the BackGround set the variable disabilita (true-->false & false-->true)
+				BG.changeExtensionStatus(); // in the BackGround set the variable disabilita (true-->false & false-->true)
 	      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 		     		if(BG.extensionDisabled) BG.iApiLayerDisabled = true;
 		      	BG.ScriptJs(tabs[0].id); 
-		     		BG.setIcon(tabs[0].id);//set the relative icon of the current tab (red/green) or black if disable 
+		     		BG.setIcon(tabs[0].id); // set the relative icon of the current tab (red/green) or black if disable 
 	      });
 	 		  $("#" + env + " div").toggle();
 		    break;
+		    
 		    
 		case "editor":
 		
@@ -64,11 +67,11 @@ function toggleSwitch (env) {
 	 		  		$("#" + env + " div").toggle();
 		        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {		
 		        		BG.changeIApiLayerStatus(tabs[0].id);
-		            //    changeIApiLayerStatusText();
 		            BG.ScriptJs(tabs[0].id);
 		        });
 		    }
 		    break;
+		    
 		    
 		case "annotator":
 				
