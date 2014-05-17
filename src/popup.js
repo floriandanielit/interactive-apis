@@ -51,9 +51,9 @@ function toggleSwitch (env) {
 			
 		case "engine":
 		
+				if (BG.extensionDisabled == false && BG.iApiLayerDisabled == false) toggleSwitch("editor");
 				BG.changeExtensionStatus(); // in the BackGround set the variable disabilita (true-->false & false-->true)
 	      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-		     		if(BG.extensionDisabled) BG.iApiLayerDisabled = true;
 		      	BG.ScriptJs(tabs[0].id); 
 		     		BG.setIcon(tabs[0].id); // set the relative icon of the current tab (red/green) or black if disable 
 	      });
@@ -80,6 +80,6 @@ function toggleSwitch (env) {
 		    
 		}
 		
-    window.close(); // close the popup
+//    window.close(); // close the popup
 	
 }
