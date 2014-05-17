@@ -43,6 +43,18 @@
 	font-weight: bold;
 }
 
+#titletext img {
+  float: right;
+}
+
 .status {
 	font-style: italic;
+}
+
+.off {
+	color:red; 
+}
+
+.on {
+	color:green; 
 }

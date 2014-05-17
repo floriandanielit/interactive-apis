@@ -14,36 +14,38 @@
   <div id="wrapper">
         	
 		<div id="titletext">
-			iAPI extensions
-		  <img src="../img/logo.png" width="32px" style="float: right;" />
+			iAPI extensions console
+		  <img src="../img/logo.png" width="32px"/>
 		</div>           
 		 
-		<div class="status">Just some status info</div>
-		 
-		<div class="separator"></div>
-		
-		<div id="engine">
-			<div class="menu-entry switch" style="color:red">Engine switched off (click to enable)</div>
-			<div class="menu-entry switch" style="color:green; display:none;">Engine switched on (click to disable)</div>
+		<!-- the following elements with class 'switch' implement on/off switches -->
+		<!-- their ids are used in popup.js to understand which switch has been operated -->
+		<!-- the two sub-elements implement the on/off view -->
+		<div id="engine" class="menu-entry switch">
+			<div class="off">Engine off (click to enable)</div>
+			<div class="on" style="display:none;">Engine on (click to disable)</div>
 		</div>		
-		<div id="editor">
-			<div class="menu-entry switch" style="color:red">Editor switched off (click to enable)</div>
-			<div class="menu-entry switch" style="color:green; display:none;">Editor switched on (click to disable)</div>
+		<div id="editor" class="menu-entry switch" >
+			<div class="off">Editor off (click to enable)</div>
+			<div class="on" style="display:none;">Editor on (click to disable)</div>
 		</div>		
-		<div id="annotator">
-			<div class="menu-entry switch" style="color:red">Annotator switched off (click to enable)</div>
-			<div class="menu-entry switch" style="color:green; display:none;">Annotator switched on (click to disable)</div>
+		<div id="annotator" class="menu-entry switch" >
+			<div class="off">Annotator off (click to enable)</div>
+			<div class="on" style="display:none;">Annotator on (click to disable)</div>
 		</div>
 		
 		           
 		<div class="separator"></div>
 		
-		<div id="optionPage" class="menu-entry" style="display: block;">Options</div>
-<!--		<div id="newPage" class="menu-entry" style="display: block;">Create new page</div> -->
+		<!-- the actions of the elements with an id can be arbitrarily set inside popup.js -->
+		<div id="newPage" class="menu-entry">Create new page</div>
+		<div id="optionPage" class="menu-entry">Options</div>
 		
 		
 		<div class="separator"></div>
         
+		<!-- the elements with class 'link' transform the inner <a> element into a regular menu entry with external link logo -->
+		<div class="menu-entry link"><a href="http://www.w3.org/community/interative-apis/">iAPI Community Group</a></div>
 		<div class="menu-entry link"><a href="https://github.com/floriandanielit/interactive-apis">GitHub Engine</a></div>
 		<div class="menu-entry link"><a href="https://github.com/floriandanielit/iapi-automator">GitHub Automator</a></div>
 		<div class="menu-entry link"><a href="https://github.com/floriandanielit/iapi-annotator">GitHub Annotator</a></div>
