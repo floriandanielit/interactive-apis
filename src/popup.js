@@ -1,7 +1,7 @@
 ﻿
 
 // connection with background page
-var BG = chrome.extension.getBackgroundPage();
+var BG = chrome.extension.getBackgroundPage(); 
 
 
 // set event handlers for menu entries
