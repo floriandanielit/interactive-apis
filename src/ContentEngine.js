@@ -9,6 +9,7 @@ chrome.extension.sendMessage({
 window.addEventListener('message', function (e) {
     //console.log(JSON.parse(e.data).action)
     try {
+        //GETEXTERNAL////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "getExternal") {
             // if the request from the inject scripts is "getExternal",
             // send to background.js the relative action
@@ -24,6 +25,7 @@ window.addEventListener('message', function (e) {
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
+        //MIDDLEWAREACTION////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "middlewareAction") {
             // if the request from the inject scripts is "middlewareAction",
             // execute the  generate
@@ -36,6 +38,7 @@ window.addEventListener('message', function (e) {
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
+        //GETSTOREDOBJECT////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "getStoredObject") {
             // if the request from the inject scripts is "getStoredObject",
             // extract the data then provide it
@@ -54,7 +57,9 @@ window.addEventListener('message', function (e) {
                     e.source.postMessage(JSON.stringify(pass_data), e.origin);
                 });
             });
-        } if (JSON.parse(e.data).action === "STUnion") {
+        }
+        //STUNION////////////////////////////////////////////////////////////
+        if (JSON.parse(e.data).action === "STUnion") {
             getSpecificStoredObject(JSON.parse(e.data).idPageSource, function (data1) {
                 data1 = JSON.parse(data1);
                 try {
@@ -87,6 +92,7 @@ window.addEventListener('message', function (e) {
                 });
             });
         }
+        //STJOIN////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "STJoin") {
             getSpecificStoredObject(JSON.parse(e.data).idPageSource, function (data1) {
                 data1 = JSON.parse(data1);
@@ -126,13 +132,17 @@ window.addEventListener('message', function (e) {
                     }
                 });
             });
-        } if (JSON.parse(e.data).action === "generate") {
+        }
+        //GENERATE////////////////////////////////////////////////////////////
+        if (JSON.parse(e.data).action === "generate") {
             //  execute the  generate
             idTargte = JSON.parse(e.data).id;
             pageId = JSON.parse(e.data).pageId;
             generate(idTargte, pageId, function () {
             });
-        } if (JSON.parse(e.data).action === "filters") {
+        }
+        //FILTERS////////////////////////////////////////////////////////////
+        if (JSON.parse(e.data).action === "filters") {
             pageIdRequest(function (pageid) {
                 getStoredObject(function (data) {
                     doFilter(data, JSON.parse(e.data).values, JSON.parse(e.data).id, function () {
@@ -142,6 +152,7 @@ window.addEventListener('message', function (e) {
                 });
             });
         }
+        //GETOBJECT////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "getObject") {
             // if the request from the inject scripts is "getObject",
             // retrieve data from the localStorage
@@ -153,6 +164,7 @@ window.addEventListener('message', function (e) {
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
+        //GETSAME////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "getSame") {
             console.log("EnterContentEngine.js");
             getSpecificStoredObject(JSON.parse(e.data).idPageSource, function (data1) {
@@ -161,7 +173,7 @@ window.addEventListener('message', function (e) {
                     var idsource = JSON.parse(e.data).idSource;
                     data1 = data1[idsource];
                 } catch (er) {
-                    data1 = null;
+                    data1 = undefined;
                 }
 
                 getSpecificStoredObject(JSON.parse(e.data).idPageTarget, function (data2) {
@@ -170,26 +182,60 @@ window.addEventListener('message', function (e) {
                         var idtarget = JSON.parse(e.data).idTarget;
                         data2 = data2[idtarget];
                     } catch (er) {
-                        data2 = null;
+                        data2 = undefined;
                     }
 
-                    console.log("data1:" + data1);
-                    SameType(data1, data2, function (same) {
-                        var pass_data = {
-                            'action': "getSameObjects",
-                            'same': same
-                        };
-                        e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                    if (data1 != undefined) {
+                        for (var i = 0; i < data1.length; i++) {
+                            console.log("arr1[" + i + "]_" + data1[i]);
+                        }
+                    } else {
+                        console.log("arr2[UNDEFINED]");
+                    }
+                    if (data2 != undefined) {
+                        for (var i = 0; i < data2.length; i++) {
+                            console.log("arr2[" + i + "]_" + data2[i]);
+                        }
+                    } else {
+                        console.log("arr2[UNDEFINED]");
+                    }
+                    getFirstRowKeyObject(true, data1, function (arr1) {
+                        getFirstRowKeyObject(true, data2, function (arr2) {
+
+                            console.log("arr1:" + arr1 + "_arr2:" + arr2);
+                            SameType(arr1, arr2, function (same) {
+                                var pass_data ;
+                                if (arr1 != undefined && arr2 != undefined) {
+                                    pass_data = {
+                                        'action': "getSameObjects",
+                                        'same': same,
+                                        'choise': { "Union": true, "Substitute": true, "Join": true }
+                                    };
+                                } else {
+                                    pass_data = {
+                                        'action': "getSameObjects",
+                                        'same': same,
+                                        'choise': { "Union": false, "Substitute": true, "Join": false }
+                                    };
+                                }
+
+                                console.log("pass:Action:" + pass_data.action + "_same:" + pass_data.same + "_choise:Union:" + pass_data.choise.Union + "_choise:Substitute:" + pass_data.choise.Substitute + "_choise:Join:" + pass_data.choise.Join);
+                                e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                            });
+                        });
                     });
+
                 });
             });
         }
+        //GENERAL////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).idTemp !== undefined) {
             chrome.extension.sendMessage({
                 "type": "StoreTemplate",
                 "value": JSON.parse(e.data)
             });
         }
+        //PAGEIDREQUEST////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "pageidRequest") {
             // if the request from the inject scripts is "pageidRequest",
             // provide the injected script with the pageId
@@ -200,7 +246,9 @@ window.addEventListener('message', function (e) {
                 };
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
-        } if (JSON.parse(e.data).action === "getTEMPLATE") {
+        }
+        //GETTEMPLATE////////////////////////////////////////////////////////////
+        if (JSON.parse(e.data).action === "getTEMPLATE") {
             chrome.extension.sendMessage({
                 "type": "getExternal",
                 "value": chrome.extension.getURL('html/templates.html')
@@ -212,7 +260,9 @@ window.addEventListener('message', function (e) {
                 };
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
-        } if (JSON.parse(e.data).action === "getTEMPLATEeditor") {
+        }
+        //GETTEMPLATEEDITOR////////////////////////////////////////////////////////////
+        if (JSON.parse(e.data).action === "getTEMPLATEeditor") {
             chrome.extension.sendMessage({
                 "type": "getExternal",
                 "value": chrome.extension.getURL('html/templates.html')
@@ -232,11 +282,33 @@ window.addEventListener('message', function (e) {
 }, false);
 
 //Controls if the source and the target object are the same tipe
-function SameType(objSource, objTarget, call) {
-    call(true);
+function SameType(arrSource, arrTarget, call) {
+    console.log("arrSource:" + arrSource + "_ArrTarget:" + arrTarget);
+    if (arrSource !== undefined && arrTarget !== undefined) {
+        var count = 0;
+        for (var i = 0; i < arrSource.length; i++) {
+            for (var j = 0; j < arrTarget.length && find === false; j++) {
+                if (arrSource[i] === arrTarget[j]) {
+                    find = true;
+                }
+            }
+            if (find) {
+                count++;
+                find = false;
+            }
+        }
+        if (count === arrSource.length)
+            call(true);
+        else
+            call(false);
+    }
+    call(false);
 }
 
 function STUnionExtended(objSource, objTarget, call) {
+
+
+
     call();
 }
 
@@ -523,4 +595,26 @@ function getSpecificStoredObject(idPage, call) {
     }, function (data) {
         call(data);
     });
+}
+
+//Get the titles of columns
+function getFirstRowKeyObject(dataitem, tmp, call) {
+    if (tmp != undefined) {
+        var arr = new Array();
+        $.each(tmp, function (key, value) {
+            $.each(value, function (key, value) {
+                arr.length = 0;
+                if (dataitem === true)
+                    arr.push(key);
+                for (var key in value) {
+                    arr.push(key);
+                }
+                call(arr);
+            });
+            return false;
+        });
+    }
+    else
+        call(undefined);
+
 }
