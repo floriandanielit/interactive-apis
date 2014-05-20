@@ -230,6 +230,14 @@ function iapi_menu() {
 function doFilters(id) {
     offset = $("#" + id).offset();
 
+
+    //////////////////////////////////
+    //////////////TODO////////////////
+    //////////////////////////////////
+    //Load prev filters if there are//
+    ///and display on the overlayer///
+    //////////////////////////////////
+
     $("#iapi_frame").css('pointer-events', 'none');
     filterBox = '<div class="info"></div>';
     $("#" + id).append(filterBox);
@@ -319,21 +327,26 @@ function cancelFilter(id) {
     });
 
 }
-// get the all dataattribute from the stored object
+//Get the titles of columns
 function getFirstRowKeyObject(dataitem, tmp, call) {
-    var arr = new Array();
-    $.each(tmp, function (key, value) {
-        $.each(value, function (key, value) {
-            arr.length = 0;
-            if (dataitem === true)
-                arr.push(key);
-            for (var key in value) {
-                arr.push(key);
-            }
-            call(arr);
+    if (tmp != undefined) {
+        var arr = new Array();
+        $.each(tmp, function (key, value) {
+            $.each(value, function (key, value) {
+                arr.length = 0;
+                if (dataitem === true)
+                    arr.push(key);
+                for (var key in value) {
+                    arr.push(key);
+                }
+                call(arr);
+            });
+            return false;
         });
-        return false;
-    });
+    }
+    else
+        call(undefined);
+
 }
 
 //return true if the element is a source
