@@ -21,40 +21,16 @@ function allowDrop(ev, pageId) {
     ev.preventDefault();
     if (!over) {
         getParentIAPI(ev.target, function (parent) {
-
-            overlay = true;
-            offset = $(parent).offset();
-            idtarget = $(parent).prop('id');
-            console.log("id:" + idtarget);
-
-            filterBox = '<div class="info" style="pointer-events:none ; font-weight:bold; position:absolute;left:0;right:0;text-align: center;">Drop Here</div>'
-            eventDrop = ev;
-
-            $(parent).append(filterBox);
-
-            var imgWidth = $(parent).width();
-            var imgHeight = $(parent).height();
-            var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-            $(parent).children(".info").fadeTo(0, 0.8);
-            $(parent).children(".info").css("width", (imgWidth) + "px");
-            $(parent).children(".info").css("height", (imgHeight) + "px");
-            $(parent).children(".info").css("top", offset.top + "px");
-            $(parent).children(".info").css("left", negImgWidth + "px");
-            $(parent).children(".info").css("visibility", "visible");
-
-            $(parent).children(".info").animate({ "left": offset.left }, 250);
-
+            isSrcPage(parent, function (isSource) {
+                console.log("isSource:" + isSource);
+                if (!isSource) {
+                    idtarget = $(parent).prop('id');
+                    AnimationOverlay('<div class="info" style="pointer-events:none ; font-weight:bold; position:absolute;left:0;right:0;text-align: center;">Drop Here</div>');
+                }
+            });
         });
     }
     over = true;
-
-
-    //$(ev.target).addClass("over");
-
-
-
-
 }
 
 //This function gather and set parameters that must be transfered in the drag operation
@@ -121,28 +97,14 @@ function hasIdTemplate(id, call) {
 function leave(ev) {
     if (over) {
         getParentIAPI(ev.target, function (parent) {
-
-            //console.log("uguali?:" + $(parent).prop('id') === idtarget);
-            //console.log("attuale:" + $(parent).prop('id'));
-            //console.log("vecchio:" + idtarget);
-
-            // if ($(parent).prop('id') !== idtarget) {
-            var imgWidth = $(parent).width();
-            var imgHeight = $(parent).height();
-            var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-            $(parent).children(".info").animate({ "left": negImgWidth }, 250, function () {
+            closeOverlay(function () {
                 $(parent).children(".info").remove();
                 overlay = false;
                 over = false;
+
             });
-            // }
         });
-
     }
-
-
-    //$(ev.target).removeClass("over");
 }
 
 //Drop operation (event handler contains a set of parameters from the drag op)
@@ -150,73 +112,76 @@ function drop(ev, pageId) {
 
     over = false;
     ev.preventDefault();
-    //$(ev.target).removeClass("over");
-    //get the datas from datatransfer
-    idsource = ev.dataTransfer.getData("id");
-    source = ev.dataTransfer.getData("source");
-    idsourcepage = ev.dataTransfer.getData("idpagesource");
-    pageID = pageId;
+    getParentIAPI(ev.target, function (parent) {
+        isSrcPage(parent, function (isSource) {
+            if (!isSource) {
+                //get the datas from datatransfer
+                idsource = ev.dataTransfer.getData("id");
+                source = ev.dataTransfer.getData("source");
+                idsourcepage = ev.dataTransfer.getData("idpagesource");
+                pageID = pageId;
 
 
-    /////////TEST////////
-    pageID = 39;
-    idsourcepage = 35;
-    idsource = "PRIMO";
+                /////////TEST////////
+                pageID = 39;
+                idsourcepage = 35;
+                idsource = "PRIMO";
 
-    /////////////////////
+                /////////////////////
 
-    console.log("..........SOURCE.............." + idsourcepage);
-    console.log("..........TARGET.............." + pageID);
-    var findHide = false;
-    var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
-    for (i = 0; i < tagtarg.length && findHide === false; i++) {
-        if (tagtarg[i].substr(0, 5) === "hide:") {
-            findHide = true;
-            annotation = tagtarg[i];
-        }
-    }
-
-    //////////////////////DATA_INTEGRATION//////////////////////////////
-
-
-    //Rendering
-    //send messages to middleware
-    try {
-        var pass_data = {
-            'action': "getSame",
-            'idPageSource': idsourcepage,
-            'idSource': idsource,
-            'idPageTarget': pageID,
-            'idTarget': idtarget
-
-        };
-        window.postMessage(JSON.stringify(pass_data), window.location.href);
-
-        var flag = true;
-        window.addEventListener('message', function (event) {
-            if (JSON.parse(event.data).action == "getSameObjects" && flag) {
-                flag = false;
-
-                arrSource = JSON.parse(event.data).arrSource;
-                arrTarget = JSON.parse(event.data).arrTarget;
-                if (JSON.parse(event.data).same) {
-                    MainOverlayST(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
-                }
-                    ////If they aren't the same type
-                else {
-                    if (JSON.parse(event.data).choise.Union === false && JSON.parse(event.data).choise.Join === false) {
-                        MainOverlayAfterColumnsMatchDT(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
-                    } else {
-                        MainOverlayDT();
+                console.log("..........SOURCE.............." + idsourcepage);
+                console.log("..........TARGET.............." + pageID);
+                var findHide = false;
+                var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
+                for (i = 0; i < tagtarg.length && findHide === false; i++) {
+                    if (tagtarg[i].substr(0, 5) === "hide:") {
+                        findHide = true;
+                        annotation = tagtarg[i];
                     }
+                }
+
+                //////////////////////DATA_INTEGRATION//////////////////////////////
+
+
+                //Rendering
+                //send messages to middleware
+                try {
+                    var pass_data = {
+                        'action': "getSame",
+                        'idPageSource': idsourcepage,
+                        'idSource': idsource,
+                        'idPageTarget': pageID,
+                        'idTarget': idtarget
+
+                    };
+                    window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+                    var flag = true;
+                    window.addEventListener('message', function (event) {
+                        if (JSON.parse(event.data).action == "getSameObjects" && flag) {
+                            flag = false;
+
+                            arrSource = JSON.parse(event.data).arrSource;
+                            arrTarget = JSON.parse(event.data).arrTarget;
+                            if (JSON.parse(event.data).same) {
+                                MainOverlayST(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
+                            }
+                                ////If they aren't the same type
+                            else {
+                                if (JSON.parse(event.data).choise.Union === false && JSON.parse(event.data).choise.Join === false) {
+                                    MainOverlayAfterColumnsMatchDT(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
+                                } else {
+                                    MainOverlayDT();
+                                }
+                            }
+                        }
+                    });
+                } catch (e) {
+                    alert(e);
                 }
             }
         });
-    } catch (e) {
-        alert(e);
-    }
-
-
+    });
 }
 
 function old(source, idsource, idtarget, pageId, ev, callback) {
@@ -855,6 +820,7 @@ function updateFilter(position) {
 //TODO
 //Animation after Update (binking)
 function animationUpdateFilter(position, id, call) {
+
     call();
 }
 
@@ -1040,7 +1006,7 @@ function MainOverlayST(union, substitute, join) {
     });
 }
 
-//Same type Join
+//Same type Join Menù
 function STJoin() {
     console.log("STJoin" + idtarget);
     closeOverlay(function () {
@@ -1063,15 +1029,15 @@ function STJoinOperator() {
         console.log("arr1:" + arrSource[i]);
 
         var newchi = "";
-        newchi = '<div class="info"><select class="iapicolumnsSource">';
+        newchi = '<div class="info"><select id="iapicolumnsSource">';
         for (var j = 1; j < arrSource.length; j++) {
             newchi += '<option value="' + arrSource[j] + '" >' + arrSource[j] + '</option>';
         }
-        newchi += '</select><select>'
+        newchi += '</select><select id="iapiOperator">'
        + '<option value="=">=</option>'
        + '<option value=">">></option>'
        + '<option value="<"><</option>'
-       + '</select><select class="iapicolumnsSource">';
+       + '</select><select id="iapicolumnsTarget">';
         for (var j = 1; j < arrTarget.length; j++) {
             newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
         }
@@ -1090,15 +1056,15 @@ function STJoinAttributes() {
         console.log("arr1:" + arrSource[i]);
 
         var newchi = "";
-        newchi = '<div class="info"><select class="iapicolumnsSource">';
+        newchi = '<div class="info"><select id="iapicolumnsSource">';
         for (var j = 1; j < arrSource.length; j++) {
             newchi += '<option value="' + arrSource[j] + '" >' + arrSource[j] + '</option>';
         }
-        newchi += '</select><select>'
+        newchi += '</select><select id="iapiOperator">'
        + '<option value="=">=</option>'
        + '<option value=">">></option>'
        + '<option value="<"><</option>'
-       + '</select><select class="iapicolumnsSource">';
+       + '</select><select id="iapicolumnsTarget">';
         for (var j = 1; j < arrTarget.length; j++) {
             newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
         }
@@ -1117,15 +1083,15 @@ function STJoinComparison() {
         console.log("arr1:" + arrSource[i]);
 
         var newchi = "";
-        newchi = '<div class="info"><select class="iapicolumnsSource">';
+        newchi = '<div class="info"><select id="iapicolumnsSource">';
         for (var j = 1; j < arrSource.length; j++) {
             newchi += '<option value="' + arrSource[j] + '" >' + arrSource[j] + '</option>';
         }
-        newchi += '</select><select>'
+        newchi += '</select><select id="iapiOperator">'
        + '<option value="=">=</option>'
        + '<option value=">">></option>'
        + '<option value="<"><</option>'
-       + '</select><select class="iapicolumnsSource">';
+       + '</select><select id="iapicolumnsTarget">';
         for (var j = 1; j < arrTarget.length; j++) {
             newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
         }
@@ -1138,8 +1104,13 @@ function STJoinComparison() {
 }
 
 //Function button Apply in JoinAttribute
-function STJoinAttributeApply(columnSource, columnTarget, operator) {
+function STJoinAttributeApply() {
     console.log("STJoinAttributesApply" + idtarget);
+    var div = $("#" + idtarget).children(".info");
+    var columnSource = $(div).children("#iapicolumnsSource").find(":selected").val();
+    var columnTarget = $(div).children("#iapicolumnsTarget").find(":selected").val();
+    var operator = $(div).children("#iapiOperator").find(":selected").val();
+
     try {
         var pass_data = {
             'action': "STJoin",
@@ -1163,8 +1134,12 @@ function STJoinAttributeApply(columnSource, columnTarget, operator) {
 }
 
 //Function button Apply in JoinOperator
-function STJoinOperatorApply(columnSource, columnTarget, operator) {
+function STJoinOperatorApply() {
     console.log("STJoinOperatorApply" + idtarget);
+    var div = $("#" + idtarget).children(".info");
+    var columnSource = $(div).children("#iapicolumnsSource").find(":selected").val();
+    var columnTarget = $(div).children("#iapicolumnsTarget").find(":selected").val();
+    var operator = $(div).children("#iapiOperator").find(":selected").val();
 
     try {
         var pass_data = {
@@ -1189,8 +1164,13 @@ function STJoinOperatorApply(columnSource, columnTarget, operator) {
 }
 
 //Function button Apply in JoinComparison
-function STJoinComparisonApply(columnSource, columnTarget, operator) {
+function STJoinComparisonApply() {
     console.log("STJoinComparisonApply" + idtarget);
+    var div = $("#" + idtarget).children(".info");
+    var columnSource = $(div).children("#iapicolumnsSource").find(":selected").val();
+    var columnTarget = $(div).children("#iapicolumnsTarget").find(":selected").val();
+    var operator = $(div).children("#iapiOperator").find(":selected").val();
+
     try {
         var pass_data = {
             'action': "STJoin",
@@ -1213,7 +1193,7 @@ function STJoinComparisonApply(columnSource, columnTarget, operator) {
     });
 }
 
-//Same type function Union
+//Same type function Union Menù
 function STUnion() {
     console.log("STUnion" + idtarget);
     closeOverlay(function () {
@@ -1341,7 +1321,7 @@ function Substitute() {
 ///////////////////////////ADVANCED FEATURE/////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
-//Different type function Union
+//Different type function Union Menù
 function DTUnion() {
     console.log("DTUnionExtended" + idtarget);
     closeOverlay(function () {
@@ -1373,7 +1353,7 @@ function DTUnionRestricted() {
     //TODO
 }
 
-//Different type function join
+//Different type function join Menù
 function DTJoin() {
     console.log("DTJoin" + idtarget);
     closeOverlay(function () {
@@ -1414,19 +1394,41 @@ function DTJoinAttributes() {
     //TODO
 }
 
-//Different type function join operator
+//Different type Match Columns Manually
 function DTMatchColumnsManually() {
     console.log("DTMatchColumnsManually" + idtarget);
+
     closeOverlay(function () {
-        AnimationOverlay('<div class="info">'
-                    + 'Select columns... TEST TEST TEST TEST  Columns ..... ... ...'
-                    + '<button id="mainOverlayAfterColumnsMatchButtonDT" onclick="MainOverlayAfterColumnsMatchDT(true,true,true)">OK</button>'
-                    + '</div>');
+        console.log("arr1:" + arrSource[i]);
+
+        var newchi = "";
+        newchi = '<div class="info"><select id="iapicolumnsSource">';
+        for (var j = 1; j < arrSource.length; j++) {
+            newchi += '<option value="' + arrSource[j] + '" >' + arrSource[j] + '</option>';
+        }
+        newchi += '</select> IS -> <select id="iapicolumnsTarget">';
+        for (var j = 1; j < arrTarget.length; j++) {
+            newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
+        }
+
+        //newchi += '<button id="addColumnMatchColumnsManuallyButtonDT" onclick="DTAddColumnMatchColumnsManually()">ADD</button>'
+        newchi += '<button id="mainOverlayAfterColumnsMatchButtonDT" onclick="MainOverlayAfterColumnsMatchDT(true,true,true)">OK</button>'
+
+
+        console.log(newchi);
+        AnimationOverlay(newchi);
     });
+
     //TODO
 }
 
-//Different type function join operator
+//Add Button Match Column Manually
+function DTAddColumnMatchColumnsManually() {
+
+    //TODO
+}
+
+//Different type Matche Columns Manually
 function DTMatchColumnsAutomatically() {
     console.log("DTMatchColumnsAutomatically" + idtarget);
     closeOverlay(function () {
@@ -1436,6 +1438,10 @@ function DTMatchColumnsAutomatically() {
                     + '</div>');
     });
     //TODO
+}
+
+//Advanced// REquestDBPedia
+function RequestOnDBPedia() {
 }
 
 //Create and Display main Overlay Dfferent Type
@@ -1465,10 +1471,6 @@ function MainOverlayAfterColumnsMatchDT(union, substitute, join) {
                 + '</div>';
         AnimationOverlay(content);
     });
-}
-
-//Advanced// REquestDBPedia
-function RequestOnDBPedia() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -1558,4 +1560,20 @@ function getObject(call) {
         alert(e);
     }
 
+}
+//return true if the element is a source
+function isSrcPage(YourFindElement, call) {
+    var tagtarg = $(YourFindElement).attr("class").split(" ");
+    var presenceDataSource = null;
+
+    for (i = 0; i < tagtarg.length && presenceDataSource === null; i++) {
+        if (tagtarg[i].slice(0, 11) == ("datasource:")) {
+            presenceDataSource = false;
+        } else if (tagtarg[i].slice(0, 5) == ("json:")) {
+            presenceDataSource = true;
+        } else if (tagtarg[i].slice(0, 5) == ("data:")) {
+            presenceDataSource = true;
+        } 
+    }
+    call(presenceDataSource);
 }
