@@ -713,6 +713,7 @@ function showDataattribute(id, type, call) {
     call("done");
 }
 
+//Return the message of the Iapi (Empty Iapi, Source Iapi...)
 function messageIapi_menu(id) {
 
     var iapiDiv = $("#" + id);
