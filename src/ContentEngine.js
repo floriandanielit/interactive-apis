@@ -76,16 +76,66 @@ window.addEventListener('message', function (e) {
                     } catch (er) {
                         data2 = null;
                     }
+
+
+                    /*getFirstRowKeyObject(true, data1, function (ret1) {
+                        getFirstRowKeyObject(true, data2, function (ret2) {
+                            for (var i = 0; i < ret1.length; i++) {
+                                console.log("arr1:" + ret1[i]);
+                            }
+                            for (var i = 0; i < ret2.length; i++) {
+                                console.log("arr2:" + ret2[i]);
+                            }
+                        });
+
+                    }); */
                     if (JSON.parse(e.data).subAction === "Extended") {
                         STUnionExtended(data1, data2, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
-                                //Send to eventHandler if I would generate dinamic Message
+                                //Send to eventHandler if I would generate dinamic Message in EventHandler.js
+
+                                //Do the generate
+                                var messageReturn = "done";
+                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
+                                    var pass_data = {
+                                        'action': "middlewareResponse",
+                                        'ret': "MiddlewareGenerate"
+                                    };
+                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                                });
                             });
                         });
                     } else if (JSON.parse(e.data).subAction === "Restricted") {
                         STUnionRestricted(data1, data2, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
+
+                                //Do the generate
+                                var messageReturn = "done";
+                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
+                                    var pass_data = {
+                                        'action': "middlewareResponse",
+                                        'ret': "MiddlewareGenerate"
+                                    };
+                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                                });
+                            });
+                        });
+                    } else if (JSON.parse(e.data).subAction === "EliminateDuplicates") {
+                        STEliminateDuplicates(data1, data2, function (resultObj) {
+                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
+
+                                //Send to eventHandler if I would generate dinamic Message
+
+                                //Do the generate
+                                var messageReturn = "done";
+                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
+                                    var pass_data = {
+                                        'action': "middlewareResponse",
+                                        'ret': "MiddlewareGenerate"
+                                    };
+                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                                });
                             });
                         });
                     }
@@ -114,19 +164,48 @@ window.addEventListener('message', function (e) {
                         STJoinComparison(data1, data2, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
+
+                                //Do the generate
+                                var messageReturn = "done";
+                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
+                                    var pass_data = {
+                                        'action': "middlewareResponse",
+                                        'ret': "MiddlewareGenerate"
+                                    };
+                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                                });
                             });
                         });
                     } else if (JSON.parse(e.data).subAction === "Operator") {
                         STJoinOperator(data1, data2, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
+
+                                //Do the generate
+                                var messageReturn = "done";
+                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
+                                    var pass_data = {
+                                        'action': "middlewareResponse",
+                                        'ret': "MiddlewareGenerate"
+                                    };
+                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                                });
                             });
                         });
-                    }
-                    else if (JSON.parse(e.data).subAction === "Attributes") {
-                        STJoinAttributes(data1, data2, function (resultObj) {
+                    } else if (JSON.parse(e.data).subAction === "Attributes") {
+                        STJoinAttributes(data1, data2,JSON.parse(e.data).columnSource,JSON.parse(e.data).columnTarget,JSON.parse(e.data).operator, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
+
+                                //Do the generate
+                                var messageReturn = "done";
+                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
+                                    var pass_data = {
+                                        'action': "middlewareResponse",
+                                        'ret': "MiddlewareGenerate"
+                                    };
+                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                                });
                             });
                         });
                     }
@@ -144,10 +223,29 @@ window.addEventListener('message', function (e) {
         //FILTERS////////////////////////////////////////////////////////////
         if (JSON.parse(e.data).action === "filters") {
             pageIdRequest(function (pageid) {
-                getStoredObject(function (data) {
-                    doFilter(data, JSON.parse(e.data).values, JSON.parse(e.data).id, function () {
-                        /*generate(JSON.parse(e.data).id, pageid, function () {
-                        }); */
+                getStoredObject(function (dataPAGE) {
+                    var dataID = JSON.parse(dataPAGE);
+                    try {
+                        var idsource = JSON.parse(e.data).id;
+                        dataID = dataID[idsource];
+                    } catch (er) {
+                        dataID = undefined;
+                    }
+
+                    doFilter(dataID, JSON.parse(e.data).values, function (resultObj) {
+                        saveSpecificObject(pageid, JSON.parse(e.data).id, resultObj, function (res) {
+                            //Send to eventHandler if I would generate dinamic Message
+
+                            //Do the generate
+                            var messageReturn = "done";
+                            generate(JSON.parse(e.data).id, pageid, function () {
+                                var pass_data = {
+                                    'action': "middlewareResponse",
+                                    'ret': "MiddlewareGenerate"
+                                };
+                                e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                            });
+                        });
                     });
                 });
             });
@@ -185,41 +283,45 @@ window.addEventListener('message', function (e) {
                         data2 = undefined;
                     }
 
-                    if (data1 != undefined) {
-                        for (var i = 0; i < data1.length; i++) {
-                            console.log("arr1[" + i + "]_" + data1[i]);
-                        }
-                    } else {
-                        console.log("arr2[UNDEFINED]");
-                    }
-                    if (data2 != undefined) {
-                        for (var i = 0; i < data2.length; i++) {
-                            console.log("arr2[" + i + "]_" + data2[i]);
-                        }
-                    } else {
-                        console.log("arr2[UNDEFINED]");
-                    }
+                    //if (data1 != undefined) {
+                    //    for (var i = 0; i < data1.length; i++) {
+                    //        console.log("arr1[" + i + "]_" + data1[i]);
+                    //    }
+                    //} else {
+                    //    console.log("arr2[UNDEFINED]");
+                    //}
+                    //if (data2 != undefined) {
+                    //    for (var i = 0; i < data2.length; i++) {
+                    //        console.log("arr2[" + i + "]_" + data2[i]);
+                    //    }
+                    //} else {
+                    //    console.log("arr2[UNDEFINED]");
+                    //}
                     getFirstRowKeyObject(true, data1, function (arr1) {
                         getFirstRowKeyObject(true, data2, function (arr2) {
 
-                            console.log("arr1:" + arr1 + "_arr2:" + arr2);
+                            //console.log("arr1:" + arr1 + "_arr2:" + arr2);
                             SameType(arr1, arr2, function (same) {
-                                var pass_data ;
+                                var pass_data;
                                 if (arr1 != undefined && arr2 != undefined) {
                                     pass_data = {
                                         'action': "getSameObjects",
                                         'same': same,
-                                        'choise': { "Union": true, "Substitute": true, "Join": true }
+                                        'choise': { "Union": true, "Substitute": true, "Join": true },
+                                        "arrSource": arr1,
+                                        "arrTarget": arr2
                                     };
                                 } else {
                                     pass_data = {
                                         'action': "getSameObjects",
                                         'same': same,
-                                        'choise': { "Union": false, "Substitute": true, "Join": false }
+                                        'choise': { "Union": false, "Substitute": true, "Join": false },
+                                        "arrSource": arr1,
+                                        "arrTarget": arr2
                                     };
                                 }
 
-                                console.log("pass:Action:" + pass_data.action + "_same:" + pass_data.same + "_choise:Union:" + pass_data.choise.Union + "_choise:Substitute:" + pass_data.choise.Substitute + "_choise:Join:" + pass_data.choise.Join);
+                                //console.log("pass:Action:" + pass_data.action + "_same:" + pass_data.same + "_choise:Union:" + pass_data.choise.Union + "_choise:Substitute:" + pass_data.choise.Substitute + "_choise:Join:" + pass_data.choise.Join);
                                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
                             });
                         });
@@ -283,7 +385,7 @@ window.addEventListener('message', function (e) {
 
 //Controls if the source and the target object are the same tipe
 function SameType(arrSource, arrTarget, call) {
-    console.log("arrSource:" + arrSource + "_ArrTarget:" + arrTarget);
+    //console.log("arrSource:" + arrSource + "_ArrTarget:" + arrTarget);
     if (arrSource !== undefined && arrTarget !== undefined) {
         var count = 0;
         for (var i = 0; i < arrSource.length; i++) {
@@ -305,30 +407,191 @@ function SameType(arrSource, arrTarget, call) {
     call(false);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////EXAMPLE SOURCE OBJECT///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+//{                                                                                   //<-- Start Object
+//  "PRIMO":[                                                                         //<-- Id "DOM" Object
+//    {"0":                                                                           //<-- Real Dataitem
+//        {
+//            "oid":"120",                                                            //\
+//            "author":"A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",            // \
+//            "title":"Advanced Web Services",                                        //  \ Data
+//            "to_uploadresource":null,                                               //  / Attribute
+//            "abstract":"Web services and Service-Oriented Computing (SOC)......",   // /
+//            "where":"Springer, 2014. In print. ISBN 978-1-4614-7534-7"}             ///
+//         },                                                                         
+//    {"1":                                                                           //<-- Dataitem
+//        {
+//            "oid":"129",                                                            //\
+//            "author":"F. Daniel, G. Papadopoulos, P. Thiran (Eds.)",                // \
+//            "title":"Mobile Web Information Systems. 10th International........",   //  \ Data
+//            "to_uploadresource":null,                                               //  / Attribute
+//            "abstract":"This book constitutes the refereed proceedings ........",   // /
+//            "where":"Springer, August 2013. ISBN 978-3-642-40275-3"                 ///
+//         }         
+//     } ....                                                                             
+//  ],                                                                                
+//  "SECONDO":[                                                                       //<-- Id "DOM" Object
+//    {"Publication":                                                                 //<-- Dataitem
+//        {
+//            "Author":"IAPI SRC PAGE",                                               //\
+//            "Title":"The Interactive API (iAPI)",                                   // \
+//            "Conference":"Proceedings of ComposableWeb 2013",                       //  > DataAttribute
+//            "Href":"HREF",                                                          // / 
+//            "Abstract":"ABSTRACT"                                                   ///
+//    },                                                
+//    {"Publication":                                                                 //<-- Dataitem
+//        {
+//            "Author":"J. Jara, F. Daniel, F. Casati and M. Marchese",               //\
+//            "Title":"From a Simple Flow to Social Applications",                    // \
+//            "Conference":"Proceedings of ComposableWeb 2013",                       //  > DataAttribute
+//            "Href":"Proceedings of ComposableWeb 2013",                             // / 
+//            "Abstract":"Proceedings of ComposableWeb 2013"                          ///
+//        }                         
+//     }                            
+//  ]                                                                                 
+//}                                                                                   //<--End Object
+//
+////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////EXAMPLE TARGET OBJECT//////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+//{                                                                                   //<-- Start Object
+//  "TERZO":[                                                                         //<-- Id "DOM" Object
+//      {"Publication":                                                               //<-- Dataitem
+//          {
+//              "Author":"IAPI SRC PAGE",                                             //\              
+//              "Title":"The Interactive API (iAPI)",                                 // \
+//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
+//              "Href":"HREF",                                                        // / 
+//              "Abstract":"ABSTRACT"                                                 ///
+//          }
+//      },                                             
+//      {"Publication":                                                               //<-- Dataitem
+//          {
+//              "Author":"J. Jara, F. Daniel, F. Casati and M. Marchese",             //\              
+//              "Title":"From a Simple Flow to Social Applications",                  // \
+//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
+//              "Href":"Proceedings of ComposableWeb 2013",                           // / 
+//              "Abstract":"Proceedings of ComposableWeb 2013"                        ///
+//          }
+//      }                      
+//  ],                                                                                
+//  "Quarto":[                                                                        //<-- Id "DOM" Object
+//      {"Publication":                                                               //<-- Dataitem
+//          {
+//              "Author":"IAPI SRC PAGE",                                             //\              
+//              "Title":"The Interactive API (iAPI)",                                 // \
+//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
+//              "Href":"HREF","Abstract":"ABSTRACT"                                   // /
+//          }                                                                         ///
+//      },                                 
+//      {"Publication":                                                               //<-- Dataitem
+//          {
+//              "Author":"J. Jara, F. Daniel, F. Casati and M. Marchese",             //\              
+//              "Title":"From a Simple Flow to Social Applications",                  // \
+//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
+//              "Href":"Proceedings of ComposableWeb 2013",                           // / 
+//              "Abstract":"Proceedings of ComposableWeb 2013"                        ///
+//          }                                                                         
+//      }                                                                             
+//  ]                                                                                 
+//}                                                                                   //<--End Object
+//
+
+function STEliminateDuplicates(objSource, objTarget, call) {
+    if (objSource != undefined && objTarget != undefined) {
+        var arr1 = new Array();
+        var arr2 = new Array();
+
+        function arrSource(arr1, call) {
+            $.each(objSource, function (key, value) {
+                $.each(value, function (key, value) {
+                    for (var key in value) {
+                        arr1.push({ "key": key, "val": value[key] });
+                    }
+                });
+            });
+            call(arr1);
+        }
+        function arrTarget(arr2, call) {
+            $.each(objTarget, function (key, value) {
+                $.each(value, function (key, value) {
+                    for (var key in value) {
+                        arr2.push({ "key": key, "val": value[key] });
+                    }
+                });
+            });
+            call(arr2);
+        }
+        arrSource(arr1, function () {
+            arrTarget(arr2, function () {
+                for (var i = 0; i < arr1.length; i++) {
+                    console.log("arr1:" + arr1[i].key + "_" + arr1[i].val);
+                }
+                for (var i = 0; i < arr2.length; i++) {
+                    console.log("arr2:" + arr2[i].key + "_" + arr2[i].val);
+                }
+                //console.log("READARRAY");
+
+                for (var i = 0; i < arr1.length; i++) {
+                    for (var j = 0; j < arr2.length; j++) {
+                        if (arr1[i].key === arr2[j].key) {
+                            if (arr1[i].val !== arr2[j].val) {
+                            }
+                        }
+                    }
+                }
+
+                call(objTarget);
+            });
+        });
+
+    }
+    else
+        call(undefined);
+}
+
 function STUnionExtended(objSource, objTarget, call) {
-
-
-
+    //TODO
+    //Union extended
     call();
 }
 
 function STUnionRestricted(objSource, objTarget, call) {
+    //TODO
+    //Union Restricted
     call();
 }
 
-function doFilter(localObject, filters, id, call) {
-    call();
+function doFilter(localObjectID, filters, call) {
+    if (localObjectID != undefined) {
+        //for (var i = 0; i < filters.length; i++) {
+        //    console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
+        //}
+        //TODO
+        //Filters
+        call(localObjectID);
+    }
+    else
+        call(undefined);
 }
 
 function STJoinComparison(objSource, objTarget, call) {
+    //TODO
+    //Join Comparison
     call();
 }
 
-function STJoinAttributes(objSource, objTarget, call) {
+function STJoinAttributes(objSource, objTarget,columnSource,ColumnTarget,operator, call) {
+    //TODO
+    //Join Comparison
     call();
 }
 
 function STJoinOperator(objSource, objTarget, call) {
+    //TODO
+    //Join Comparison
     call();
 }
 

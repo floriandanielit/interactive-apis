@@ -97,7 +97,7 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
     } else if (msg.type === "saveSpecificObject") {
         // store the DOM object
         saveObjectInTheLocalStorage(msg.idPage, msg.idTag, msg.obj, function () {
-
+            sendResponse("DONE");
         });
         return true;
     } else if (msg.type === "StoreTemplate") {
