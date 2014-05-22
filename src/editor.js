@@ -18,6 +18,7 @@ window.addEventListener('message', function (event) {
 }, false);
 
 iapi_menu();
+
 //Inject the Iframe (highlight the iapi's)
 function iapi_menu() {
     if (!document.getElementById("iapi_frame")) {
@@ -268,8 +269,10 @@ function doFilters(id) {
                        + '<option value="<"><</option>'
                        + '<option value="<="><=</option>'
                        + '<option value=">=">>=</option>'
+                       + '<option value="contain">contain</option>'
                        + '</select>'
                        + '<input type="text" name="input_text"></input>'
+                       //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
                        + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
                         $(table).append(newchi);
 
@@ -312,21 +315,6 @@ function doFilters(id) {
     });
 }
 
-function prova() {
-    alert("sssss");
-
-}
-
-function cancelFilter(id) {
-    var imgWidth = $("#" + id).width();
-    var imgHeight = $("#" + id).height();
-    var negImgWidth = imgWidth - imgWidth - imgWidth;
-
-    $("#" + id).children(".info").animate({ "left": negImgWidth }, 250, function () {
-        $("#" + id).children(".info").remove();
-    });
-
-}
 //Get the titles of columns
 function getFirstRowKeyObject(dataitem, tmp, call) {
     if (tmp != undefined) {
