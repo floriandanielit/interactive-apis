@@ -193,7 +193,7 @@ window.addEventListener('message', function (e) {
                             });
                         });
                     } else if (JSON.parse(e.data).subAction === "Attributes") {
-                        STJoinAttributes(data1, data2,JSON.parse(e.data).columnSource,JSON.parse(e.data).columnTarget,JSON.parse(e.data).operator, function (resultObj) {
+                        STJoinAttributes(data1, data2, JSON.parse(e.data).columnSource, JSON.parse(e.data).columnTarget, JSON.parse(e.data).operator, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
 
@@ -570,6 +570,70 @@ function doFilter(localObjectID, filters, call) {
         //    console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
         //}
         //TODO
+        if (localObjectID != undefined) {
+            var arr = new Array();
+            $.each(localObjectID, function (key, value) {
+                $.each(value, function (key, value) {
+                    for (var key in value) {
+                        for (var i = 0; i < filters.length; i++) {
+                            
+                            if (key === filters[i].column) {
+                                console.log("key:" + key);
+                                console.log("filters[i].column:" + filters[i].column);
+
+                                if (filters[i].operator === "<") {
+                                    if (value[key].localeCompare(filters[i].value) === -1) {
+                                        console.log("value[key]:" + value[key]);
+                                        console.log("filters[i].value:" + filters[i].value);
+
+                                        console.log("MINORE");
+                                    }
+                                } else if (filters[i].operator === ">") {
+                                    if (value[key].localeCompare(filters[i].value) === 1) {
+                                        console.log("value[key]:" + value[key]);
+                                        console.log("filters[i].value:" + filters[i].value);
+
+                                        console.log("MAGGIORE");
+                                    }
+                                } else if (filters[i].operator === "=") {
+                                    if (value[key].localeCompare(filters[i].value) === 0) {
+                                        console.log("value[key]:" + value[key]);
+                                        console.log("filters[i].value:" + filters[i].value);
+
+                                        console.log("UGUALE");
+                                    }
+                                } else if (filters[i].operator === "<=") {
+                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === -1) {
+                                        console.log("value[key]:" + value[key]);
+                                        console.log("filters[i].value:" + filters[i].value);
+
+                                        console.log("UGUALE MINORE");
+                                    }
+                                } else if (filters[i].operator === ">=") {
+                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === 1) {
+                                        console.log("value[key]:" + value[key]);
+                                        console.log("filters[i].value:" + filters[i].value);
+
+                                        console.log("UGUALE MAGGIORE");
+                                    }
+                                } else if (filters[i].operator === "contain") {
+                                    if (value[key].indexOf(filters[i].value)!=-1) {
+                                        console.log("value[key]:" + value[key]);
+                                        console.log("filters[i].value:" + filters[i].value);
+
+                                        console.log("Contains");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        else
+            call(undefined);
+
         //Filters
         call(localObjectID);
     }
@@ -583,7 +647,7 @@ function STJoinComparison(objSource, objTarget, call) {
     call();
 }
 
-function STJoinAttributes(objSource, objTarget,columnSource,ColumnTarget,operator, call) {
+function STJoinAttributes(objSource, objTarget, columnSource, ColumnTarget, operator, call) {
     //TODO
     //Join Comparison
     call();

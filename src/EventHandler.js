@@ -14,17 +14,22 @@ var eventDrop;
 var numRemoveFilter = 0;
 var arrSource;
 var arrTarget;
+var prewID;
 
 
 
 function allowDrop(ev, pageId) {
-    ev.preventDefault();
     if (!over) {
+
+        console.log("allow");
+
         getParentIAPI(ev.target, function (parent) {
+            overlay = true;
+            eventDrop = ev;
+            idtarget = $(parent).prop('id');
+           
             isSrcPage(parent, function (isSource) {
-                console.log("isSource:" + isSource);
                 if (!isSource) {
-                    idtarget = $(parent).prop('id');
                     AnimationOverlay('<div class="info" style="pointer-events:none ; font-weight:bold; position:absolute;left:0;right:0;text-align: center;">Drop Here</div>');
                 }
             });
@@ -36,36 +41,35 @@ function allowDrop(ev, pageId) {
 //This function gather and set parameters that must be transfered in the drag operation
 function drag(ev, source, idPage) {
 
+    console.log("drag");
     ev.dataTransfer.setData("source", source);
     ev.dataTransfer.setData("id", ev.target.id);
     ev.dataTransfer.setData("classAttribute", $("#" + ev.target.id).attr("class"));
-    ev.dataTransfer.setData("idpagesource", idPage);
+    //ev.dataTransfer.setData("idpagesource", idPage);
+    hasIdTemplate(ev.target.id, function (msg) {
+        if (msg !== "NOIDTEMPLATE")
+            ev.dataTransfer.setData("idtemplate", msg);
+        else
+            ev.dataTransfer.setData("idtemplate", msg);
+    });
+    var pass_data = {
+        'action': "pageidRequest"
+    };
+    window.postMessage(JSON.stringify(pass_data), window.location.href);
 
-    console.log("id____________________:" + idPage);
+    var flag = true;
+    window.addEventListener('message', function (e) {
+        try {
+            if (JSON.parse(e.data).action === "pageidResponse" && flag) {
 
-    /*getPageIdFromURL(source,function () {
-
-        //Listener for the page ID
-        var flag = true;
-        window.addEventListener('message', function (e) {
-            try {
-                if (JSON.parse(e.data).action === "pageidResponseFromURL" && flag) {
-
-                    flag = false;
-                    console.log(",,,,,,,,,,DRAG,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
-                    var id= JSON.parse(e.data).pageid;
-                    ev.dataTransfer.setData("idpagesource", id);
-                    hasIdTemplate(ev.target.id, function (msg) {
-                        if (msg !== "NOIDTEMPLATE")
-                            ev.dataTransfer.setData("idtemplate", msg);
-                        else
-                            ev.dataTransfer.setData("idtemplate", msg);
-                    });
-                    return true;
-                }
-            } catch (err) { }
-        }, false);
-    });   */
+                flag = false;
+                console.log(",,,,,,,,,,DRAG,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
+                var id = JSON.parse(e.data).pageid;
+                ev.dataTransfer.setData("idpagesource", id);
+                return true;
+            }
+        } catch (err) { }
+    }, false);
 
 }
 
@@ -95,12 +99,18 @@ function hasIdTemplate(id, call) {
 
 // leave iapi element
 function leave(ev) {
+
     if (over) {
+        console.log("leave");
+
         getParentIAPI(ev.target, function (parent) {
+
+            $(parent).children(".info").remove();
+            overlay = false;
+            over = false;
+            prewID = idtarget;
             closeOverlay(function () {
-                $(parent).children(".info").remove();
-                overlay = false;
-                over = false;
+                
 
             });
         });
@@ -122,9 +132,16 @@ function drop(ev, pageId) {
                 pageID = pageId;
 
 
+                console.log("pageID:" + pageID);
+                console.log("idtarget:" + idtarget);
+                console.log("idsourcepage:" + idsourcepage);
+                console.log("idsource:" + idsource);
+
+
+
                 /////////TEST////////
-                pageID = 39;
-                idsourcepage = 35;
+                pageID = 75;
+                idsourcepage = 83;
                 idsource = "PRIMO";
 
                 /////////////////////
@@ -833,7 +850,7 @@ function getFilterAtIndex(index, id, call) {
     $("#" + id).children(".info").children("div:eq(" + index + ")").children().each(function () {
         if ($(this).prop("tagName").toLowerCase() !== "button") {
             if ($(this).prop("tagName").toLowerCase() === "select") {
-                if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=") {
+                if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=" && $(this).children("option:selected").attr("value") !== "contain") {
                     column = $(this).children().filter(":selected").attr("value");
                 }
                 else
@@ -895,7 +912,9 @@ function addFilter() {
        + '<option value="<"><</option>'
        + '<option value="<="><=</option>'
        + '<option value=">=">>=</option>'
+       + '<option value="contain">contain</option>'
        + '</select>'
+       //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
        + '<input type="text" name="input_text"></input>'
        + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
         $(table).append(newchi);
@@ -919,7 +938,7 @@ function addFilter() {
         $("#" + id).children(".info").children("div").last().children().each(function () {
             if ($(this).prop("tagName").toLowerCase() !== "button") {
                 if ($(this).prop("tagName").toLowerCase() === "select") {
-                    if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=") {
+                    if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=" && $(this).children("option:selected").attr("value") !== "contain") {
                         $(this).children().each(function () {
                             if ($(this).css('backgroundColor') === "rgb(255, 0, 0)")
                                 columnsHide.push($(this).attr("value"));
@@ -1573,7 +1592,7 @@ function isSrcPage(YourFindElement, call) {
             presenceDataSource = true;
         } else if (tagtarg[i].slice(0, 5) == ("data:")) {
             presenceDataSource = true;
-        } 
+        }
     }
     call(presenceDataSource);
 }
