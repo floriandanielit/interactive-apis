@@ -1,34 +1,56 @@
 ﻿<!DOCTYPE html>
 <html>
+	
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>iAPI Middleware</title>
-    <link rel="stylesheet" type="text/css" href="../css/popup.css"/>
-    
-        <script src="../popup.js"></script>
-        <script src="../lib/jquery-2.0.3.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>iAPI extension pop-up</title>    
+    <link rel="stylesheet" type="text/css" href="../css/popup.css"/>   
+		<script src="../lib/jquery-2.0.3.js"></script>
+		<script src="../popup.js"></script>
 </head>
-<body>
-    <div id="wrapper">
-        <div id="menu-items">
-            <div id="titletext">
-                <img src="../img/logo.png" id="icon" />
 
-                <h1>iAPI Middleware</h1>
-            </div>
-            <div id="separator0" class="separator" style="display: block;"></div>
-            <div id="on_off" class="menu-entry" style="display: block;"></div>
-            <div id="typeInteraction"  style="display: none;"></div>
-            <div id="separator1" class="separator" style="display: block;"></div>
-            <div id="on_off_IApiLayer" class="menu-entry" style="display: block;"></div>
-            <div id="optionPage" class="menu-entry" style="display: block;">Option</div>
-            <div id="newPage" class="menu-entry" style="display: block;">New Page</div>
-            <div id="separator1" class="separator" style="display: block;"></div>
-        </div>
-        <div id="div_slideout" data-width="675" data-height="480">
-            <a href="https://github.com/floriandanielit/interactive-apis">GitHub</a>
-           
-        </div>
-   </div>
+<body>
+	
+  <div id="wrapper">
+        	
+		<div id="titletext">
+			iAPI extensions console
+		  <img src="../img/logo.png" width="32px"/>
+		</div>           
+		 
+		<!-- the following elements with class 'switch' implement on/off switches -->
+		<!-- their ids are used in popup.js to understand which switch has been operated -->
+		<!-- the two sub-elements implement the on/off view -->
+		<div id="engine" class="menu-entry switch">
+			<div><img src="../img/off.gif" style="vertical-align: middle;"/> <span style="vertical-align: middle;">Engine off</span></div>
+			<div style="display:none;"><img src="../img/on.gif" style="vertical-align: middle;"/> <span style="vertical-align: middle;">Engine on</span></div>
+		</div>		
+		<div id="editor" class="menu-entry switch" >
+			<div><img src="../img/off.gif" style="vertical-align: middle;"/> <span style="vertical-align: middle;">Editor off</span></div>
+			<div style="display:none;"><img src="../img/on.gif" style="vertical-align: middle;"/> <span style="vertical-align: middle;">Editor on</span></div>
+		</div>		
+		<div id="annotator" class="menu-entry switch" >
+			<div><img src="../img/off.gif" style="vertical-align: middle;"/> <span style="vertical-align: middle;">Annotator off</span></div>
+			<div style="display:none;"><img src="../img/on.gif" style="vertical-align: middle;"/> <span style="vertical-align: middle;">Annotator on</span></div>
+		</div>
+		
+		           
+		<div class="separator"></div>
+		
+		<!-- the actions of the elements with an id can be arbitrarily set inside popup.js -->
+		<div id="newPage" class="menu-entry">Create new page</div>
+		<div id="optionPage" class="menu-entry">Options</div>
+		
+		
+		<div class="separator"></div>
+        
+		<!-- the elements with class 'link' transform the inner <a> element into a regular menu entry with external link logo -->
+		<div class="menu-entry link"><a href="http://www.w3.org/community/interative-apis/">iAPIs W3C Community Group</a></div>
+		<div class="menu-entry link"><a href="https://github.com/floriandanielit/interactive-apis">GitHub Engine</a></div>
+		<div class="menu-entry link"><a href="https://github.com/floriandanielit/iapi-automator">GitHub Automator</a></div>
+		<div class="menu-entry link"><a href="https://github.com/floriandanielit/iapi-annotator">GitHub Annotator</a></div>
+        
+	</div>
+     
 </body>
 </html>
