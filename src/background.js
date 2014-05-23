@@ -213,7 +213,7 @@ function getStoredObject(arg_name, call) {
 }
 
 //delete the DOMid object present in the localStorage
-function deleteLocalStorageObjectWithASpecificDOMId(url,id,call) {
+function deleteLocalStorageObjectWithASpecificDOMId(url, id, call) {
     getStoredTemplate(url, function (data) {
         console.log("urlTemp:" + data);
         data = JSON.parse(data);
@@ -223,10 +223,9 @@ function deleteLocalStorageObjectWithASpecificDOMId(url,id,call) {
         });
         if (more > 1) {
             delete data[id];
-            localStorage.setItem(url, JSON.stringify(data));           
+            localStorage.setItem(url, JSON.stringify(data));
         }
-        else
-        {
+        else {
             localStorage.removeItem(url);
         }
         call();
@@ -247,7 +246,6 @@ function getAllLocalStorageTemplate(call) {
             archive[keys[i]] = localStorage.getItem(keys[i]);
         }
     }
-
     call(archive);
 }
 

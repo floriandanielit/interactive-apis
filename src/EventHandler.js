@@ -14,7 +14,7 @@ var eventDrop;
 var numRemoveFilter = 0;
 var arrSource;
 var arrTarget;
-
+var prewID;
 
 
 function allowDrop(ev, pageId) {
@@ -108,6 +108,10 @@ function leave(ev) {
             $(parent).children(".info").remove();
             overlay = false;
             over = false;
+            <<<<<<< HEAD
+            =======
+                        prewID = idtarget;
+            >>>>>>> a7162cadfe172c6b23f9372aa69e737569103f83
             closeOverlay(function () {
                 
 
@@ -938,6 +942,7 @@ function addFilter() {
             if ($(this).prop("tagName").toLowerCase() !== "button") {
                 if ($(this).prop("tagName").toLowerCase() === "select") {
                     if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=" && $(this).children("option:selected").attr("value") !== "contains") {
+
                         $(this).children().each(function () {
                             if ($(this).css('backgroundColor') === "rgb(255, 0, 0)")
                                 columnsHide.push($(this).attr("value"));
