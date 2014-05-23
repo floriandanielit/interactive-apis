@@ -27,6 +27,9 @@ var scriptPresence = new Array();
 // scriptPresence[tab.id] tells whether the respective tab contains the inject script
 var scriptiapiLayerPresence = new Array();
 
+
+
+
 // set the correct icon based on the presence of iAPIs in the current tab
 function setIcon(tabId) {
     if (extensionDisabled === true) {
@@ -209,6 +212,45 @@ function getStoredObject(arg_name, call) {
     call(data);
 }
 
+//delete the DOMid object present in the localStorage
+function deleteLocalStorageObjectWithASpecificDOMId(url,id,call) {
+    getStoredTemplate(url, function (data) {
+        console.log("urlTemp:" + data);
+        data = JSON.parse(data);
+        var more = 0;
+        $.each(data, function (key, val) {
+            more++;
+        });
+        if (more > 1) {
+            delete data[id];
+            localStorage.setItem(url, JSON.stringify(data));           
+        }
+        else
+        {
+            localStorage.removeItem(url);
+        }
+        call();
+    });
+
+}
+
+
+function getAllLocalStorageTemplate(call) {
+
+    var archive = {};  //notice change here
+    var keys = Object.keys(localStorage);
+    var i = 0;
+
+    for (; i < keys.length; i++) {
+        console.log(keys[i]);
+        if (isNaN(keys[i]) == true) {
+            archive[keys[i]] = localStorage.getItem(keys[i]);
+        }
+    }
+
+    call(archive);
+}
+
 //load a external page with different domain
 function loadExtern(path, success, error) {
     var xhr = new XMLHttpRequest();
@@ -290,12 +332,12 @@ function ScriptJs(tabId) {
         scriptiapiLayerPresence[tabId] === "yes";
         chrome.tabs.executeScript(tabId, {
             file: 'editor.js'
-        });
+        }, function () { });
     }
     if (iApiLayerDisabled) {
         chrome.tabs.executeScript(tabId, {
             code: "iapi_frame = document.getElementById('iapi_frame'); if(iapi_frame){iapi_frame.parentNode.removeChild(iapi_frame);}"
-        });
+        }, function () { });
     }
     if (extensionDisabled === false && scriptPresence[tabId] === "no") {
         chrome.tabs.executeScript(tabId, {
@@ -303,13 +345,13 @@ function ScriptJs(tabId) {
         }, function () {
             chrome.tabs.executeScript(tabId, {
                 file: 'ContentEngine.js'
-            });
+            }, function () { });
         });
     }
     if (extensionDisabled === true && scriptPresence[tabId] === "yes") {
         chrome.tabs.executeScript(tabId, {
             code: "iapi_frame = document.getElementById('iapi_frame'); if(iapi_frame){iapi_frame.parentNode.removeChild(iapi_frame);}"
-        });
+        }, function () { });
     }
 
     setIcon(tabId);

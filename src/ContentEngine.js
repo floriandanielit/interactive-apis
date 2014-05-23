@@ -616,7 +616,7 @@ function doFilter(localObjectID, filters, call) {
 
                                         console.log("UGUALE MAGGIORE");
                                     }
-                                } else if (filters[i].operator === "contain") {
+                                } else if (filters[i].operator === "contains") {
                                     if (value[key].indexOf(filters[i].value)!=-1) {
                                         console.log("value[key]:" + value[key]);
                                         console.log("filters[i].value:" + filters[i].value);

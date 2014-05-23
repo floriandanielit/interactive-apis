@@ -14,11 +14,11 @@ var eventDrop;
 var numRemoveFilter = 0;
 var arrSource;
 var arrTarget;
-var prewID;
 
 
 
 function allowDrop(ev, pageId) {
+    ev.preventDefault();
     if (!over) {
 
         console.log("allow");
@@ -108,7 +108,6 @@ function leave(ev) {
             $(parent).children(".info").remove();
             overlay = false;
             over = false;
-            prewID = idtarget;
             closeOverlay(function () {
                 
 
@@ -119,7 +118,7 @@ function leave(ev) {
 
 //Drop operation (event handler contains a set of parameters from the drag op)
 function drop(ev, pageId) {
-
+    console.log("DROP");
     over = false;
     ev.preventDefault();
     getParentIAPI(ev.target, function (parent) {
@@ -850,7 +849,7 @@ function getFilterAtIndex(index, id, call) {
     $("#" + id).children(".info").children("div:eq(" + index + ")").children().each(function () {
         if ($(this).prop("tagName").toLowerCase() !== "button") {
             if ($(this).prop("tagName").toLowerCase() === "select") {
-                if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=" && $(this).children("option:selected").attr("value") !== "contain") {
+                if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=" && $(this).children("option:selected").attr("value") !== "contains") {
                     column = $(this).children().filter(":selected").attr("value");
                 }
                 else
@@ -912,7 +911,7 @@ function addFilter() {
        + '<option value="<"><</option>'
        + '<option value="<="><=</option>'
        + '<option value=">=">>=</option>'
-       + '<option value="contain">contain</option>'
+       + '<option value="contains">contains</option>'
        + '</select>'
        //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
        + '<input type="text" name="input_text"></input>'
@@ -938,7 +937,7 @@ function addFilter() {
         $("#" + id).children(".info").children("div").last().children().each(function () {
             if ($(this).prop("tagName").toLowerCase() !== "button") {
                 if ($(this).prop("tagName").toLowerCase() === "select") {
-                    if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=" && $(this).children("option:selected").attr("value") !== "contain") {
+                    if ($(this).children("option:selected").attr("value") !== "=" && $(this).children("option:selected").attr("value") !== ">" && $(this).children("option:selected").attr("value") !== "<" && $(this).children("option:selected").attr("value") !== ">=" && $(this).children("option:selected").attr("value") !== "<=" && $(this).children("option:selected").attr("value") !== "contains") {
                         $(this).children().each(function () {
                             if ($(this).css('backgroundColor') === "rgb(255, 0, 0)")
                                 columnsHide.push($(this).attr("value"));

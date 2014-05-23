@@ -269,7 +269,7 @@ function doFilters(id) {
                        + '<option value="<"><</option>'
                        + '<option value="<="><=</option>'
                        + '<option value=">=">>=</option>'
-                       + '<option value="contain">contain</option>'
+                       + '<option value="contains">contains</option>'
                        + '</select>'
                        + '<input type="text" name="input_text"></input>'
                        //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'

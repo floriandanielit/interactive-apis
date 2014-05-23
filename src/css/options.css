@@ -1,0 +1,52 @@
+﻿body {
+  color: black;
+  background: #ededed;
+  margin: 0px;
+}
+
+#wrapper { 
+  margin: 0px 0px;
+  width: 220px;
+  font-family: "Arial", sans-serif;
+  font-size: 12px;
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+
+.separator {
+  width: 100%;
+  border-top: 2px groove white;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: -5px;
+  margin-right: -8px;
+  display: block;
+}
+
+.menu-entry {
+  padding: 3px;
+  cursor:pointer;
+}
+
+.menu-entry:hover {
+  border: 2px solid #AECFF7;
+  border-radius: 3px;
+  padding: 1px;
+  padding-left: 5px;
+  margin-left: -4px;
+}
+
+#titletext {
+  padding: 8px 8px 2px 0px;
+  overflow: hidden;
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+#titletext img {
+  float: right;
+}
+
+.status {
+	font-style: italic;
+}
