@@ -108,10 +108,6 @@ function leave(ev) {
             $(parent).children(".info").remove();
             overlay = false;
             over = false;
-            <<<<<<< HEAD
-            =======
-                        prewID = idtarget;
-            >>>>>>> a7162cadfe172c6b23f9372aa69e737569103f83
             closeOverlay(function () {
                 
 
