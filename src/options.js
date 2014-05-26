@@ -20,12 +20,38 @@ $(document).ready(function () {
             id = id.substring(13);
             var url = $(this).parent().parent().children("td:nth-child(1)").children("a").html()
             var idDOM = $(this).parent().parent().children("td:nth-child(2)").html();
-            console.log("id:" + id + "_url:" + url + "_idDOM:" + idDOM);
-            deleteRowAndUpdateTable(id,url,idDOM);
+            removeTempObject(url, idDOM, function () {
+                deleteRowAndUpdateTable(id, url, idDOM);
+            });
         });
+        $("[id=iapiRefreshTableLocalStorage]").click(function () {
+            tableDOMObject(function () {
+
+            });
+        }); 
     });
 
 });
+
+//Remove the Tmporally Object
+function removeTempObject(url, id, call) {
+    chrome.windows.getAll({ populate: true }, function (windows) {
+        console.log("wind:" + windows);
+        windows.forEach(function(window){
+            window.tabs.forEach(function(tab){
+                console.log("url:" + tab.url);
+
+                if (url === tab.url) {
+                    
+                    console.log(tab.id);
+                    BG.deleteLocalStorageObjectWithASpecificDOMId(tab.id, id, function () {
+                        call();
+                    });
+                }
+            });
+        });
+    });
+}
 
 //Create the table with all template saved in the localStorage
 function tableDOMObject(call) {
@@ -35,12 +61,10 @@ function tableDOMObject(call) {
 
     $("#iapiTemplateLocalStorage").empty();
     BG.getAllLocalStorageTemplate(function (local) {
-        if (local != null) {
+        console.log(local);
+        if (Object.keys(local).length > 0) {
             $.each(local, function (keys, value) {
-                if (createtable === false) {
-                    createtable = true;
-                    createTable();
-                }
+                
                 var values = local[keys];
                 values = JSON.parse(values);
                 if (createtable === false&& value!=null) {
@@ -53,6 +77,10 @@ function tableDOMObject(call) {
 
                 });
             });
+        }
+        else
+        {
+            createMessage();
         }
         call();
     });
@@ -82,6 +110,12 @@ function createTable() {
     $("#iapiTemplateLocalStorage").append(content);
 }
 
+//Create the Message Empty localStorage
+function createMessage() {
+    var content = '<h1>Empty localStorage</h1>';
+    $("#iapiTemplateLocalStorage").append(content);
+}
+
 //delete the Row at index and refresh other idButton
 function deleteRowAndUpdateTable(index, url, id)
 {
@@ -94,7 +128,6 @@ function deleteRowAndUpdateTable(index, url, id)
         var elementFind = false;
         var pos = index;
         for (var i = index; i <= numChildren; i++) {
-            console.log("i:" + i);
             if (!elementFind) {
                 elementFind = true;
                 $(table).children("tr:nth-child(" + pos + ")").remove();

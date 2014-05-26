@@ -123,6 +123,7 @@ window.addEventListener('message', function (e) {
                         });
                     } else if (JSON.parse(e.data).subAction === "EliminateDuplicates") {
                         STEliminateDuplicates(data1, data2, function (resultObj) {
+
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
 
                                 //Send to eventHandler if I would generate dinamic Message
@@ -499,71 +500,49 @@ function SameType(arrSource, arrTarget, call) {
 //}                                                                                   //<--End Object
 //
 
+//Union two same type object and eliminate the duplicats
 function STEliminateDuplicates(objSource, objTarget, call) {
     if (objSource != undefined && objTarget != undefined) {
-        var arr1 = new Array();
-        var arr2 = new Array();
-
-        function arrSource(arr1, call) {
-            $.each(objSource, function (key, value) {
-                $.each(value, function (key, value) {
-                    for (var key in value) {
-                        arr1.push({ "key": key, "val": value[key] });
+            $.each(objSource, function (key1, value1) {
+                $.each(value1, function (key1, value1) {
+                    for (var key1 in value1) {
+                        $.each(objTarget, function (key2, value2) {
+                            $.each(value2, function (key2, value2) {
+                                for (var key2 in value2) {
+                                    if(value1[key1]===value2[key2])
+                                    {
+                                        find = true;
+                                        console.log("UGUALI");
+                                        value2[key2] = "";
+                                        break;
+                                    }
+                                }
+                            });
+                        });
                     }
                 });
             });
-            call(arr1);
-        }
-        function arrTarget(arr2, call) {
-            $.each(objTarget, function (key, value) {
-                $.each(value, function (key, value) {
-                    for (var key in value) {
-                        arr2.push({ "key": key, "val": value[key] });
-                    }
-                });
-            });
-            call(arr2);
-        }
-        arrSource(arr1, function () {
-            arrTarget(arr2, function () {
-                for (var i = 0; i < arr1.length; i++) {
-                    console.log("arr1:" + arr1[i].key + "_" + arr1[i].val);
-                }
-                for (var i = 0; i < arr2.length; i++) {
-                    console.log("arr2:" + arr2[i].key + "_" + arr2[i].val);
-                }
-                //console.log("READARRAY");
-
-                for (var i = 0; i < arr1.length; i++) {
-                    for (var j = 0; j < arr2.length; j++) {
-                        if (arr1[i].key === arr2[j].key) {
-                            if (arr1[i].val !== arr2[j].val) {
-                            }
-                        }
-                    }
-                }
-
-                call(objTarget);
-            });
-        });
-
+            call(objTarget);
     }
     else
         call(undefined);
 }
 
+//Union two same type object and 
 function STUnionExtended(objSource, objTarget, call) {
     //TODO
     //Union extended
     call();
 }
 
+//Union two same type object and 
 function STUnionRestricted(objSource, objTarget, call) {
     //TODO
     //Union Restricted
     call();
 }
 
+//Filter the object in the local storage
 function doFilter(localObjectID, filters, call) {
     if (localObjectID != undefined) {
         //for (var i = 0; i < filters.length; i++) {
@@ -576,7 +555,7 @@ function doFilter(localObjectID, filters, call) {
                 $.each(value, function (key, value) {
                     for (var key in value) {
                         for (var i = 0; i < filters.length; i++) {
-                            
+
                             if (key === filters[i].column) {
                                 console.log("key:" + key);
                                 console.log("filters[i].column:" + filters[i].column);
@@ -617,7 +596,7 @@ function doFilter(localObjectID, filters, call) {
                                         console.log("UGUALE MAGGIORE");
                                     }
                                 } else if (filters[i].operator === "contains") {
-                                    if (value[key].indexOf(filters[i].value)!=-1) {
+                                    if (value[key].indexOf(filters[i].value) != -1) {
                                         console.log("value[key]:" + value[key]);
                                         console.log("filters[i].value:" + filters[i].value);
 
@@ -641,18 +620,21 @@ function doFilter(localObjectID, filters, call) {
         call(undefined);
 }
 
+//Join two same type object (Comparison)
 function STJoinComparison(objSource, objTarget, call) {
     //TODO
     //Join Comparison
     call();
 }
 
+//Join two same type object (Attributes)
 function STJoinAttributes(objSource, objTarget, columnSource, ColumnTarget, operator, call) {
     //TODO
     //Join Comparison
     call();
 }
 
+//Join two same type object (Operator)
 function STJoinOperator(objSource, objTarget, call) {
     //TODO
     //Join Comparison

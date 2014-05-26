@@ -215,7 +215,7 @@ function getStoredObject(arg_name, call) {
 //delete the DOMid object present in the localStorage
 function deleteLocalStorageObjectWithASpecificDOMId(url, id, call) {
     getStoredTemplate(url, function (data) {
-        console.log("urlTemp:" + data);
+        console.log(url+":"+data)
         data = JSON.parse(data);
         var more = 0;
         $.each(data, function (key, val) {
@@ -234,6 +234,7 @@ function deleteLocalStorageObjectWithASpecificDOMId(url, id, call) {
 }
 
 
+
 function getAllLocalStorageTemplate(call) {
 
     var archive = {};  //notice change here
@@ -241,7 +242,6 @@ function getAllLocalStorageTemplate(call) {
     var i = 0;
 
     for (; i < keys.length; i++) {
-        console.log(keys[i]);
         if (isNaN(keys[i]) == true) {
             archive[keys[i]] = localStorage.getItem(keys[i]);
         }
@@ -308,6 +308,7 @@ chrome.windows.onFocusChanged.addListener(function () {
         active: true,
         currentWindow: true
     }, function (tabs) {
+        console.log("IdPage:" + tabs[0].id);
         ScriptJs(tabs[0].id);
     });
 });

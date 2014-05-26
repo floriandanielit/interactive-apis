@@ -139,8 +139,8 @@ function drop(ev, pageId) {
 
 
                 /////////TEST////////
-                pageID = 75;
-                idsourcepage = 83;
+                pageID = 176;
+                idsourcepage = 106;
                 idsource = "PRIMO";
 
                 /////////////////////
