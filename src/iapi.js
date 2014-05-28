@@ -12,7 +12,7 @@
 
         if (idTemplate === undefined) {
 
-            generate(idtarget, data, sourceType);
+            generate (idtarget, data, sourceType);
         }
         else {
 
