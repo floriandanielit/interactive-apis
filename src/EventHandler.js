@@ -152,63 +152,63 @@ function drop(ev) {
                 //            console.log(",,,,,,,,,,DROP,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
                 //            pageID = JSON.parse(e.data).pageid;
 
-                            /////////TEST////////
-                            pageID = 71;
-                            idsourcepage = 81;
-                            idsource = "PRIMO";
+                /////////TEST////////
+                pageID = 71;
+                idsourcepage = 81;
+                idsource = "PRIMO";
 
-                            /////////////////////
+                /////////////////////
 
-                            console.log("..........SOURCE.............." + idsourcepage);
-                            console.log("..........TARGET.............." + pageID);
-                            var findHide = false;
-                            var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
-                            for (i = 0; i < tagtarg.length && findHide === false; i++) {
-                                if (tagtarg[i].substr(0, 5) === "hide:") {
-                                    findHide = true;
-                                    annotation = tagtarg[i];
+                console.log("..........SOURCE.............." + idsourcepage);
+                console.log("..........TARGET.............." + pageID);
+                var findHide = false;
+                var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
+                for (i = 0; i < tagtarg.length && findHide === false; i++) {
+                    if (tagtarg[i].substr(0, 5) === "hide:") {
+                        findHide = true;
+                        annotation = tagtarg[i];
+                    }
+                }
+
+                //////////////////////DATA_INTEGRATION//////////////////////////////
+
+
+                //Rendering
+                //send messages to middleware
+                try {
+                    var pass_data = {
+                        'action': "getSame",
+                        'idPageSource': idsourcepage,
+                        'idSource': idsource,
+                        'idPageTarget': pageID,
+                        'idTarget': idtarget
+
+                    };
+                    window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+                    var flag = true;
+                    window.addEventListener('message', function (event) {
+                        if (JSON.parse(event.data).action == "getSameObjects" && flag) {
+                            flag = false;
+
+                            arrSource = JSON.parse(event.data).arrSource;
+                            arrTarget = JSON.parse(event.data).arrTarget;
+                            if (JSON.parse(event.data).same) {
+                                MainOverlayST(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
+                            }
+                                ////If they aren't the same type
+                            else {
+                                if (JSON.parse(event.data).choise.Union === false && JSON.parse(event.data).choise.Join === false) {
+                                    MainOverlayAfterColumnsMatchDT(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
+                                } else {
+                                    MainOverlayDT();
                                 }
                             }
-
-                            //////////////////////DATA_INTEGRATION//////////////////////////////
-
-
-                            //Rendering
-                            //send messages to middleware
-                            try {
-                                var pass_data = {
-                                    'action': "getSame",
-                                    'idPageSource': idsourcepage,
-                                    'idSource': idsource,
-                                    'idPageTarget': pageID,
-                                    'idTarget': idtarget
-
-                                };
-                                window.postMessage(JSON.stringify(pass_data), window.location.href);
-
-                                var flag = true;
-                                window.addEventListener('message', function (event) {
-                                    if (JSON.parse(event.data).action == "getSameObjects" && flag) {
-                                        flag = false;
-
-                                        arrSource = JSON.parse(event.data).arrSource;
-                                        arrTarget = JSON.parse(event.data).arrTarget;
-                                        if (JSON.parse(event.data).same) {
-                                            MainOverlayST(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
-                                        }
-                                            ////If they aren't the same type
-                                        else {
-                                            if (JSON.parse(event.data).choise.Union === false && JSON.parse(event.data).choise.Join === false) {
-                                                MainOverlayAfterColumnsMatchDT(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
-                                            } else {
-                                                MainOverlayDT();
-                                            }
-                                        }
-                                    }
-                                });
-                            } catch (e) {
-                                alert(e);
-                            }
+                        }
+                    });
+                } catch (e) {
+                    alert(e);
+                }
                 //        }
                 //    } catch (err) { }
                 //}, false);
@@ -813,9 +813,11 @@ function getTemplateFile(call) {
 
 //Remove the filter in the Overlay
 function removeFilter(position) {
-    console.log("click remove" + position);
     var id = $("#iapi_menu [class='getAll']").attr("id");
     idtarget = id;
+    numRemoveFilter = $("#" + idtarget).children(".info").children("div").length - 1;
+
+
     for (var i = position; i < numRemoveFilter; i++) {
         $("#" + id).children(".info").children("div:eq(" + i + ")").children("button").each(function () {
             if ($(this).attr("name") === "Update" || $(this).attr("name") === "Remove") {
@@ -863,9 +865,11 @@ function getFilterAtIndex(index, id, call) {
 
 //Add filter button
 function addFilter() {
-    console.log("click add");
     var id = $("#iapi_menu [class='getAll']").attr("id");
     idtarget = id;
+    numRemoveFilter = $("#" + id).children(".info").children("div").length - 1;
+    console.log("numRemoveFilter:" + numRemoveFilter);
+
 
     var filter = {};
     var columns = new Array();
@@ -878,7 +882,7 @@ function addFilter() {
     getSelected(function () {
 
         filter = { "column": column, "operator": operator, "value": value };
-        
+
         //MODIFY PREV FILTER
         var prev = $("#" + id).children(".info").children("div").last().before();
 
@@ -961,18 +965,16 @@ function addFilter() {
 function apply() {
     var id = $("#iapi_menu [class='getAll']").attr("id");
     idtarget = id;
-    console.log("apply" + id);
-    var children = $("#" + id).children(".info").children("div").length - 1;
-    console.log("children:" + children);
-    for (var i = 0; i < children; i++) {
-        getFilterAtIndex(i, id, function (column, operator, value) { 
+    numRemoveFilter = $("#" + id).children(".info").children("div").length - 1;
+    for (var i = 0; i < numRemoveFilter; i++) {
+        getFilterAtIndex(i, id, function (column, operator, value) {
             filters.push({ "column": column, "operator": operator, "value": value });
-        }); 
+        });
     }
-    //for (var i = 0; i < filters.length; i++) {
-    //    console.log("filters:" + i + "_column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
+    for (var i = 0; i < filters.length; i++) {
+        console.log("filters:" + i + "_column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
 
-    //}
+    }
     ////////////////////////////////////////
 
     try {

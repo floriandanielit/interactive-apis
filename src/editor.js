@@ -211,6 +211,8 @@ function iapi_menu() {
         });
     }
 }
+
+//Load prew filters from LocalStorage
 function LoadPrewFilters(call) {
     var arrFilters = new Array();
     var arrColumns = new Array();
@@ -222,13 +224,14 @@ function LoadPrewFilters(call) {
     arrColumns.push({ "column": "abstract", "selected": false });
     arrColumns.push({ "column": "where", "selected": false });
 
-    //arrFilters.push({ "columns": arrColumns, "operator": "<", "value": "PROVA" });
+    arrFilters.push({ "columns": arrColumns, "operator": "<", "value": "PROVA" });
     arrFilters.push({ "columns": arrColumns, "operator": "contains", "value": "Daniel" });
-    //arrFilters.push({ "columns": arrColumns, "operator": "=", "value": "test" });
+    arrFilters.push({ "columns": arrColumns, "operator": "=", "value": "test" });
 
     call(arrFilters);
 }
 
+//Create the overlay with prew filters and inject in the DOM
 function doFilters(id) {
     offset = $("#" + id).offset();
     $("#iapi_frame").css('pointer-events', 'none');

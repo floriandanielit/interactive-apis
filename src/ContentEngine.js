@@ -560,7 +560,7 @@ function doFilter(localObjectID, filters, call) {
                                 //console.log("filters[i].column:" + filters[i].column);
                                 //console.log("filters[i].value:" + filters[i].value);
                                 //console.log("filters[i].operator:" + filters[i].operator);
-                                
+
                                 //var attr = {};
 
                                 if (filters[i].operator === "<=") {
