@@ -4,7 +4,7 @@
 ( function ($) {
 
     $.fn.renderData = function (data, idTemplate) {
-        var URL = "http://localhost:63342/interactive-apis/src/html/templates.html";
+        var URL = "http://127.0.0.1:8020/Interactive-apis/src/html/templates.html";
         var template;
         var idtarget = this.attr("id");
         var sourceType = "iapi";

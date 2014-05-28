@@ -7,7 +7,6 @@ chrome.extension.sendMessage({
 
 // listeners to intercept the editor.js messages (request)
 window.addEventListener('message', function (e) {
-    console.log(JSON.parse(e.data).action)
     try {
         if (JSON.parse(e.data).action === "getExternal") {
             // if the request from the inject scripts is "getExternal",
@@ -134,6 +133,13 @@ function middleware(disa, iAPILayerDisable) {
 
         var sq = document.createElement('script');
         sq.src = chrome.extension.getURL("EventHandler.js");
+        sq.onload = function () {
+            this.parentNode.removeChild(this);
+        };
+        (document.head || document.documentElement).appendChild(sq);
+        
+        var sq = document.createElement('script');
+        sq.src = chrome.extension.getURL("iapi.js");
         sq.onload = function () {
             this.parentNode.removeChild(this);
         };

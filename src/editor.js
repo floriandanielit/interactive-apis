@@ -9,7 +9,6 @@ var function7 = null;
 //listener for HTML5 messages from the ContentEngine
 window.addEventListener('message', function (event) {
     try {
-        console.log("editor::::::"+JSON.parse(event.data).action);
         if (JSON.parse(event.data).action == "startIApiLayer" && flag) {
             flag = false;
             iapi_frame = document.getElementById('iapi_frame');

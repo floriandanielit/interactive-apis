@@ -31,5 +31,5 @@
 	"permissions": [
 	"management","webNavigation","webRequest","tabs", "storage","webRequestBlocking", "contextMenus","http://*/*","https://*/*","file://*/*"],
 	"web_accessible_resources": [
-	"lib/jquery-2.0.3.js","EventHandler.js","editor.js","html/*"]
+	"lib/jquery-2.0.3.js","EventHandler.js","iapi.js","editor.js","html/*"]
 }
