@@ -503,26 +503,25 @@ function SameType(arrSource, arrTarget, call) {
 //Union two same type object and eliminate the duplicats
 function STEliminateDuplicates(objSource, objTarget, call) {
     if (objSource != undefined && objTarget != undefined) {
-            $.each(objSource, function (key1, value1) {
-                $.each(value1, function (key1, value1) {
-                    for (var key1 in value1) {
-                        $.each(objTarget, function (key2, value2) {
-                            $.each(value2, function (key2, value2) {
-                                for (var key2 in value2) {
-                                    if(value1[key1]===value2[key2])
-                                    {
-                                        find = true;
-                                        console.log("UGUALI");
-                                        value2[key2] = "";
-                                        break;
-                                    }
+        $.each(objSource, function (key1, value1) {
+            $.each(value1, function (key1, value1) {
+                for (var key1 in value1) {
+                    $.each(objTarget, function (key2, value2) {
+                        $.each(value2, function (key2, value2) {
+                            for (var key2 in value2) {
+                                if (value1[key1] === value2[key2]) {
+                                    find = true;
+                                    console.log("UGUALI");
+                                    value2[key2] = "";
+                                    break;
                                 }
-                            });
+                            }
                         });
-                    }
-                });
+                    });
+                }
             });
-            call(objTarget);
+        });
+        call(objTarget);
     }
     else
         call(undefined);
@@ -555,54 +554,59 @@ function doFilter(localObjectID, filters, call) {
                 $.each(value, function (key, value) {
                     for (var key in value) {
                         for (var i = 0; i < filters.length; i++) {
-
                             if (key === filters[i].column) {
-                                console.log("key:" + key);
-                                console.log("filters[i].column:" + filters[i].column);
+                                //console.log("key:" + key);
+                                //console.log("value[key]:" + value[key]);
+                                //console.log("filters[i].column:" + filters[i].column);
+                                //console.log("filters[i].value:" + filters[i].value);
+                                //console.log("filters[i].operator:" + filters[i].operator);
+                                
+                                //var attr = {};
 
-                                if (filters[i].operator === "<") {
-                                    if (value[key].localeCompare(filters[i].value) === -1) {
-                                        console.log("value[key]:" + value[key]);
-                                        console.log("filters[i].value:" + filters[i].value);
-
-                                        console.log("MINORE");
-                                    }
-                                } else if (filters[i].operator === ">") {
-                                    if (value[key].localeCompare(filters[i].value) === 1) {
-                                        console.log("value[key]:" + value[key]);
-                                        console.log("filters[i].value:" + filters[i].value);
-
-                                        console.log("MAGGIORE");
-                                    }
-                                } else if (filters[i].operator === "=") {
-                                    if (value[key].localeCompare(filters[i].value) === 0) {
-                                        console.log("value[key]:" + value[key]);
-                                        console.log("filters[i].value:" + filters[i].value);
-
-                                        console.log("UGUALE");
-                                    }
-                                } else if (filters[i].operator === "<=") {
+                                if (filters[i].operator === "<=") {
                                     if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === -1) {
-                                        console.log("value[key]:" + value[key]);
-                                        console.log("filters[i].value:" + filters[i].value);
-
-                                        console.log("UGUALE MINORE");
+                                        //att = { key: value[key] };
+                                        //console.log("value[key]:" + value[key]);
+                                        //console.log("filters[i].value:" + filters[i].value);
+                                        //console.log("MINORE UGUALE");
                                     }
                                 } else if (filters[i].operator === ">=") {
                                     if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === 1) {
-                                        console.log("value[key]:" + value[key]);
-                                        console.log("filters[i].value:" + filters[i].value);
-
-                                        console.log("UGUALE MAGGIORE");
+                                        //att = { key: value[key] };
+                                        //console.log("value[key]:" + value[key]);
+                                        //console.log("filters[i].value:" + filters[i].value);
+                                        //console.log("MAGGIORE UGUALE");
+                                    }
+                                } else if (filters[i].operator === "<") {
+                                    if (value[key].localeCompare(filters[i].value) === -1) {
+                                        //att = { key: value[key] };
+                                        //console.log("value[key]:" + value[key]);
+                                        //console.log("filters[i].value:" + filters[i].value);
+                                        //console.log("MINORE");
+                                    }
+                                } else if (filters[i].operator === ">") {
+                                    if (value[key].localeCompare(filters[i].value) === 1) {
+                                        //att = { key: value[key] };
+                                        //console.log("value[key]:" + value[key]);
+                                        //console.log("filters[i].value:" + filters[i].value);
+                                        //console.log("MAGGIORE");
+                                    }
+                                } else if (filters[i].operator === "=") {
+                                    if (value[key].localeCompare(filters[i].value) === 0) {
+                                        //att = { key: value[key] };
+                                        //console.log("value[key]:" + value[key]);
+                                        //console.log("filters[i].value:" + filters[i].value);
+                                        //console.log("UGUALE");
                                     }
                                 } else if (filters[i].operator === "contains") {
                                     if (value[key].indexOf(filters[i].value) != -1) {
-                                        console.log("value[key]:" + value[key]);
-                                        console.log("filters[i].value:" + filters[i].value);
-
-                                        console.log("Contains");
+                                        //att = { key: value[key] };
+                                        //console.log("value[key]:" + value[key]);
+                                        //console.log("filters[i].value:" + filters[i].value);
+                                        //console.log("Contains");
                                     }
                                 }
+                                //console.log("---------------------------------------------");
 
                             }
                         }

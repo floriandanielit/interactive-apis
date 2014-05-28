@@ -832,29 +832,7 @@ function removeFilter(position) {
         });
     }
     $("#" + id).children(".info").children("div:eq(" + position + ")").remove();
-    filters.splice(position, 1);
     numRemoveFilter--;
-}
-
-//Update the filter in the Overlay
-function updateFilter(position) {
-    console.log("click update" + position);
-    var id = $("#iapi_menu [class='getAll']").attr("id");
-    idtarget = id;
-    getFilterAtIndex(position, id, function (column, operator, value) {
-        animationUpdateFilter(position, id, function () {
-            var ob = {};
-            obj = { "column": column, "operator": operator, "value": value };
-            filters[position] = obj;
-        });
-    });
-}
-
-//TODO
-//Animation after Update (binking)
-function animationUpdateFilter(position, id, call) {
-
-    call();
 }
 
 //Extract the values of the filter in a determinate position ("0" to "numRemoveFilter")
@@ -900,14 +878,12 @@ function addFilter() {
     getSelected(function () {
 
         filter = { "column": column, "operator": operator, "value": value };
-        filters.push(filter);
-
+        
         //MODIFY PREV FILTER
         var prev = $("#" + id).children(".info").children("div").last().before();
 
         $(prev).children("button").remove();
-        var removeButton = '<button type="text" name="Update" value="Update' + numRemoveFilter + '" onclick="updateFilter(' + numRemoveFilter + ')">Update</button>'
-                          + '<button type="text" name="Remove" value="Remove' + numRemoveFilter + '" onclick="removeFilter(' + numRemoveFilter + ')">Remove</button>';
+        var removeButton = '<button type="text" name="Remove" value="Remove' + numRemoveFilter + '" onclick="removeFilter(' + numRemoveFilter + ')">Remove</button>';
 
         $(prev).append(removeButton);
         numRemoveFilter++;
@@ -922,7 +898,7 @@ function addFilter() {
         for (var j = 0; j < columns.length; j++) {
             newchi += '<option value="' + columns[j] + '" >' + columns[j] + '</option>'
         }
-        newchi += '</select><select >'
+        newchi += '</select><select class="iapioperators">'
        + '<option value="=">=</option>'
        + '<option value=">">></option>'
        + '<option value="<"><</option>'
@@ -930,9 +906,9 @@ function addFilter() {
        + '<option value=">=">>=</option>'
        + '<option value="contains">contains</option>'
        + '</select>'
-       //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
        + '<input type="text" name="input_text"></input>'
        + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
+        //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
         $(table).append(newchi);
 
 
@@ -986,7 +962,13 @@ function apply() {
     var id = $("#iapi_menu [class='getAll']").attr("id");
     idtarget = id;
     console.log("apply" + id);
-
+    var children = $("#" + id).children(".info").children("div").length - 1;
+    console.log("children:" + children);
+    for (var i = 0; i < children; i++) {
+        getFilterAtIndex(i, id, function (column, operator, value) { 
+            filters.push({ "column": column, "operator": operator, "value": value });
+        }); 
+    }
     //for (var i = 0; i < filters.length; i++) {
     //    console.log("filters:" + i + "_column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
 

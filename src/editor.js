@@ -211,92 +211,217 @@ function iapi_menu() {
         });
     }
 }
+function LoadPrewFilters(call) {
+    var arrFilters = new Array();
+    var arrColumns = new Array();
 
+    arrColumns.push({ "column": "oid", "selected": false });
+    arrColumns.push({ "column": "author", "selected": true });
+    arrColumns.push({ "column": "title", "selected": false });
+    arrColumns.push({ "column": "to_uploadresource", "selected": false });
+    arrColumns.push({ "column": "abstract", "selected": false });
+    arrColumns.push({ "column": "where", "selected": false });
+
+    //arrFilters.push({ "columns": arrColumns, "operator": "<", "value": "PROVA" });
+    arrFilters.push({ "columns": arrColumns, "operator": "contains", "value": "Daniel" });
+    //arrFilters.push({ "columns": arrColumns, "operator": "=", "value": "test" });
+
+    call(arrFilters);
+}
 
 function doFilters(id) {
     offset = $("#" + id).offset();
-
-
-    //////////////////////////////////
-    //////////////TODO////////////////
-    //////////////////////////////////
-    //Load prev filters if there are//
-    ///and display on the overlayer///
-    //////////////////////////////////
-
     $("#iapi_frame").css('pointer-events', 'none');
     filterBox = '<div class="info"></div>';
     $("#" + id).append(filterBox);
 
-    var arr = new Array();
+    LoadPrewFilters(function (arrPrewFilters) {
+        //////////////////////////////////
+        //////////////TODO////////////////
+        //////////////////////////////////
+        //Load prev filters if there are//
+        ///and display on the overlayer///
+        //////////////////////////////////
+        //arrPrewFilters.length = 0;
+        if (arrPrewFilters.length != 0) {
 
-    getObject(function (tmp) {
 
-        if (tmp !== undefined) {
-            tmp = JSON.parse(tmp);
-            if (tmp !== null) {
-                tmp = tmp[id];
+            for (var i = 0; i < arrPrewFilters.length; i++) {
+                newchi = "<div>";
+                newchi += '<select class="iapicolumns">'
+                //console.log(arrPrewFilters[i].columns.length);
+                for (var j = 0; j < arrPrewFilters[i].columns.length; j++) {
+                    newchi += '<option value="' + arrPrewFilters[i].columns[j].column + '" >' + arrPrewFilters[i].columns[j].column + '</option>'
+                }
+                newchi += '</select><select class="iapioperators">'
+               + '<option value="=">=</option>'
+               + '<option value=">">></option>'
+               + '<option value="<"><</option>'
+               + '<option value="<="><=</option>'
+               + '<option value=">=">>=</option>'
+               + '<option value="contains">contains</option>'
+               + '</select>'
+               + '<input type="text" name="input_text" value="' + arrPrewFilters[i].value + '"></input>'
+               + '<button type="text" name="Remove" value="Remove' + i + '" onclick="removeFilter(' + i + ')">Remove</button>';
+                //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
+                $("#" + id).children(".info").append(newchi);
 
-                if (tmp !== undefined) {
-                    getFirstRowKeyObject(false, tmp, function (arr) {
-                        var newchi = "<div>";
-                        $("#" + id).children(".info").append(newchi);
-                        var table = $("#" + id).children(".info").children("div");
+                //color the background of hide elements
+                var arrAttr = $("#" + id).attr("class").split(" ");
+                for (var k = 0; k < arrAttr.length; k++) {
 
-                        newchi = "";
-                        newchi = '<select class="iapicolumns">'
-                        for (var j = 0; j < arr.length; j++) {
-                            newchi += '<option value="' + arr[j] + '" >' + arr[j] + '</option>'
+                    if (arrAttr[k].substr(0, 5) === "hide:") {
+                        var attribute = arrAttr[k].split(":");
+
+                        for (var j = 1; j < attribute.length; j++) {
+                            $("#" + id).children(".info").children("div").children(".iapicolumns").last().each(function () {
+                                $(this).children('[value=' + attribute[j] + ']').css("background-color", "red");
+
+                            });
                         }
-                        newchi += '</select><select>'
-                       + '<option value="=">=</option>'
-                       + '<option value=">">></option>'
-                       + '<option value="<"><</option>'
-                       + '<option value="<="><=</option>'
-                       + '<option value=">=">>=</option>'
-                       + '<option value="contains">contains</option>'
-                       + '</select>'
-                       + '<input type="text" name="input_text"></input>'
-                       //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
-                       + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
-                        $(table).append(newchi);
+                    }
+                }
 
+                //select the correct operator
+                $("#" + id).children(".info").children("div").children(".iapioperators").last().each(function () {
+                    $(this).children('[value="' + arrPrewFilters[i].operator + '"]').prop('selected', true);
+                });
 
-
-                        var arrAttr = $("#" + id).attr("class").split(" ");
-                        for (var i = 0; i < arrAttr.length; i++) {
-
-                            if (arrAttr[i].substr(0, 5) === "hide:") {
-                                var attribute = arrAttr[i].split(":");
-
-                                for (var j = 1; j < attribute.length; j++) {
-                                    console.log($("#" + id).children(".info").children("div").children(".iapicolumns").html());
-                                    $("#" + id).children(".info").children("div").children(".iapicolumns").each(function () {
-                                        $(this).children('[value=' + attribute[j] + ']').css("background-color", "red");
-
-                                    });
-                                }
-                            }
+                //select the correct column
+                $("#" + id).children(".info").children("div").children(".iapicolumns").last().each(function () {
+                    var tmp = false;
+                    for (var j = 0; j < arrPrewFilters[i].columns.length && tmp === false; j++) {
+                        if (arrPrewFilters[i].columns[j].selected) {
+                            tmp = true;
+                            $(this).children('[value="' + arrPrewFilters[i].columns[j].column + '"]').prop('selected', true);
                         }
-                    });
+                    }
+
+                });
+            }
+
+            //Add a line with empty fields
+            var newchi = "<div>";
+            newchi += '<select class="iapicolumns">'
+            for (var j = 0; j < arrPrewFilters[0].columns.length; j++) {
+                newchi += '<option value="' + arrPrewFilters[0].columns[j].column + '" >' + arrPrewFilters[0].columns[j].column + '</option>'
+            }
+            newchi += '</select><select class="iapioperators">'
+           + '<option value="=">=</option>'
+           + '<option value=">">></option>'
+           + '<option value="<"><</option>'
+           + '<option value="<="><=</option>'
+           + '<option value=">=">>=</option>'
+           + '<option value="contains">contains</option>'
+           + '</select>'
+           + '<input type="text" name="input_text"></input>'
+           + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
+            $("#" + id).children(".info").append(newchi);
+
+            //color the background of hide elements
+            var arrAttr = $("#" + id).attr("class").split(" ");
+            for (var k = 0; k < arrAttr.length; k++) {
+
+                if (arrAttr[k].substr(0, 5) === "hide:") {
+                    var attribute = arrAttr[k].split(":");
+
+                    for (var j = 1; j < attribute.length; j++) {
+                        $("#" + id).children(".info").children("div").children(".iapicolumns").last().each(function () {
+                            $(this).children('[value=' + attribute[j] + ']').css("background-color", "red");
+
+                        });
+                    }
                 }
             }
+
+
+            filterBox = '<button onclick="apply()">Apply</button>'
+                + '<button onclick="cancel()">Cancel</button>';
+            $("#" + id).children(".info").append(filterBox);
+
+            var imgWidth = $("#" + id).width();
+            var imgHeight = $("#" + id).height();
+            var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+            $("#" + id).children(".info").fadeTo(0, 0.8);
+            $("#" + id).children(".info").css("width", (imgWidth) + "px");
+            $("#" + id).children(".info").css("height", (imgHeight) + "px");
+            $("#" + id).children(".info").css("top", offset.top + "px");
+            $("#" + id).children(".info").css("left", negImgWidth + "px");
+            $("#" + id).children(".info").css("visibility", "visible");
+
+            $("#" + id).children(".info").animate({ "left": offset.left }, 250);
         }
-        filterBox = '<button onclick="apply()">Apply</button>'
-            + '<button onclick="cancel()">Cancel</button>';
-        $("#" + id).children(".info").append(filterBox);
-        var imgWidth = $("#" + id).width();
-        var imgHeight = $("#" + id).height();
-        var negImgWidth = imgWidth - imgWidth - imgWidth;
+        else {
+            var arr = new Array();
+            getObject(function (tmp) {
 
-        $("#" + id).children(".info").fadeTo(0, 0.8);
-        $("#" + id).children(".info").css("width", (imgWidth) + "px");
-        $("#" + id).children(".info").css("height", (imgHeight) + "px");
-        $("#" + id).children(".info").css("top", offset.top + "px");
-        $("#" + id).children(".info").css("left", negImgWidth + "px");
-        $("#" + id).children(".info").css("visibility", "visible");
+                if (tmp !== undefined) {
+                    tmp = JSON.parse(tmp);
+                    if (tmp !== null) {
+                        tmp = tmp[id];
 
-        $("#" + id).children(".info").animate({ "left": offset.left }, 250);
+                        if (tmp !== undefined) {
+                            getFirstRowKeyObject(false, tmp, function (arr) {
+                                var newchi = "<div>";
+                                $("#" + id).children(".info").append(newchi);
+                                var table = $("#" + id).children(".info").children("div");
+
+                                newchi = "";
+                                newchi = '<select class="iapicolumns">'
+                                for (var j = 0; j < arr.length; j++) {
+                                    newchi += '<option value="' + arr[j] + '" >' + arr[j] + '</option>'
+                                }
+                                newchi += '</select><select class="iapioperators">'
+                               + '<option value="=">=</option>'
+                               + '<option value=">">></option>'
+                               + '<option value="<"><</option>'
+                               + '<option value="<="><=</option>'
+                               + '<option value=">=">>=</option>'
+                               + '<option value="contains">contains</option>'
+                               + '</select>'
+                               + '<input type="text" name="input_text"></input>'
+                               + '<button type="text" name="addFilter"  onclick="addFilter()">Add</button>';
+                                //+ '<input type="checkbox" name="caseSensitive" >Case Sensitive</input>'
+                                $(table).append(newchi);
+
+
+
+                                var arrAttr = $("#" + id).attr("class").split(" ");
+                                for (var i = 0; i < arrAttr.length; i++) {
+
+                                    if (arrAttr[i].substr(0, 5) === "hide:") {
+                                        var attribute = arrAttr[i].split(":");
+
+                                        for (var j = 1; j < attribute.length; j++) {
+                                            $("#" + id).children(".info").children("div").children(".iapicolumns").each(function () {
+                                                $(this).children('[value=' + attribute[j] + ']').css("background-color", "red");
+
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+                filterBox = '<button onclick="apply()">Apply</button>'
+                    + '<button onclick="cancel()">Cancel</button>';
+                $("#" + id).children(".info").append(filterBox);
+                var imgWidth = $("#" + id).width();
+                var imgHeight = $("#" + id).height();
+                var negImgWidth = imgWidth - imgWidth - imgWidth;
+
+                $("#" + id).children(".info").fadeTo(0, 0.8);
+                $("#" + id).children(".info").css("width", (imgWidth) + "px");
+                $("#" + id).children(".info").css("height", (imgHeight) + "px");
+                $("#" + id).children(".info").css("top", offset.top + "px");
+                $("#" + id).children(".info").css("left", negImgWidth + "px");
+                $("#" + id).children(".info").css("visibility", "visible");
+
+                $("#" + id).children(".info").animate({ "left": offset.left }, 250);
+            });
+        }
     });
 }
 
