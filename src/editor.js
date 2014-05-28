@@ -159,23 +159,8 @@ function iapi_menu() {
 
             getActions($(this).attr("class"), $(this).attr("id"), function () {
 
-                getPageId(function () {
-
-                    //Listener for the page ID
-                    var flag = true;
-                    window.addEventListener('message', function (e) {
-                        try {
-                            if (JSON.parse(e.data).action === "pageidResponse" && flag) {
-                                flag = false;
-                                console.log("........EDITOR1....................");
-                                $(".iapi").attr("ondragover", "allowDrop(event," + JSON.parse(e.data).pageid + ")");
-                                $(".iapi").attr("ondrop", "drop(event," + JSON.parse(e.data).pageid + ")");
-                                //console.log($("#iapi_frame").children("#iapi_menu").children(".iapiactions").html());
-                                $("#iapi_frame").children("#iapi_menu").children(".iapiactions").children(".getAll").attr("ondragstart", "drag(event,document.URL," + JSON.parse(e.data).pageid + ")");
-                            }
-                        } catch (err) { }
-                    }, false);
-                });
+                $(".iapi").attr("ondragover", "allowDrop(event)");
+                $(".iapi").attr("ondrop", "drop(event)");
             });
 
         });

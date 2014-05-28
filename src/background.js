@@ -215,7 +215,7 @@ function getStoredObject(arg_name, call) {
 //delete the DOMid object present in the localStorage
 function deleteLocalStorageObjectWithASpecificDOMId(url, id, call) {
     getStoredTemplate(url, function (data) {
-        console.log(url+":"+data)
+        //console.log(url+":"+data)
         data = JSON.parse(data);
         var more = 0;
         $.each(data, function (key, val) {
@@ -232,8 +232,6 @@ function deleteLocalStorageObjectWithASpecificDOMId(url, id, call) {
     });
 
 }
-
-
 
 function getAllLocalStorageTemplate(call) {
 

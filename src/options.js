@@ -16,6 +16,7 @@ $(document).ready(function () {
 
         //EventHandler button with a specific id
         $("[id^=removeStorage]").click(function () {
+            console.log("click DELETE");
             var id = $(this).attr("id");
             id = id.substring(13);
             var url = $(this).parent().parent().children("td:nth-child(1)").children("a").html()
@@ -25,9 +26,7 @@ $(document).ready(function () {
             });
         });
         $("[id=iapiRefreshTableLocalStorage]").click(function () {
-            tableDOMObject(function () {
-
-            });
+            window.location.reload()();
         }); 
     });
 

@@ -17,7 +17,7 @@ var arrTarget;
 var prewID;
 
 
-function allowDrop(ev, pageId) {
+function allowDrop(ev) {
     ev.preventDefault();
     if (!over) {
 
@@ -27,7 +27,7 @@ function allowDrop(ev, pageId) {
             overlay = true;
             eventDrop = ev;
             idtarget = $(parent).prop('id');
-           
+
             isSrcPage(parent, function (isSource) {
                 if (!isSource) {
                     AnimationOverlay('<div class="info" style="pointer-events:none ; font-weight:bold; position:absolute;left:0;right:0;text-align: center;">Drop Here</div>');
@@ -39,7 +39,7 @@ function allowDrop(ev, pageId) {
 }
 
 //This function gather and set parameters that must be transfered in the drag operation
-function drag(ev, source, idPage) {
+function drag(ev, source) {
 
     console.log("drag");
     ev.dataTransfer.setData("source", source);
@@ -51,25 +51,26 @@ function drag(ev, source, idPage) {
             ev.dataTransfer.setData("idtemplate", msg);
         else
             ev.dataTransfer.setData("idtemplate", msg);
+
+        //var pass_data = {
+        //    'action': "pageidRequest"
+        //};
+        //window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+        //var flag = true;
+        //window.addEventListener('message', function (e) {
+        //    try {
+        //        if (JSON.parse(e.data).action === "pageidResponse" && flag) {
+
+        //            flag = false;
+        //            console.log(",,,,,,,,,,DRAG,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
+        //            var id = JSON.parse(e.data).pageid;
+        //            ev.dataTransfer.setData("idpagesource", id);
+        //            return true;
+        //        }
+        //    } catch (err) { }
+        //}, false);
     });
-    var pass_data = {
-        'action': "pageidRequest"
-    };
-    window.postMessage(JSON.stringify(pass_data), window.location.href);
-
-    var flag = true;
-    window.addEventListener('message', function (e) {
-        try {
-            if (JSON.parse(e.data).action === "pageidResponse" && flag) {
-
-                flag = false;
-                console.log(",,,,,,,,,,DRAG,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
-                var id = JSON.parse(e.data).pageid;
-                ev.dataTransfer.setData("idpagesource", id);
-                return true;
-            }
-        } catch (err) { }
-    }, false);
 
 }
 
@@ -109,7 +110,7 @@ function leave(ev) {
             overlay = false;
             over = false;
             closeOverlay(function () {
-                
+
 
             });
         });
@@ -117,7 +118,7 @@ function leave(ev) {
 }
 
 //Drop operation (event handler contains a set of parameters from the drag op)
-function drop(ev, pageId) {
+function drop(ev) {
     console.log("DROP");
     over = false;
     ev.preventDefault();
@@ -128,8 +129,6 @@ function drop(ev, pageId) {
                 idsource = ev.dataTransfer.getData("id");
                 source = ev.dataTransfer.getData("source");
                 idsourcepage = ev.dataTransfer.getData("idpagesource");
-                pageID = pageId;
-
 
                 console.log("pageID:" + pageID);
                 console.log("idtarget:" + idtarget);
@@ -138,63 +137,81 @@ function drop(ev, pageId) {
 
 
 
-                /////////TEST////////
-                pageID = 176;
-                idsourcepage = 106;
-                idsource = "PRIMO";
 
-                /////////////////////
+                //var pass_data = {
+                //    'action': "pageidRequest"
+                //};
+                //window.postMessage(JSON.stringify(pass_data), window.location.href);
 
-                console.log("..........SOURCE.............." + idsourcepage);
-                console.log("..........TARGET.............." + pageID);
-                var findHide = false;
-                var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
-                for (i = 0; i < tagtarg.length && findHide === false; i++) {
-                    if (tagtarg[i].substr(0, 5) === "hide:") {
-                        findHide = true;
-                        annotation = tagtarg[i];
-                    }
-                }
+                //var flag = true;
+                //window.addEventListener('message', function (e) {
+                //    try {
+                //        if (JSON.parse(e.data).action === "pageidResponse" && flag) {
 
-                //////////////////////DATA_INTEGRATION//////////////////////////////
+                //            flag = false;
+                //            console.log(",,,,,,,,,,DROP,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
+                //            pageID = JSON.parse(e.data).pageid;
 
+                            /////////TEST////////
+                            pageID = 71;
+                            idsourcepage = 81;
+                            idsource = "PRIMO";
 
-                //Rendering
-                //send messages to middleware
-                try {
-                    var pass_data = {
-                        'action': "getSame",
-                        'idPageSource': idsourcepage,
-                        'idSource': idsource,
-                        'idPageTarget': pageID,
-                        'idTarget': idtarget
+                            /////////////////////
 
-                    };
-                    window.postMessage(JSON.stringify(pass_data), window.location.href);
-
-                    var flag = true;
-                    window.addEventListener('message', function (event) {
-                        if (JSON.parse(event.data).action == "getSameObjects" && flag) {
-                            flag = false;
-
-                            arrSource = JSON.parse(event.data).arrSource;
-                            arrTarget = JSON.parse(event.data).arrTarget;
-                            if (JSON.parse(event.data).same) {
-                                MainOverlayST(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
-                            }
-                                ////If they aren't the same type
-                            else {
-                                if (JSON.parse(event.data).choise.Union === false && JSON.parse(event.data).choise.Join === false) {
-                                    MainOverlayAfterColumnsMatchDT(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
-                                } else {
-                                    MainOverlayDT();
+                            console.log("..........SOURCE.............." + idsourcepage);
+                            console.log("..........TARGET.............." + pageID);
+                            var findHide = false;
+                            var tagtarg = ev.dataTransfer.getData("classAttribute").split(" ");
+                            for (i = 0; i < tagtarg.length && findHide === false; i++) {
+                                if (tagtarg[i].substr(0, 5) === "hide:") {
+                                    findHide = true;
+                                    annotation = tagtarg[i];
                                 }
                             }
-                        }
-                    });
-                } catch (e) {
-                    alert(e);
-                }
+
+                            //////////////////////DATA_INTEGRATION//////////////////////////////
+
+
+                            //Rendering
+                            //send messages to middleware
+                            try {
+                                var pass_data = {
+                                    'action': "getSame",
+                                    'idPageSource': idsourcepage,
+                                    'idSource': idsource,
+                                    'idPageTarget': pageID,
+                                    'idTarget': idtarget
+
+                                };
+                                window.postMessage(JSON.stringify(pass_data), window.location.href);
+
+                                var flag = true;
+                                window.addEventListener('message', function (event) {
+                                    if (JSON.parse(event.data).action == "getSameObjects" && flag) {
+                                        flag = false;
+
+                                        arrSource = JSON.parse(event.data).arrSource;
+                                        arrTarget = JSON.parse(event.data).arrTarget;
+                                        if (JSON.parse(event.data).same) {
+                                            MainOverlayST(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
+                                        }
+                                            ////If they aren't the same type
+                                        else {
+                                            if (JSON.parse(event.data).choise.Union === false && JSON.parse(event.data).choise.Join === false) {
+                                                MainOverlayAfterColumnsMatchDT(JSON.parse(event.data).choise.Union, JSON.parse(event.data).choise.Substitute, JSON.parse(event.data).choise.Join);
+                                            } else {
+                                                MainOverlayDT();
+                                            }
+                                        }
+                                    }
+                                });
+                            } catch (e) {
+                                alert(e);
+                            }
+                //        }
+                //    } catch (err) { }
+                //}, false);
             }
         });
     });
