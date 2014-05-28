@@ -5,8 +5,14 @@
     <title></title>
 </head>
 <body>
+
+<!--
+datasource:http://www.floriandaniel.it/ops/pubs.json sourcetype:json
+ datasource:http://127.0.0.1:8020/interactive-apis/demo/source.html sourcetype:iapi iapiid:1
+
+-->
     
-         <DIV class="iapi datasource:http://www.floriandaniel.it/ops/pubs.json sourcetype:json" id="PRIMO" style="background-color: gray;" cellspacing="1" cellpadding="3">
+         <DIV class="iapi" id="PRIMO" style="background-color: gray;" cellspacing="1" cellpadding="3">
               
                 <ol class="iapitemplate:item idTemplate:2D_NL_S dataitem:Publication" style="background-color: white;">
                     <li class="dataattribute:Author:author" style="color:red ;font-style:inherit; text-align:right" >JSON EXTERNAL TRG(prefilled)</li>
@@ -19,7 +25,7 @@
           </DIV> 
      
      
-         <table class="iapi datasource:http://127.0.0.1:8020/interactive-apis/demo/source.html sourcetype:iapi iapiid:1" id="SECONDO" style="background-color: gray;" cellspacing="1" cellpadding="3">
+         <table class="iapi" id="SECONDO" style="background-color: gray;" cellspacing="1" cellpadding="3">
                 <tr style="font-weight: bold; background-color: white;">
                     <td>Author</td>
                     <td>Title</td>
