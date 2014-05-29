@@ -153,10 +153,8 @@ function drop(ev) {
                 //            pageID = JSON.parse(e.data).pageid;
 
                 /////////TEST////////
-                pageID = 71;
-                idsourcepage = 81;
-                idsource = "PRIMO";
-
+                //pageID = 71;
+                //idsourcepage = 81;
                 /////////////////////
 
                 console.log("..........SOURCE.............." + idsourcepage);

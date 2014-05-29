@@ -16,11 +16,11 @@ $(document).ready(function () {
 
         //EventHandler button with a specific id
         $("[id^=removeStorage]").click(function () {
-            console.log("click DELETE");
             var id = $(this).attr("id");
             id = id.substring(13);
             var url = $(this).parent().parent().children("td:nth-child(1)").children("a").html()
             var idDOM = $(this).parent().parent().children("td:nth-child(2)").html();
+            
             removeTempObject(url, idDOM, function () {
                 deleteRowAndUpdateTable(id, url, idDOM);
             });
@@ -32,23 +32,25 @@ $(document).ready(function () {
 
 });
 
-//Remove the Tmporally Object
+//Remove the Temporally Object
 function removeTempObject(url, id, call) {
+    var exit =false;
+    var match =false;
     chrome.windows.getAll({ populate: true }, function (windows) {
-        console.log("wind:" + windows);
         windows.forEach(function(window){
-            window.tabs.forEach(function(tab){
-                console.log("url:" + tab.url);
-
-                if (url === tab.url) {
-                    
-                    console.log(tab.id);
+            window.tabs.forEach(function (tab) {
+                if (url === tab.url&&exit ===false) {
+                    exit = true;
+                    match=true;
                     BG.deleteLocalStorageObjectWithASpecificDOMId(tab.id, id, function () {
                         call();
                     });
                 }
             });
         });
+        if(!match)
+        call();
+
     });
 }
 
@@ -60,7 +62,6 @@ function tableDOMObject(call) {
 
     $("#iapiTemplateLocalStorage").empty();
     BG.getAllLocalStorageTemplate(function (local) {
-        console.log(local);
         if (Object.keys(local).length > 0) {
             $.each(local, function (keys, value) {
                 
