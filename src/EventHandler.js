@@ -52,24 +52,24 @@ function drag(ev, source) {
         else
             ev.dataTransfer.setData("idtemplate", msg);
 
-        //var pass_data = {
-        //    'action': "pageidRequest"
-        //};
-        //window.postMessage(JSON.stringify(pass_data), window.location.href);
+        var pass_data = {
+            'action': "pageidRequest"
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
 
-        //var flag = true;
-        //window.addEventListener('message', function (e) {
-        //    try {
-        //        if (JSON.parse(e.data).action === "pageidResponse" && flag) {
+        var flag = true;
+        window.addEventListener('message', function (e) {
+            try {
+                if (JSON.parse(e.data).action === "pageidResponse" && flag) {
 
-        //            flag = false;
-        //            console.log(",,,,,,,,,,DRAG,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
-        //            var id = JSON.parse(e.data).pageid;
-        //            ev.dataTransfer.setData("idpagesource", id);
-        //            return true;
-        //        }
-        //    } catch (err) { }
-        //}, false);
+                    flag = false;
+                    console.log(",,,,,,,,,,DRAG,,,,,,,,,,,,,," + JSON.parse(e.data).pageid);
+                    var id = JSON.parse(e.data).pageid;
+                    ev.dataTransfer.setData("idpagesource", id);
+                    return true;
+                }
+            } catch (err) { }
+        }, false);
     });
 
 }
@@ -145,6 +145,7 @@ function drop(ev) {
 
                 //var flag = true;
                 //window.addEventListener('message', function (e) {
+ 
                 //    try {
                 //        if (JSON.parse(e.data).action === "pageidResponse" && flag) {
 
@@ -153,8 +154,8 @@ function drop(ev) {
                 //            pageID = JSON.parse(e.data).pageid;
 
                 /////////TEST////////
-                //pageID = 71;
-                //idsourcepage = 81;
+                pageID = 132;
+                idsourcepage = 59;
                 /////////////////////
 
                 console.log("..........SOURCE.............." + idsourcepage);
@@ -1030,41 +1031,13 @@ function STJoin() {
     closeOverlay(function () {
         AnimationOverlay('<div class="info">'
                      + 'Type of join...'
-                     + '<button id="joinComparisonButtonST" onclick="STJoinComparison()" >Join Comparison</button>'
-                     + '<button id="joinOperatorButtonST" onclick="STJoinOperator()">Join Operator</button>'
+                     + '<button id="joinComparisonOperatorButtonST" onclick="STJoinComparisonOperator()" >Join ComparisonOperator</button>'
                      + '<button id="joinAttributesButtonST"  onclick="STJoinAttributes()">Join Attributes</button>'
                      + '<button onclick="closeOverlay()">Cancel</button>'
                      + '<button onclick="MainOverlayST(true,true,true)">Back</button>'
                      + '</div>');
     });
     //TODO
-}
-
-//Same type function join operator
-function STJoinOperator() {
-    console.log("STJoinOperator" + idtarget);
-    closeOverlay(function () {
-        console.log("arr1:" + arrSource[i]);
-
-        var newchi = "";
-        newchi = '<div class="info"><select id="iapicolumnsSource">';
-        for (var j = 1; j < arrSource.length; j++) {
-            newchi += '<option value="' + arrSource[j] + '" >' + arrSource[j] + '</option>';
-        }
-        newchi += '</select><select id="iapiOperator">'
-       + '<option value="=">=</option>'
-       + '<option value=">">></option>'
-       + '<option value="<"><</option>'
-       + '</select><select id="iapicolumnsTarget">';
-        for (var j = 1; j < arrTarget.length; j++) {
-            newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
-        }
-
-        newchi += '</select><button type="text" name="addFilter"  id="joinOperatorApplyButtonST" onclick="STJoinOperatorApply()">Apply</button></div>';
-
-        console.log(newchi);
-        AnimationOverlay(newchi);
-    });
 }
 
 //Same type function join attributes
@@ -1095,8 +1068,8 @@ function STJoinAttributes() {
 }
 
 //Same type function join comparison
-function STJoinComparison() {
-    console.log("STJoinComparison" + idtarget);
+function STJoinComparisonOperator() {
+    console.log("STJoinComparisonOperator" + idtarget);
     closeOverlay(function () {
         console.log("arr1:" + arrSource[i]);
 
@@ -1114,7 +1087,7 @@ function STJoinComparison() {
             newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
         }
 
-        newchi += '</select><button type="text" name="addFilter"  id="joinComparisonApplyButtonST" onclick="STJoinComparisonApply()">Apply</button></div>';
+        newchi += '</select><button type="text" name="addFilter"  id="joinComparisonOperatorApplyButtonST" onclick="STJoinComparisonOperatorApply">Apply</button></div>';
 
         console.log(newchi);
         AnimationOverlay(newchi);
@@ -1127,7 +1100,6 @@ function STJoinAttributeApply() {
     var div = $("#" + idtarget).children(".info");
     var columnSource = $(div).children("#iapicolumnsSource").find(":selected").val();
     var columnTarget = $(div).children("#iapicolumnsTarget").find(":selected").val();
-    var operator = $(div).children("#iapiOperator").find(":selected").val();
 
     try {
         var pass_data = {
@@ -1138,8 +1110,7 @@ function STJoinAttributeApply() {
             'idPageTarget': pageID,
             'idTarget': idtarget,
             'columnSource': columnSource,
-            'columnTarget': columnTarget,
-            'operator': operator
+            'columnTarget': columnTarget
 
         };
         window.postMessage(JSON.stringify(pass_data), window.location.href);
@@ -1152,8 +1123,8 @@ function STJoinAttributeApply() {
 }
 
 //Function button Apply in JoinOperator
-function STJoinOperatorApply() {
-    console.log("STJoinOperatorApply" + idtarget);
+function STJoinComparisonOperatorApply() {
+    console.log("STJoinComparisonOperatorApply" + idtarget);
     var div = $("#" + idtarget).children(".info");
     var columnSource = $(div).children("#iapicolumnsSource").find(":selected").val();
     var columnTarget = $(div).children("#iapicolumnsTarget").find(":selected").val();
@@ -1162,37 +1133,7 @@ function STJoinOperatorApply() {
     try {
         var pass_data = {
             'action': "STJoin",
-            'subaction': "Operator",
-            'idPageSource': idsourcepage,
-            'idSource': idsource,
-            'idPageTarget': pageID,
-            'idTarget': idtarget,
-            'columnSource': columnSource,
-            'columnTarget': columnTarget,
-            'operator': operator
-
-        };
-        window.postMessage(JSON.stringify(pass_data), window.location.href);
-
-    } catch (e) {
-        alert(e);
-    }
-    closeOverlay(function () {
-    });
-}
-
-//Function button Apply in JoinComparison
-function STJoinComparisonApply() {
-    console.log("STJoinComparisonApply" + idtarget);
-    var div = $("#" + idtarget).children(".info");
-    var columnSource = $(div).children("#iapicolumnsSource").find(":selected").val();
-    var columnTarget = $(div).children("#iapicolumnsTarget").find(":selected").val();
-    var operator = $(div).children("#iapiOperator").find(":selected").val();
-
-    try {
-        var pass_data = {
-            'action': "STJoin",
-            'subaction': "Comparison",
+            'subaction': "ComparisonOperator",
             'idPageSource': idsourcepage,
             'idSource': idsource,
             'idPageTarget': pageID,

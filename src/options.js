@@ -20,43 +20,51 @@ $(document).ready(function () {
             id = id.substring(13);
             var url = $(this).parent().parent().children("td:nth-child(1)").children("a").html()
             var idDOM = $(this).parent().parent().children("td:nth-child(2)").html();
-            
-            removeTempObject(url, idDOM, function () {
-                deleteRowAndUpdateTable(id, url, idDOM);
+
+            removeTempObject(url, idDOM, function (idTab) {
+                deleteRowAndUpdateTable(id, url, idDOM, function () {
+                    if (idTab != null) {
+                        console.log("REFRESH");
+                        console.log("url:" + idTab);
+                        chrome.tabs.reload(idTab);
+                    }
+                });
             });
         });
         $("[id=iapiRefreshTableLocalStorage]").click(function () {
             window.location.reload()();
-        }); 
+        });
     });
 
 });
 
 //Remove the Temporally Object
 function removeTempObject(url, id, call) {
-    var exit =false;
-    var match =false;
+    var exit = false;
+    var match = false;
+    var idTab;
     chrome.windows.getAll({ populate: true }, function (windows) {
-        windows.forEach(function(window){
+        windows.forEach(function (window) {
             window.tabs.forEach(function (tab) {
-                if (url === tab.url&&exit ===false) {
+                if (url === tab.url && exit === false) {
+                    idTab = tab.id;
                     exit = true;
-                    match=true;
+                    match = true;
                     BG.deleteLocalStorageObjectWithASpecificDOMId(tab.id, id, function () {
-                        call();
+                        call(idTab);
                     });
                 }
             });
         });
-        if(!match)
-        call();
+        if (!match)
+            call(null);
 
     });
 }
 
 //Create the table with all template saved in the localStorage
 function tableDOMObject(call) {
-    
+
     var createtable = false;
     var row = 0;
 
@@ -64,10 +72,10 @@ function tableDOMObject(call) {
     BG.getAllLocalStorageTemplate(function (local) {
         if (Object.keys(local).length > 0) {
             $.each(local, function (keys, value) {
-                
+
                 var values = local[keys];
                 values = JSON.parse(values);
-                if (createtable === false&& value!=null) {
+                if (createtable === false && value != null) {
                     createtable = true;
                     createTable();
                 }
@@ -78,8 +86,7 @@ function tableDOMObject(call) {
                 });
             });
         }
-        else
-        {
+        else {
             createMessage();
         }
         call();
@@ -117,8 +124,7 @@ function createMessage() {
 }
 
 //delete the Row at index and refresh other idButton
-function deleteRowAndUpdateTable(index, url, id)
-{
+function deleteRowAndUpdateTable(index, url, id, call) {
     index = parseInt(index);
     index = index + 2;
 
@@ -138,11 +144,11 @@ function deleteRowAndUpdateTable(index, url, id)
                 pos++;
             }
             //remove all headers of the table
-            if(index==numChildren&&numChildren==2)
-            {
+            if (index == numChildren && numChildren == 2) {
                 $("#iapiTemplateLocalStorage").empty();
             }
 
         }
+        call();
     });
 }

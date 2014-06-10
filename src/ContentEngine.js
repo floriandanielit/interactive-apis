@@ -161,24 +161,8 @@ window.addEventListener('message', function (e) {
                     } catch (er) {
                         data2 = null;
                     }
-                    if (JSON.parse(e.data).subAction === "Comparison") {
-                        STJoinComparison(data1, data2, function (resultObj) {
-                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
-                                //Send to eventHandler if I would generate dinamic Message
-
-                                //Do the generate
-                                var messageReturn = "done";
-                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
-                                    var pass_data = {
-                                        'action': "middlewareResponse",
-                                        'ret': "MiddlewareGenerate"
-                                    };
-                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
-                                });
-                            });
-                        });
-                    } else if (JSON.parse(e.data).subAction === "Operator") {
-                        STJoinOperator(data1, data2, function (resultObj) {
+                    if (JSON.parse(e.data).subAction === "ComparisonOperator") {
+                        STJoinComparisonOperator(data1, data2, JSON.parse(e.data).columnSource, JSON.parse(e.data).columnTarget,JSON.parse(e.data).operator, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
 
@@ -194,7 +178,7 @@ window.addEventListener('message', function (e) {
                             });
                         });
                     } else if (JSON.parse(e.data).subAction === "Attributes") {
-                        STJoinAttributes(data1, data2, JSON.parse(e.data).columnSource, JSON.parse(e.data).columnTarget, JSON.parse(e.data).operator, function (resultObj) {
+                        STJoinAttributes(data1, data2, JSON.parse(e.data).columnSource, JSON.parse(e.data).columnTarget, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
 
@@ -500,46 +484,31 @@ function SameType(arrSource, arrTarget, call) {
 //}                                                                                   //<--End Object
 //
 
-//Union two same type object and eliminate the duplicats
-function STEliminateDuplicates(objSource, objTarget, call) {
-    if (objSource != undefined && objTarget != undefined) {
-        $.each(objSource, function (key1, value1) {
-            $.each(value1, function (key1, value1) {
-                for (var key1 in value1) {
-                    $.each(objTarget, function (key2, value2) {
-                        $.each(value2, function (key2, value2) {
-                            for (var key2 in value2) {
-                                if (value1[key1] === value2[key2]) {
-                                    find = true;
-                                    console.log("UGUALI");
-                                    value2[key2] = "";
-                                    break;
-                                }
-                            }
-                        });
-                    });
-                }
-            });
-        });
-        call(objTarget);
-    }
-    else
-        call(undefined);
-}
+/////////////////////////GENERAL FUNCTIONS///////////////////////////////
 
-//Union two same type object and 
-function STUnionExtended(objSource, objTarget, call) {
+//General Function Join called by iapi_scripting
+function Join(first,second,option,call) {
     //TODO
-    //Union extended
+    //Join
     call();
 }
 
-//Union two same type object and 
-function STUnionRestricted(objSource, objTarget, call) {
+//General Function Merge called by iapi_scripting
+function Merge(first, second, option, call) {
     //TODO
-    //Union Restricted
+    //Merge
     call();
 }
+
+//General Function Filter called by iapi_scripting
+function Filter(first, option, call) {
+    //TODO
+    //Filter
+    call();
+}
+
+
+/////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
 //Filter the object in the local storage
 function doFilter(localObjectID, filters, call) {
@@ -624,26 +593,62 @@ function doFilter(localObjectID, filters, call) {
         call(undefined);
 }
 
+//Union two same type object and eliminate the duplicats
+function STEliminateDuplicates(objSource, objTarget, call) {
+    if (objSource != undefined && objTarget != undefined) {
+        $.each(objSource, function (key1, value1) {
+            $.each(value1, function (key1, value1) {
+                for (var key1 in value1) {
+                    $.each(objTarget, function (key2, value2) {
+                        $.each(value2, function (key2, value2) {
+                            for (var key2 in value2) {
+                                if (value1[key1] === value2[key2]) {
+                                    find = true;
+                                    console.log("UGUALI");
+                                    value2[key2] = "";
+                                    break;
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        });
+        call(objTarget);
+    }
+    else
+        call(undefined);
+}
+
+//Union two same type object and 
+function STUnionExtended(objSource, objTarget, call) {
+    //TODO
+    //Union extended
+    call();
+}
+
+//Union two same type object and 
+function STUnionRestricted(objSource, objTarget, call) {
+    //TODO
+    //Union Restricted
+    call();
+}
+
 //Join two same type object (Comparison)
-function STJoinComparison(objSource, objTarget, call) {
+function STJoinComparisonOperator(objSource, objTarget, columnSource, ColumnTarget,operator, call) {
     //TODO
     //Join Comparison
     call();
 }
 
 //Join two same type object (Attributes)
-function STJoinAttributes(objSource, objTarget, columnSource, ColumnTarget, operator, call) {
+function STJoinAttributes(objSource, objTarget, columnSource, ColumnTarget, call) {
     //TODO
     //Join Comparison
     call();
 }
 
-//Join two same type object (Operator)
-function STJoinOperator(objSource, objTarget, call) {
-    //TODO
-    //Join Comparison
-    call();
-}
+///////////////////////////////////////////
 
 //the Middleware script
 function middleware(disa, iAPILayerDisable) {

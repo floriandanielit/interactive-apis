@@ -27,9 +27,6 @@ var scriptPresence = new Array();
 // scriptPresence[tab.id] tells whether the respective tab contains the inject script
 var scriptiapiLayerPresence = new Array();
 
-
-
-
 // set the correct icon based on the presence of iAPIs in the current tab
 function setIcon(tabId) {
     if (extensionDisabled === true) {
