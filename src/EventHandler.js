@@ -1008,6 +1008,8 @@ function cancel(id) {
     //TODO
 }
 
+////////////////////////SAME TYPE OBJECTS///////////////////////////////////
+
 //Create and Display main Overlay Same Type
 function MainOverlayST(union, substitute, join) {
     closeOverlay(function () {
@@ -1037,7 +1039,6 @@ function STJoin() {
                      + '<button onclick="MainOverlayST(true,true,true)">Back</button>'
                      + '</div>');
     });
-    //TODO
 }
 
 //Same type function join attributes
@@ -1051,11 +1052,7 @@ function STJoinAttributes() {
         for (var j = 1; j < arrSource.length; j++) {
             newchi += '<option value="' + arrSource[j] + '" >' + arrSource[j] + '</option>';
         }
-        newchi += '</select><select id="iapiOperator">'
-       + '<option value="=">=</option>'
-       + '<option value=">">></option>'
-       + '<option value="<"><</option>'
-       + '</select><select id="iapicolumnsTarget">';
+        newchi += '</select> = <select id="iapicolumnsTarget">';
         for (var j = 1; j < arrTarget.length; j++) {
             newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
         }
@@ -1087,7 +1084,7 @@ function STJoinComparisonOperator() {
             newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
         }
 
-        newchi += '</select><button type="text" name="addFilter"  id="joinComparisonOperatorApplyButtonST" onclick="STJoinComparisonOperatorApply">Apply</button></div>';
+        newchi += '</select><button type="text" name="addFilter"  id="joinComparisonOperatorApplyButtonST" onclick="STJoinComparisonOperatorApply()">Apply</button></div>';
 
         console.log(newchi);
         AnimationOverlay(newchi);
@@ -1256,7 +1253,7 @@ function STEliminateDuplicates() {
     //TODO
 }
 
-///////////COMMON////////////
+////////////////////////////////COMMON////////////////////////////////
 //Sobstitute the target with the source
 function Substitute() {
     console.log("Substitute" + idtarget);
@@ -1274,11 +1271,42 @@ function Substitute() {
         closeOverlay();
     });
 }
-////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////ADVANCED FEATURE/////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////DIFFERENT TYPE OBJECTS///////////////////////////////////
+
+//Create and Display main Overlay Dfferent Type
+function MainOverlayDT() {
+    closeOverlay(function () {
+        AnimationOverlay('<div class="info">'
+                      + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
+                      + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
+                      + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
+                      + '<button onclick="closeOverlay()">Cancel</button>'
+                      + '</div>');
+    });
+}
+
+//Create and Display main Overlay Dfferent Type
+function MainOverlayAfterColumnsMatchDT(union, substitute, join) {
+    closeOverlay(function () {
+        var content = '<div class="info">Different Type';
+        if (union === true) {
+            content += '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
+        } if (substitute === true) {
+            content += '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
+        } if (join === true) {
+            content += '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
+        }
+        content += '<button onclick="closeOverlay()">Cancel</button>'
+                + '</div>';
+        AnimationOverlay(content);
+    });
+}
 
 //Different type function Union Menù
 function DTUnion() {
@@ -1401,35 +1429,6 @@ function DTMatchColumnsAutomatically() {
 
 //Advanced// REquestDBPedia
 function RequestOnDBPedia() {
-}
-
-//Create and Display main Overlay Dfferent Type
-function MainOverlayDT() {
-    closeOverlay(function () {
-        AnimationOverlay('<div class="info">'
-                      + 'The source and the target object are different Type... So you can match columns Manually(Basic Mode) or Automatically (Advanced Mode)'
-                      + '<button id="matchColumnsManuallyButtonDT" onclick="DTMatchColumnsManually()" >Match Columns Manually</button>'
-                      + '<button id="matchColumnsAutomaticallyButtonDT" onclick="DTMatchColumnsAutomatically()" >Match Columns Automatically</button>'
-                      + '<button onclick="closeOverlay()">Cancel</button>'
-                      + '</div>');
-    });
-}
-
-//Create and Display main Overlay Dfferent Type
-function MainOverlayAfterColumnsMatchDT(union, substitute, join) {
-    closeOverlay(function () {
-        var content = '<div class="info">Different Type';
-        if (union === true) {
-            content += '<button id="unionButtonDT" onclick="DTUnion()" >Union</button>'
-        } if (substitute === true) {
-            content += '<button id="substituteButtonDT" onclick="Substitute()">Substitute</button>'
-        } if (join === true) {
-            content += '<button id="joinButtonDT"  onclick="DTJoin()">Join</button>'
-        }
-        content += '<button onclick="closeOverlay()">Cancel</button>'
-                + '</div>';
-        AnimationOverlay(content);
-    });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

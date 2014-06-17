@@ -404,8 +404,9 @@ function SameType(arrSource, arrTarget, call) {
 //            "title":"Advanced Web Services",                                        //  \ Data
 //            "to_uploadresource":null,                                               //  / Attribute
 //            "abstract":"Web services and Service-Oriented Computing (SOC)......",   // /
-//            "where":"Springer, 2014. In print. ISBN 978-1-4614-7534-7"}             ///
-//         },                                                                         
+//            "where":"Springer, 2014. In print. ISBN 978-1-4614-7534-7"              ///
+//         }                                                                          
+//    },
 //    {"1":                                                                           //<-- Dataitem
 //        {
 //            "oid":"129",                                                            //\
@@ -425,6 +426,7 @@ function SameType(arrSource, arrTarget, call) {
 //            "Conference":"Proceedings of ComposableWeb 2013",                       //  > DataAttribute
 //            "Href":"HREF",                                                          // / 
 //            "Abstract":"ABSTRACT"                                                   ///
+//        }                                                                           
 //    },                                                
 //    {"Publication":                                                                 //<-- Dataitem
 //        {
@@ -512,6 +514,7 @@ function Filter(first, option, call) {
 
 //Filter the object in the local storage
 function doFilter(localObjectID, filters, call) {
+    var cloneLocalObjectID = localObjectID;
     if (localObjectID != undefined) {
         //for (var i = 0; i < filters.length; i++) {
         //    console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
@@ -575,6 +578,7 @@ function doFilter(localObjectID, filters, call) {
                                         //console.log("Contains");
                                     }
                                 }
+                                
                                 //console.log("---------------------------------------------");
 
                             }
@@ -635,16 +639,16 @@ function STUnionRestricted(objSource, objTarget, call) {
 }
 
 //Join two same type object (Comparison)
-function STJoinComparisonOperator(objSource, objTarget, columnSource, ColumnTarget,operator, call) {
+function STJoinComparisonOperator(objSource, objTarget, columnSource, columnTarget, operator, call) {
     //TODO
-    //Join Comparison
+    //Join Comparison Operator
     call();
 }
 
 //Join two same type object (Attributes)
-function STJoinAttributes(objSource, objTarget, columnSource, ColumnTarget, call) {
+function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, call) {
     //TODO
-    //Join Comparison
+    //Join Attributes
     call();
 }
 
