@@ -484,6 +484,9 @@ function Join(first, second, columnA, columnB, operator, call) {
     call();
 }
 
+Join("", "", "oid", "oid", ">=", function () {
+
+});
 /// <summary>General Function UnionAll called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
 /// <param name="second" type="Object">The second Object in LocalStorage</param>   
@@ -611,9 +614,7 @@ function getTemplate(idTemplate, first, call) {
 
     LoadTemplateFile(idTemplate, function (file) {
         var template = $("<div>" + file + "</div>").find('#' + idTemplate);
-        console.log(template[0].outerHTML);
-
-        getFirstRowKeyObjectNEW(false,first, function (arr) {
+        getFirstRowKeyObjectNEW(false, first, function (arr) {
             for (var i = 0; i < arr.length; i++) {
                 console.log(arr[i]);
             }
@@ -622,8 +623,10 @@ function getTemplate(idTemplate, first, call) {
 
     });
 }
-getTemplate("2D_L_SNEW", "", function (val) {
-});
+
+//TEST
+//getTemplate("2D_L_SNEW", "", function (val) {});
+
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
 //Filter the object in the local storage
@@ -1070,10 +1073,138 @@ function STUnionAll(objSource, objTarget, call) {
 function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, operator, call) {
     //TODO
     //Join Attributes
+    objSource = {
+        "Publication": [{
+            "Publication2":
+                {
+                    "oid": "120",
+                    "author": "B. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                    "title": "Advancsed Web Services",
+                    "to_uploadresource": null,
+                    "abstract": "Web services and Service-Oriented Computing (SOC)......",
+                    "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
+                }
+        }, {
+            "Publication2":
+               {
+                   "oid": "141",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }]
 
-    STUnionAll(first, second, function (objectMerged) {
+    }
 
+    objTarget =
+        {
+            "Publication": [
+                {
+                    "Publication2":
+                       {
+                           "oid": "115",
+                           "Author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                           "Title": "Advanced Web Services",
+                           "Abstract": "Web services and Service-Oriented Computing (SOC)......",
+                           "Conference": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
+                       }
+                },
+                {
+                    "Publication2":
+                       {
+                           "oid": "121",
+                           "Author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                           "Title": "Advanced Web Services",
+                           "Abstract": "Web services and Service-Oriented Computing (SOC)......",
+                           "Conference": "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+                       }
+                },
+                {
+                    "Publication2":
+                       {
+                           "oid": "141",
+                           "Author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                           "Title": "Advanced Web Services",
+                           "Abstract": "Web services and Service-Oriented Computing (SOC)......",
+                           "Conference": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                       }
+                }]
+        }
+
+    var mergeDupe = function (pub1, pub2) {
+
+        var o = $.extend(true, {}, pub2, pub1);
+
+        console.log("1111111111111");
+        console.log(o);
+        console.log("2222222222222");
+        return o;
+    };
+
+    // true if pub are "operator" (equal,greatest,lower)
+    var checkDupe = function (pub1, pub2) {
+        if (operator === ">=") {
+            if (pub1.localeCompare(pub2) === 1 || pub1.localeCompare(pub2) === 0) {
+                return true;
+            }
+        } else if (operator === "<=") {
+            if (pub1.localeCompare(pub2) === -1 || pub1.localeCompare(pub2) === 0) {
+                return true;
+            }
+        }
+        else if (operator === "=") {
+            if (pub1.localeCompare(pub2) === 0) {
+                return true;
+            }
+        }
+        else if (operator === "<") {
+            if (pub1.localeCompare(pub2) === -1) {
+                return true;
+            }
+        }
+        else if (operator === ">") {
+            if (pub1.localeCompare(pub2) === 1) {
+                return true;
+            }
+        }
+        else
+            return false;
+    };
+
+    //false if all equal
+    var checkDupes = function (arr, value1) {
+        $.each(objTarget, function (pubKey, pubVal) {
+            for (var i = 0; i < pubVal.length; i++) {
+                $.each(pubVal[i], function (key1, value2) {
+                    if (checkDupe(value1[columnSource], value2[columnTarget])) {
+                        arr.push(mergeDupe(value1, value2));
+                    }
+                });
+            }
+        });
+
+    };
+
+    var existingPUBs = [];
+    $.each(objSource, function (pubKey, pubVal) {
+        for (var i = 0; i < pubVal.length; i++) {
+            $.each(pubVal[i], function (key1, value1) {
+                checkDupes(existingPUBs, value1);
+            });
+        }
     });
+    $.each(objTarget, function (key1, value1) {
+        objTarget[key1] = existingPUBs;
+    });
+    console.log("------------------------------------");
+    
+
+    console.log(objTarget);
+
+
+
 
     call();
 }
