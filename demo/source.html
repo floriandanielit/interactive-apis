@@ -23,7 +23,7 @@ and open the template in the editor.
         </style>
     </head>
     <body>
-
+<!--
     	<h1>Page with reusable data</h1>
     	<h2>A table with publications</h2>
 
@@ -45,11 +45,24 @@ and open the template in the editor.
                 <tr class="dataitem:Publication" style="background-color: white;">
                     <td class="dataattribute:Author">J. Jara, F. Daniel, F. Casati and M. Marchese</td>
                     <td class="dataattribute:Title">From a Simple Flow to Social Applications</td> 
-                    <td class="dataattribute:Conference">Proceedings of ComposableWeb 2013</td>
-                    <td class="dataattribute:Href">Proceedings of ComposableWeb 2013</td>
-                    <td class="dataattribute:Abstract">Proceedings of ComposableWeb 2013</td>
+                    <td class="dataattribute:Conference">Proceedings of ComposableWeb 2014</td>
+                    <td class="dataattribute:Href">Proceedings of ComposableWeb 2014</td>
+                    <td class="dataattribute:Abstract">Proceedings of ComposableWeb 2014</td>
                 </tr>
-         
+                <tr class="dataitem:Publication" style="background-color: white;">
+                    <td class="dataattribute:Author">J. Jara, F. Daniel, F. Casati and M. Marchese</td>
+                    <td class="dataattribute:Title">From a Simple Flow to Social Applications</td>
+                    <td class="dataattribute:Conference">Proceedings of ComposableWeb 2015</td>
+                    <td class="dataattribute:Href">Proceedings of ComposableWeb 2015</td>
+                    <td class="dataattribute:Abstract">Proceedings of ComposableWeb 2015</td>
+                </tr>
+                <tr class="dataitem:Publication" style="background-color: white;">
+                    <td class="dataattribute:Author">J. Jara, F. Daniel, F. Casati and M. Marchese</td>
+                    <td class="dataattribute:Title">From a Simple Flow to Social Applications</td>
+                    <td class="dataattribute:Conference">Proceedings of ComposableWeb 2016</td>
+                    <td class="dataattribute:Href">Proceedings of ComposableWeb 2016</td>
+                    <td class="dataattribute:Abstract">Proceedings of ComposableWeb 2016</td>
+                </tr>
                 
             </table>
 
@@ -133,7 +146,58 @@ and open the template in the editor.
 
      
             
-            
+       -->
+<table id="2" class="h-iapi
+   e-data:Publications u-json:http://www.floriandaniel.it/ops/pubs.json
+   e-item:Publication:pubs
+   p-attr:Author:author
+   p-attr:Tile:title
+   p-attr:Event:where">
+    <tr style="font-weight: bold; background-color: green;">
+        <td class="p-attr">Author</td>
+        <td class="p-attr">Title</td>
+        <td class="p-attr">Event</td>
+    </tr>
+</table>
+
+<table id="1" class="iapi e-data:Publications"  cellspacing="1" cellpadding="3">
+    <tr style="font-weight: bold; background-color: green;">
+        <td class="p-attr">Author</td>
+        <td class="p-attr">Title</td>
+        <td class="p-attr">Conference</td>
+        <td class="p-attr">Href</td>
+        <td class="p-attr">Abstract</td>
+    </tr>
+    <tr class="e-item:Publication">
+        <td class="p-attr:Authors">F. Daniel and A. Furlan</td>
+        <td class="p-attr:Title">The Interactive API (iAPI)</td>
+        <td class="p-attr:Event">ComposableWeb 2013</td>
+        <td class="p-attr:Href">Florian@email.com</td>
+        <td class="p-attr:Abstract">this is a demo </td>
+    </tr>
+    <tr class="e-item:Publication">
+        <td class="p-attr:Authors">F. Daniel</td>
+        <td class="p-attr:Title">The Interactive API (iAPI)</td>
+        <td class="p-attr:Event">ComposableWeb 2014</td>
+        <td class="p-attr:Href">Florian@email.com</td>
+        <td class="p-attr:Abstract">this is a demo </td>
+    </tr>
+    <tr class="e-item:Publication">
+        <td class="p-attr:Authors">A. Furlan</td>
+        <td class="p-attr:Title">The Interactive API (iAPI)</td>
+        <td class="p-attr:Event">ComposableWeb 2015</td>
+        <td class="p-attr:Href">Florian@email.com</td>
+        <td class="p-attr:Abstract">this is a demo </td>
+    </tr>
+    <tr class="e-item:Publication">
+        <td class="p-attr:Authors">Anis Nouri</td>
+        <td class="p-attr:Title">The Interactive API (iAPI)</td>
+        <td class="p-attr:Event">ComposableWeb 2016</td>
+        <td class="p-attr:Href">Florian@email.com</td>
+        <td class="p-attr:Abstract">this is a demo </td>
+    </tr>
+</table>
+
     </body>
 </html>
 

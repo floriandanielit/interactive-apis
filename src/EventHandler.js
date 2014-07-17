@@ -79,9 +79,10 @@ function drop(ev, pageId) {
     if (ev.dataTransfer.getData("idtemplate") !== "NOIDTEMPLATE") {
         idTemplate = ev.dataTransfer.getData("idtemplate");
     }
-
+ //   console.log(ev.target.id,source,idsource);
+   // iapi.fetchData(ev.target.id,source,"iapi",idsource,function(data){$("#"+ev.target.id).renderData(data,"iapi");});
     //load the page
-    getPage(source, idtarget, function () {
+  /*  getPage(source, idtarget, function () {
 
         // Draged element is a source or a target, then extract related data
         getTypeSource(source, document.URL, idsource, idtarget, function (urlsource, sourceType, iapiid, arr) {
@@ -140,6 +141,7 @@ function drop(ev, pageId) {
                     }
 
                     //Store template
+                    console.log($('#' + idtarget)[0].outerHTML);
                     try {
 
                         var pass_data = {
@@ -164,7 +166,7 @@ function drop(ev, pageId) {
             });
 
         });
-    });
+    }); */
 }
 
 //get type of the Draged element
@@ -657,3 +659,4 @@ function getTemplateFile( call) {
     }
     
 }
+

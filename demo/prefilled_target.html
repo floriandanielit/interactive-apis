@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+</head>
+<body>
+
+
+
+
+<table class="iapi datasource:http://localhost:63342/interactive-apis2/demo/source.html sourcetype:iapi iapiid:1" id="SECONDO" style="background-color: gray;" cellspacing="1" cellpadding="3">
+    <tr style="font-weight: bold; background-color: white;">
+        <td>Author</td>
+        <td>Title</td>
+        <td>Conference</td>
+        <td>Href</td>
+        <td>Abstract</td>
+    </tr>
+    <tr class="iapitemplate:item idTemplate:2D_P_D dataitem:Publication" style="background-color: white;">
+        <td class="dataattribute:Author"></td>
+        <td class="dataattribute:Title"></td>
+        <td class="dataattribute:Conference"></td>
+        <td class="dataattribute:Href"></td>
+        <td class="dataattribute:Abstract"></td>
+    </tr>
+</table>
+<DIV class="iapi datasource:http://www.floriandaniel.it/ops/pubs.json sourcetype:json " id="PRIMO" style="background-color: gray;" cellspacing="1" cellpadding="3">
+
+    <ol class="iapitemplate:item idTemplate:2D_NL_S dataitem:Publication" style="background-color: white;">
+        <li class="dataattribute:Author:author" style="color:red ;font-style:inherit; text-align:right" >JSON EXTERNAL TRG(prefilled)</li>
+        <li class="dataattribute:Title:title">The Interactive API (iAPI)</li>
+        <li class="dataattribute:Conference:where">Proceedings of ComposableWeb 2013</li>
+        <li class="dataattribute:Oid:oid">JSON EXTERNAL TRG(prefilled)</li>
+        <li class="dataattribute:Abstract:abstract">The Interactive API (iAPI)</li>
+        <li class="dataattribute:to_uploadresource:to_uploadresource">Proceedings of ComposableWeb 2013</li>
+    </ol>
+</DIV>
+<!--
+<table id="TERZO" class="iapi datasource:http://127.0.0.1:8020/interactive-apis/demo/source.html sourcetype:iapi iapiid:1" style="background-color: gray;" cellspacing="1" cellpadding="3">
+<tr style="font-weight: bold; background-color: white;">
+<td>Author</td>
+<td>Href</td>
+<td>Conference</td>
+</tr>
+<tr class="iapitemplate:item dataitem:Publication" style="background-color: white;">
+<td class="dataattribute:Author" > </td>
+<td class="dataattribute:Href" ></td>
+<td class="dataattribute:Conference" ></td>
+</tr>
+</table>
+-->
+</body>
+</html>

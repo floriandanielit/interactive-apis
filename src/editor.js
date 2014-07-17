@@ -176,7 +176,7 @@ function iapi_menu() {
             else {
                 var obj = {
                     "type_dataattribute": $(i.target).attr("value"),
-                    "value": $(i.target).is(":checked"),
+                    "value": $(i.target).is(":checked")
                 };
                 hideShowDataattributeDOM($("#iapi_menu [class='getAll']").attr("id"), obj);
             }
@@ -499,6 +499,7 @@ function hideShowDataattributeDOM(id, obj) {
                 });
             });
         } else {
+
             hideDataattribute(id, obj.type_dataattribute, function () {
                 var tmp = $('#' + id).clone();
                 $(tmp).find("[class*='iapitemplate:item']").nextAll().remove();

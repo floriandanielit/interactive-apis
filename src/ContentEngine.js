@@ -4,13 +4,12 @@ chrome.extension.sendMessage({
 }, function (msg) {
     middleware(msg.disable, msg.IApiLayerStatus);
 });
-
 // listeners to intercept the editor.js messages (request)
 window.addEventListener('message', function (e) {
     try {
         if (JSON.parse(e.data).action === "getExternal") {
             // if the request from the inject scripts is "getExternal",
-            // send to background.js the relative action
+            // send to background.js the relative action;
             chrome.extension.sendMessage({
                 "type": "getExternal",
                 "value": JSON.parse(e.data).value
@@ -35,15 +34,16 @@ window.addEventListener('message', function (e) {
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
         }
-        if (JSON.parse(e.data).action === "getStoredObject") {
-            // if the request from the inject scripts is "getStoredObject",
+
+        if (JSON.parse(e.data).action === "extractData") {
+            // if the request from the inject scripts is "extractData",
             // extract the data then provide it
             chrome.extension.sendMessage({
-                "type": "Extract",
+                "type": "Extract_Data",
                 "value": JSON.parse(e.data)
             }, function (data) {
                 chrome.extension.sendMessage({
-                    "type": "getStoredObject",
+                    "type": "getStoredObject"
                 }, function (data) {
                     var pass_data = {
                         'action': "getData",
@@ -53,6 +53,38 @@ window.addEventListener('message', function (e) {
                     e.source.postMessage(JSON.stringify(pass_data), e.origin);
                 });
             });
+        }
+
+        if (JSON.parse(e.data).action === "getStoredObject") {
+            // if the request from the inject scripts is "getStoredObject",
+            // extract the data then provide it
+            chrome.extension.sendMessage({
+                "type": "Extract",
+                "value": JSON.parse(e.data)
+            }, function (data) {
+                chrome.extension.sendMessage({
+                    "type": "getStoredObject"
+                }, function (data) {
+                    console.log("done");
+                    var pass_data = {
+                        'action': "getData",
+                        'value': data,
+                        'idTarget': JSON.parse(e.data).idTarget
+                    };
+                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
+                });
+            });
+        }
+        if (JSON.parse(e.data).action === "updateData") {
+            // if the request from the inject scripts is "updateData",
+            // forward the request to the backround and update the data
+
+                chrome.extension.sendMessage({
+                    "type": "updateStoredData",
+                    "value": JSON.parse(e.data)
+                }, function (data) {
+
+                });
         }
         if (JSON.parse(e.data).action === "generate") {
             //  execute the  generate
@@ -84,7 +116,7 @@ window.addEventListener('message', function (e) {
             pageIdRequest(function (pageid) {
                 var pass_data = {
                     'action': "pageidResponse",
-                    'pageid': pageid,
+                    'pageid': pageid
                 };
                 e.source.postMessage(JSON.stringify(pass_data), e.origin);
             });
@@ -193,6 +225,7 @@ function middleware(disa, iAPILayerDisable) {
                 var sourcetype;
                 var iapiid;
 
+
                 for (i = 0; i < tagtarg.length; i++) {
                     if (tagtarg[i].slice(0, 11) == ("datasource:")) {
                         urlsource = tagtarg[i].substr(11);
@@ -251,6 +284,7 @@ function generate(idTemplate, idPage, call) {
     getStoredObject(function (data) {
         data = JSON.parse(data);
         data = data[idTemplate];
+        console.log(data);
         template = $('#' + idTemplate);
         // select the template
         var arr = {};
@@ -260,6 +294,7 @@ function generate(idTemplate, idPage, call) {
                 var attribute = arrAttr[i].split(":");
                 for (var j = 1; j < attribute.length; j++) {
                     arr[attribute[j]] = attribute[j];
+                    console.log( attribute[j]);
                 }
             }
             if (arrAttr[i].slice(0, 11) === ("sourcetype:")) {

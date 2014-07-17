@@ -81,25 +81,20 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 		return true;
 
 	}
-	/* else
-	  if (msg.type === "StoreLocalStorage") {
-	 // store the extracted Object
-	 var prewItems;
-	 var idObject = {};
-	 prewItems = JSON.parse(localStorage.getItem(sender.tab.id));
-	 if (prewItems !== null) {
-	 prewItems[msg.value.id] = msg.value.value;
-	 localStorage.setItem(sender.tab.id, JSON.stringify(prewItems));
+    else if (msg.type === "updateStoredData") {
+        // load the Stord object
+        var idTarget =msg.value.idTarget;
+        var pageId=msg.value.pageId;
+        var data=msg.value.data;
 
-	 } else {
-	 idObject[msg.value.id] = msg.value.value;
-	 localStorage.setItem(sender.tab.id, JSON.stringify(idObject));
-	 }
+        var prewItems = {};
 
-	 return true;
+        prewItems[idTarget] = msg.value.data;
 
-	 } */
-
+        localStorage.setItem(pageId, JSON.stringify(prewItems));
+        sendResponse(localStorage.getItem(pageId));
+        return true;
+    }
 	else if (msg.type === "getStoredObject") {
 		// load the Stord object
 		getStoredObject(sender.tab.id, function(data) {
@@ -109,7 +104,8 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 		return true;
 	} else if (msg.type === "getExternal") {
 		// load an external(HTML, JSON)
-		loadExtern(msg.value, function(data) {
+        console.log("load");
+		loadExternal(msg.value, function(data) {
 			sendResponse(data);
 		});
 
@@ -158,6 +154,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 					prewItems[JSON.parse(data).id] = JSON.parse(data).value;
 					localStorage.setItem(sender.tab.id, JSON.stringify(prewItems));
 				} else {
+
 					idObject[JSON.parse(data).id] = JSON.parse(data).value;
 					localStorage.setItem(sender.tab.id, JSON.stringify(idObject));
 				}
@@ -179,6 +176,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 						idObject[JSON.parse(data).id] = JSON.parse(data).value;
 						localStorage.setItem(sender.tab.id, JSON.stringify(idObject));
 					}
+                    console.log("done extraction");
 
 					sendResponse(data);
 				});
@@ -186,6 +184,53 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
 		}
 		return true;
 	}
+    else if (msg.type === "Extract_Data") {
+        // Get the extract data and save in the localStorage the object
+        console.log(msg.value.sourceType.toLowerCase());
+        if (msg.value.sourceType.toLowerCase() === "iapi") {
+            loadExternal(msg.value.url,function(data){
+            extractIAPI(msg.value.idTarget, data,msg.value.obj, function(data) {
+                var prewItems;
+                var idObject = {};
+                prewItems = JSON.parse(localStorage.getItem(sender.tab.id));
+
+                if (prewItems !== null) {
+                    prewItems[JSON.parse(data).id] = JSON.parse(data).value;
+                    localStorage.setItem(sender.tab.id, JSON.stringify(prewItems));
+                } else {
+
+                    idObject[JSON.parse(data).id] = JSON.parse(data).value;
+                    localStorage.setItem(sender.tab.id, JSON.stringify(idObject));
+                }
+
+                sendResponse(data);
+            });
+            });
+        }
+        else if (msg.value.sourceType.toLowerCase() === "json") {
+            // extract data from JSON file then store it
+            loadExternal(msg.value.url, function (data) {
+                extractJSON (msg.value.idTarget,data, msg.value.obj, function(data) {
+                    var prewItems;
+                    var idObject = {};
+                    prewItems = JSON.parse(localStorage.getItem(sender.tab.id));
+
+                    if (prewItems !== null) {
+                        prewItems[JSON.parse(data).id] = JSON.parse(data).value;
+                        localStorage.setItem(sender.tab.id, JSON.stringify(prewItems));
+                    } else {
+                        idObject[JSON.parse(data).id] = JSON.parse(data).value;
+                        localStorage.setItem(sender.tab.id, JSON.stringify(idObject));
+                    }
+
+                    console.log("done extraction");
+
+                    sendResponse(data);
+                });
+            });
+        }
+        return true;
+    }
 });
 
 // load the DOM object
@@ -201,7 +246,7 @@ function getStoredObject(arg_name, call) {
 }
 
 //load a external page with different domain
-function loadExtern(path, success, error) {
+function loadExternal(path, success, error) {
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState === 4) {

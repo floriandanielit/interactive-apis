@@ -12,15 +12,16 @@ datasource:http://www.floriandaniel.it/ops/pubs.json sourcetype:json
 
 -->
     
-         <DIV class="iapi" id="PRIMO" style="background-color: gray;" cellspacing="1" cellpadding="3">
+         <DIV class="iapi " id="PRIMO" style="background-color: gray;" cellspacing="1" cellpadding="3">
               
                 <ol class="iapitemplate:item idTemplate:2D_NL_S dataitem:Publication" style="background-color: white;">
-                    <li class="dataattribute:Author:author" style="color:red ;font-style:inherit; text-align:right" >JSON EXTERNAL TRG(prefilled)</li>
-                    <li class="dataattribute:Title:title">The Interactive API (iAPI)</li>
-                    <li class="dataattribute:Conference:where">Proceedings of ComposableWeb 2013</li>
-                    <li class="dataattribute:Oid:oid">JSON EXTERNAL TRG(prefilled)</li>
-                    <li class="dataattribute:Abstract:abstract">The Interactive API (iAPI)</li>
-                    <li class="dataattribute:to_uploadresource:to_uploadresource">Proceedings of ComposableWeb 2013</li>
+                    <li class="dataattribute:Author:author" style="color:red ;font-style:inherit; text-align:right" ></li>
+                    <li class="dataattribute:Title:title"></li>
+                    <li class="dataattribute:Conference:where"></li>
+                    <li class="dataattribute:Oid:oid"></li>
+                    <li class="dataattribute:Abstract:abstract"></li>
+                    <li class="dataattribute:to_uploadresource:to_uploadresource"></li>
+                    <td class="dataattribute:Citazioni:Citazioni"></td>
                 </ol>
           </DIV> 
      
@@ -33,15 +34,19 @@ datasource:http://www.floriandaniel.it/ops/pubs.json sourcetype:json
                     <td>Href</td>
                     <td>Abstract</td> 
                 </tr>
-                 <tr class="iapitemplate:item idTemplate:2D_P_D dataitem:Publication" style="background-color: white;">
-                     <td class="dataattribute:Author"></td>
-                     <td class="dataattribute:Title"></td>
-                    <td class="dataattribute:Conference"></td>
-                     <td class="dataattribute:Href"></td>
-                     <td class="dataattribute:Abstract"></td> 
+
+                 <tr class="iapitemplate:item idTemplate:2D_P_D e-item:Publication" style="background-color: white;">
+                     <td class="p-attr:Authors"></td>
+                     <td class="p-attr:Title"></td>
+                    <td class="p-attr:Event"></td>
+                     <td class="p-attr:Href"></td>
+                     <td class="p-attr:Abstract"></td>
+
                  </tr>
             </table>
-           
+
+
+<div><button type="text" name="sub" onclick="done()">submit</button></div>
  <!-- 
             <table id="TERZO" class="iapi datasource:http://127.0.0.1:8020/interactive-apis/demo/source.html sourcetype:iapi iapiid:1"  style="background-color: gray;" cellspacing="1" cellpadding="3">
                 <tr style="font-weight: bold; background-color: white;">
@@ -57,5 +62,11 @@ datasource:http://www.floriandaniel.it/ops/pubs.json sourcetype:json
             </table>  
             
            -->
+<script>
+    function done(){
+        console.log("done");
+        iapi.fetchData("SECONDO","http://localhost:63342/interactive-apis2/demo/source.html","iapi",1,function(data){$("#SECONDO").renderData(data,"iapi");});    }
+
+</script>
 </body>
 </html>
