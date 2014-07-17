@@ -76,38 +76,10 @@ window.addEventListener('message', function (e) {
                     } catch (er) {
                         data2 = null;
                     }
-
-
-                    /*getFirstRowKeyObject(true, data1, function (ret1) {
-                        getFirstRowKeyObject(true, data2, function (ret2) {
-                            for (var i = 0; i < ret1.length; i++) {
-                                console.log("arr1:" + ret1[i]);
-                            }
-                            for (var i = 0; i < ret2.length; i++) {
-                                console.log("arr2:" + ret2[i]);
-                            }
-                        });
-
-                    }); */
-                    if (JSON.parse(e.data).subAction === "Extended") {
-                        STUnionExtended(data1, data2, function (resultObj) {
+                    if (JSON.parse(e.data).subAction === "EliminateDuplicates") {
+                        STEliminateDuplicates(data1, data2, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
-                                //Send to eventHandler if I would generate dinamic Message in EventHandler.js
 
-                                //Do the generate
-                                var messageReturn = "done";
-                                generate(JSON.parse(e.data).idTarget, JSON.parse(e.data).idPageTarget, function () {
-                                    var pass_data = {
-                                        'action': "middlewareResponse",
-                                        'ret': "MiddlewareGenerate"
-                                    };
-                                    e.source.postMessage(JSON.stringify(pass_data), e.origin);
-                                });
-                            });
-                        });
-                    } else if (JSON.parse(e.data).subAction === "Restricted") {
-                        STUnionRestricted(data1, data2, function (resultObj) {
-                            saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
 
                                 //Do the generate
@@ -121,9 +93,8 @@ window.addEventListener('message', function (e) {
                                 });
                             });
                         });
-                    } else if (JSON.parse(e.data).subAction === "EliminateDuplicates") {
-                        STEliminateDuplicates(data1, data2, function (resultObj) {
-
+                    } else if (JSON.parse(e.data).subAction === "All") {
+                        STUnionAll(data1, data2, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
 
                                 //Send to eventHandler if I would generate dinamic Message
@@ -162,7 +133,7 @@ window.addEventListener('message', function (e) {
                         data2 = null;
                     }
                     if (JSON.parse(e.data).subAction === "ComparisonOperator") {
-                        STJoinComparisonOperator(data1, data2, JSON.parse(e.data).columnSource, JSON.parse(e.data).columnTarget,JSON.parse(e.data).operator, function (resultObj) {
+                        STJoinComparisonOperator(data1, data2, JSON.parse(e.data).columnSource, JSON.parse(e.data).columnTarget, JSON.parse(e.data).operator, function (resultObj) {
                             saveSpecificObject(JSON.parse(e.data).idPageTarget, JSON.parse(e.data).idTarget, resultObj, function (res) {
                                 //Send to eventHandler if I would generate dinamic Message
 
@@ -454,7 +425,7 @@ function SameType(arrSource, arrTarget, call) {
 //              "Abstract":"ABSTRACT"                                                 ///
 //          }
 //      },                                             
-//      {"Publication":                                                               //<-- Dataitem
+//      {"1":                                                                         //<-- Dataitem
 //          {
 //              "Author":"J. Jara, F. Daniel, F. Casati and M. Marchese",             //\              
 //              "Title":"From a Simple Flow to Social Applications",                  // \
@@ -488,171 +459,636 @@ function SameType(arrSource, arrTarget, call) {
 
 /////////////////////////GENERAL FUNCTIONS///////////////////////////////
 
-//General Function Join called by iapi_scripting
-function Join(first,second,option,call) {
+/// <summary>General Function Join called by iapi_scripting</summary>
+/// <param name="first" type="Object">The first Object in LocalStorage</param>    
+/// <param name="second" type="Object">The second Object in LocalStorage</param>  
+/// <param name="columnA" type="String">The column of the first Object</param>    
+/// <param name="columnB" type="String">The column of the first Object</param>   
+/// <param name="operator" type="String">The operator of Join (=,<,>)</param>
+/// <param name="call" type="function">Callback</param>
+function Join(first, second, columnA, columnB, operator, call) {
     //TODO
     //Join
+
+    //Equijoin
+    if (operator === null) {
+        STJoinAttributes(first, second, columnA, columnB, "=", function (ObjectMerged) {
+
+        });
+    }
+    else {
+        STJoinAttributes(first, second, columnA, columnB, operator, function (ObjectMerged) {
+
+        });
+    }
     call();
 }
 
-//General Function Merge called by iapi_scripting
-function Merge(first, second, option, call) {
-    //TODO
-    //Merge
-    call();
+/// <summary>General Function UnionAll called by iapi_scripting</summary>
+/// <param name="first" type="Object">The Object in LocalStorage</param>    
+/// <param name="second" type="Object">The second Object in LocalStorage</param>   
+/// <param name="call" type="function">Callback</param>
+function UnionAll(first, second, call) {
+    STUnionAll(first, second, function (result) {
+        call(result);
+    });
 }
 
-//General Function Filter called by iapi_scripting
+/// <summary>General Function UnionWithoutDuplication called by iapi_scripting</summary>
+/// <param name="first" type="Object">The Object in LocalStorage</param>    
+/// <param name="second" type="Object">The second Object in LocalStorage</param>   
+/// <param name="call" type="function">Callback</param>
+function UnionWithoutDuplication(first, second, call) {
+    STEliminateDuplicates(first, second, function (result) {
+        call(result);
+    });
+}
+
+/// <summary>General Function Filter called by iapi_scripting</summary>
+/// <param name="first" type="Object">The Object in LocalStorage</param>   
+/// <param name="option" type="Array Object">Array of Filters [{"column":"Author","operator":"contains","value":"Florian"},{"column":"oid","operator":">=","value":"120"}]</param>
+/// <param name="call" type="function">Callback</param>
 function Filter(first, option, call) {
     //TODO
     //Filter
+    doFilter(first, option, function (obj) {
+        call(obj);
+    })
+}
+
+/// <summary>General Function Show called by iapi_scripting</summary>
+/// <param name="first" type="Object">The Object in LocalStorage</param>   
+/// <param name="option" type="Array String">Array of columns ["Author","Conference","Title"]</param>
+/// <param name="call" type="function">Callback</param>
+function Show(first, option, call) {
+    //TODO
+    //Show
+    if (typeof option === "string") {
+        //TODO
+    }
+    else {
+        var error = false;
+        for (var i = 0; i < option.length; i++) {
+            if (typeof option[i] !== "string")
+                call(undefined);
+        }
+        //TODO
+    }
     call();
 }
 
+/// <summary>General Function Hide called by iapi_scripting</summary>
+/// <param name="first" type="Object">The Object in LocalStorage</param>   
+/// <param name="option" type="Array String">Array of columns ["Author","Conference","Title"]</param>
+/// <param name="call" type="function">Callback</param>
+function Hide(first, option, call) {
+    //TODO
+    //Hide
+    if (typeof option === "string") {
+        //TODO
+    }
+    else {
+        var error = false;
+        for (var i = 0; i < option.length; i++) {
+            if (typeof option[i] !== "string")
+                call(undefined);
+        }
+        //TODO
+    }
+    call();
+}
 
+/// <summary>General Function GetTemplate called by iapi_scripting</summary>
+/// <param name="idTemplate" type="Integer">Id of Template</param>   
+/// <param name="first" type="Object">The Object in LocalStorage</param>
+/// <param name="call" type="function">Callback</param>
+function getTemplate(idTemplate, first, call) {
+
+    first = {
+        "Publication": [{
+            "Publication2":
+                {
+                    "oid": "120",
+                    "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                    "title": "Advancsed Web Services",
+                    "to_uploadresource": null,
+                    "abstract": "Web services and Service-Oriented Computing (SOC)......",
+                    "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
+                }
+        }, {
+            "Publication2":
+               {
+                   "oid": "120",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }, {
+            "Publication2":
+               {
+                   "oid": "120",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Oriented Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }, {
+            "Publication2":
+                {
+                    "oid": "121",
+                    "author": "F. Daniel (Eds.)",
+                    "title": "Services",
+                    "to_uploadresource": "aaaa",
+                    "abstract": "(SOC)......",
+                    "where": "ISBN 978-1-4614-7534-7"
+                }
+        }]
+
+    }
+
+    LoadTemplateFile(idTemplate, function (file) {
+        var template = $("<div>" + file + "</div>").find('#' + idTemplate);
+        console.log(template[0].outerHTML);
+
+        getFirstRowKeyObjectNEW(false,first, function (arr) {
+            for (var i = 0; i < arr.length; i++) {
+                console.log(arr[i]);
+            }
+            call();
+        });
+
+    });
+}
+getTemplate("2D_L_SNEW", "", function (val) {
+});
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
 //Filter the object in the local storage
 function doFilter(localObjectID, filters, call) {
     var cloneLocalObjectID = localObjectID;
-    if (localObjectID != undefined) {
-        //for (var i = 0; i < filters.length; i++) {
-        //    console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
-        //}
-        //TODO
+    try {
         if (localObjectID != undefined) {
-            var arr = new Array();
-            $.each(localObjectID, function (key, value) {
-                $.each(value, function (key, value) {
-                    for (var key in value) {
-                        for (var i = 0; i < filters.length; i++) {
-                            if (key === filters[i].column) {
-                                //console.log("key:" + key);
-                                //console.log("value[key]:" + value[key]);
-                                //console.log("filters[i].column:" + filters[i].column);
-                                //console.log("filters[i].value:" + filters[i].value);
-                                //console.log("filters[i].operator:" + filters[i].operator);
+            //for (var i = 0; i < filters.length; i++) {
+            //   console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
+            //}
+            //TODO
 
-                                //var attr = {};
+            if (localObjectID != undefined) {
+                console.log("type:" + typeof localObjectID);
+                $.each(localObjectID, function (key1, value) {
+                    $.each(value, function (key, value) {
 
-                                if (filters[i].operator === "<=") {
-                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === -1) {
-                                        //att = { key: value[key] };
-                                        //console.log("value[key]:" + value[key]);
-                                        //console.log("filters[i].value:" + filters[i].value);
-                                        //console.log("MINORE UGUALE");
+                        var flag = false;
+                        for (var key in value) {
+                            for (var i = 0; i < filters.length; i++) {
+                                if (key === filters[i].column) {
+                                    console.log("value[key]:" + value[key]);
+
+                                    //console.log("key:" + key);
+                                    //console.log("value[key]:" + value[key]);
+                                    //console.log("filters[i].column:" + filters[i].column);
+                                    //console.log("filters[i].value:" + filters[i].value);
+                                    //console.log("filters[i].operator:" + filters[i].operator);
+                                    //var attr = {};
+                                    if (filters[i].operator === "<=") {
+                                        if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === -1) {
+                                            //att = { key: value[key] };
+                                            //console.log("value[key]:" + value[key]);
+                                            //console.log("filters[i].value:" + filters[i].value);
+                                            console.log("MINORE UGUALE");
+                                            flag = false;
+                                            break;
+                                        } else {
+                                            flag = true;
+                                            break;
+                                        }
+                                    } else if (filters[i].operator === ">=") {
+                                        if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === 1) {
+                                            //att = { key: value[key] };
+                                            //console.log("value[key]:" + value[key]);
+                                            //console.log("filters[i].value:" + filters[i].value);
+                                            console.log("MAGGIORE UGUALE");
+                                            flag = false;
+                                            break;
+                                        }
+                                        else {
+                                            flag = true;
+                                            break;
+                                        }
+                                    } else if (filters[i].operator === "<") {
+                                        if (value[key].localeCompare(filters[i].value) === -1) {
+                                            //att = { key: value[key] };
+                                            //console.log("value[key]:" + value[key]);
+                                            //console.log("filters[i].value:" + filters[i].value);
+                                            console.log("MINORE");
+                                            flag = false;
+                                            break
+                                        } else {
+                                            flag = true;
+                                            break;
+                                        }
+                                    } else if (filters[i].operator === ">") {
+                                        if (value[key].localeCompare(filters[i].value) === 1) {
+                                            //att = { key: value[key] };
+                                            //console.log("value[key]:" + value[key]);
+                                            //console.log("filters[i].value:" + filters[i].value);
+                                            console.log("MAGGIORE");
+                                            flag = false;
+                                            break
+                                        } else {
+                                            flag = true;
+                                            break;
+                                        }
+                                    } else if (filters[i].operator === "=") {
+                                        if (value[key].localeCompare(filters[i].value) === 0) {
+                                            //att = { key: value[key] };
+                                            //console.log("value[key]:" + value[key]);
+                                            //console.log("filters[i].value:" + filters[i].value);
+                                            console.log("UGUALE");
+                                            flag = false;
+                                            break;
+                                        } else {
+                                            flag = true;
+                                            break;
+                                        }
+                                    } else if (filters[i].operator === "contains") {
+                                        if (value[key].indexOf(filters[i].value) != -1) {
+                                            //att = { key: value[key] };
+                                            //console.log("value[key]:" + value[key]);
+                                            //console.log("filters[i].value:" + filters[i].value);
+                                            console.log("Contains");
+                                            flag = false;
+                                            break;
+                                        } else {
+                                            flag = true;
+                                            break;
+                                        }
                                     }
-                                } else if (filters[i].operator === ">=") {
-                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === 1) {
-                                        //att = { key: value[key] };
-                                        //console.log("value[key]:" + value[key]);
-                                        //console.log("filters[i].value:" + filters[i].value);
-                                        //console.log("MAGGIORE UGUALE");
-                                    }
-                                } else if (filters[i].operator === "<") {
-                                    if (value[key].localeCompare(filters[i].value) === -1) {
-                                        //att = { key: value[key] };
-                                        //console.log("value[key]:" + value[key]);
-                                        //console.log("filters[i].value:" + filters[i].value);
-                                        //console.log("MINORE");
-                                    }
-                                } else if (filters[i].operator === ">") {
-                                    if (value[key].localeCompare(filters[i].value) === 1) {
-                                        //att = { key: value[key] };
-                                        //console.log("value[key]:" + value[key]);
-                                        //console.log("filters[i].value:" + filters[i].value);
-                                        //console.log("MAGGIORE");
-                                    }
-                                } else if (filters[i].operator === "=") {
-                                    if (value[key].localeCompare(filters[i].value) === 0) {
-                                        //att = { key: value[key] };
-                                        //console.log("value[key]:" + value[key]);
-                                        //console.log("filters[i].value:" + filters[i].value);
-                                        //console.log("UGUALE");
-                                    }
-                                } else if (filters[i].operator === "contains") {
-                                    if (value[key].indexOf(filters[i].value) != -1) {
-                                        //att = { key: value[key] };
-                                        //console.log("value[key]:" + value[key]);
-                                        //console.log("filters[i].value:" + filters[i].value);
-                                        //console.log("Contains");
-                                    }
+
+                                    //console.log("---------------------------------------------");
+
                                 }
-                                
-                                //console.log("---------------------------------------------");
-
                             }
+
                         }
-                    }
+                        if (flag) {
+                            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + key1 + " " + key);
+                            delete localObjectID[key1];
+
+                        }
+                    });
                 });
-            });
+            }
+            else
+                call(undefined);
+
+            console.log("FINE;");
+
+            console.log(localObjectID);
+            //Filters
+            call(localObjectID);
         }
         else
             call(undefined);
+    } catch (er) {
+        call(undefined);
+    }
+}
 
-        //Filters
-        call(localObjectID);
+//Union two same type object and eliminate the duplicats
+function STEliminateDuplicates(objSource, objTarget, call) {
+    /* OLD
+    if (objSource != undefined && objTarget != undefined) {
+
+        $.merge(objTarget, objSource);
+
+        console.log("????????????MERGE?????????");
+        $.each(objTarget, function (key1, value1) {
+            $.each(value1, function (key1, value1) {
+                console.log("MERGE:" + key1);
+                for (var key1 in value1) {
+                    console.log(key1 + " : " + value1[key1]);
+                }
+            });
+        });
+
+
+        // true if pub are equal
+        var checkDupe = function (pub1, pub2) {
+            for (var key in pub1) {
+                //console.log("key1:" + arrValue[key] + "    key2:" + pub2[key]);
+                console.log("OUT:pub2[key]:" + pub2[key] + "     pub1[key]:" + pub1[key]);
+
+                if (pub1[key] != pub2[key]) {
+                    console.log("IN IF");
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        //false if all equal
+        var checkDupes = function (arr, pub2) {
+            var isthere = false;
+            $.each(arr, function (arrKey, arrValue) {
+                isthere = isthere || checkDupe(arrValue, pub2);
+            });
+
+            if (!isthere) {
+                console.log("push");
+                arr.push(pub2);
+                return true;
+            }
+            else return false;
+        };
+
+        var existingPUBs = [];
+        objTarget = $.grep(objTarget, function (v) {
+            console.log("2");
+            $.each(v, function (pubKey, pubVal) {
+                return checkDupes(existingPUBs, pubVal);
+            });
+        }, true);
+
+        console.log("ARRRRRRR");
+        console.log(existingPUBs.length);
+        for (var i = 0; i < existingPUBs.length; i++) {
+            $.each(existingPUBs[i], function (pubKey, pubVal) {
+                console.log(pubKey + " : " + pubVal);
+            });
+        }
+
+        call(objTarget);
+    }
+    else
+        call(undefined);   */
+
+    //{
+    //    "Publication":
+    //    {
+    //        "Publication":
+    //        {
+    //            "oid": "120",
+    //            "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+    //            "title": "Advanced Web Services",
+    //            "to_uploadresource": null,
+    //            "abstract": "Web services and Service-Oriented Computing (SOC)......",
+    //            "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+    //        },
+    //        "Publication":
+    //            {
+    //                "oid": "121",
+    //                "author": "F. Daniel (Eds.)",
+    //                "title": "Services",
+    //                "to_uploadresource": "aaaa",
+    //                "abstract": "(SOC)......",
+    //                "where": "ISBN 978-1-4614-7534-7"
+    //            },
+    //        "Publication":
+    //            {
+    //                "oid": "123",
+    //                "author": "(Eds.)",
+    //                "title": "Services",
+    //                "to_uploadresource": "aaaa",
+    //                "abstract": "(SOC)......",
+    //                "where": "ISBN 978-1-4614-7534-7"
+    //            }
+    //    }
+    //}
+
+
+
+    if (objSource != undefined && objTarget != undefined) {
+
+
+        STUnionAll(objSource, objTarget, function (objTarget) {
+
+            // true if pub are equal
+            var checkDupe = function (pub1, pub2) {
+                for (var key in pub1) {
+                    if (pub1[key] != pub2[key]) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            //false if all equal
+            var checkDupes = function (arr, pub2) {
+                var isthere = false;
+                $.each(arr, function (arrKey, arrValue) {
+                    isthere = isthere || checkDupe(arrValue, pub2);
+                });
+
+                if (!isthere) {
+                    console.log("push");
+                    arr.push(pub2);
+                    return true;
+                }
+                else return false;
+            };
+
+            var existingPUBs = [];
+            var arr = new Array();
+            $.each(objTarget, function (pubKey, pubVal) {
+                for (var i = 0; i < pubVal.length; i++) {
+                    console.log(pubVal[i]);
+                    $.each(pubVal[i], function (key1, value1) {
+                        arr.push(checkDupes(existingPUBs, value1));
+                    });
+                }
+            });
+            $.each(objTarget, function (key1, value1) {
+                objTarget[key1] = existingPUBs;
+            });
+
+            /*for (var i = 0; i < arr.length; i++) {
+                console.log("arr[" + i + "]" + arr[i]);
+            }  */
+            console.log("ARRRRRRR");
+            console.log(existingPUBs.length);
+            for (var i = 0; i < existingPUBs.length; i++) {
+                $.each(existingPUBs[i], function (pubKey, pubVal) {
+                    console.log(pubKey + " : " + pubVal);
+                });
+            }
+            call(objTarget);
+        });
     }
     else
         call(undefined);
 }
 
-//Union two same type object and eliminate the duplicats
-function STEliminateDuplicates(objSource, objTarget, call) {
-    if (objSource != undefined && objTarget != undefined) {
-        $.each(objSource, function (key1, value1) {
-            $.each(value1, function (key1, value1) {
-                for (var key1 in value1) {
-                    $.each(objTarget, function (key2, value2) {
-                        $.each(value2, function (key2, value2) {
-                            for (var key2 in value2) {
-                                if (value1[key1] === value2[key2]) {
-                                    find = true;
-                                    console.log("UGUALI");
-                                    value2[key2] = "";
-                                    break;
-                                }
-                            }
-                        });
-                    });
+//Union two same type object without eliminate the duplicats
+function STUnionAll(objSource, objTarget, call) {
+
+
+    objSource = {
+        "Publication": [{
+            "Publication2":
+                {
+                    "oid": "120",
+                    "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                    "title": "Advancsed Web Services",
+                    "to_uploadresource": null,
+                    "abstract": "Web services and Service-Oriented Computing (SOC)......",
+                    "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
                 }
-            });
+        }, {
+            "Publication2":
+               {
+                   "oid": "120",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }, {
+            "Publication2":
+               {
+                   "oid": "120",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Oriented Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }, {
+            "Publication2":
+                {
+                    "oid": "121",
+                    "author": "F. Daniel (Eds.)",
+                    "title": "Services",
+                    "to_uploadresource": "aaaa",
+                    "abstract": "(SOC)......",
+                    "where": "ISBN 978-1-4614-7534-7"
+                }
+        }]
+
+    }
+
+    objTarget =
+        {
+            "Publication": [
+                {
+                    "Publication2":
+                       {
+                           "oid": "120",
+                           "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                           "title": "Advanced Web Services",
+                           "to_uploadresource": null,
+                           "abstract": "Web services and Service-Oriented Computing (SOC)......",
+                           "where": "Springer, 2014. In ggggprint. ISBN 978-1-4614-7534-7"
+                       }
+                },
+                {
+                    "Publication2":
+                       {
+                           "oid": "120",
+                           "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                           "title": "Advasdd Web Services",
+                           "to_uploadresource": null,
+                           "abstract": "Web services and Service-asdasOriented Computing (SOC)......",
+                           "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+                       }
+                },
+                {
+                    "Publication2":
+                       {
+                           "oid": "110",
+                           "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                           "title": "Advanced Web Services",
+                           "to_uploadresource": null,
+                           "abstract": "Web sersddsdsvices and Service-Oriented Computing (SOC)......",
+                           "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+                       }
+                },
+                {
+                    "Publication2":
+                       {
+                           "oid": "120",
+                           "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                           "title": "Advanced Web Services",
+                           "to_uploadresource": null,
+                           "abstract": "Web services and Service-Orienasdsdted Computing (SOC)......",
+                           "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+                       }
+                },
+                {
+                    "Publication2":
+                        {
+                            "oid": "123",
+                            "author": "(Eds.)",
+                            "title": "Services",
+                            "to_uploadresource": "aaaa",
+                            "abstract": "(SOC)......",
+                            "where": "ISBN 978-1-4614-7534-7"
+                        }
+                }
+
+            ]
+        }
+    if (objSource != undefined && objTarget != undefined) {
+
+        var lenA = 0;
+        var lenB = 0;
+        console.log("????????????MERGE?????????");
+        $.each(objSource, function (key1, value1) {
+            for (; lenA < value1.length; lenA++) { }
         });
+        $.each(objTarget, function (key1, value1) {
+            for (; lenB < value1.length; lenB++) { }
+        });
+        var vett = [];
+        vett.length = lenA + lenB;
+        console.log(vett.length);
+        $.each(objSource, function (key1, value1) {
+            for (var i = 0; i < value1.length; i++) {
+                vett[i] = value1[i];
+            }
+        });
+        $.each(objTarget, function (key1, value1) {
+            for (var i = 0; i < value1.length; i++) {
+                vett[i + lenA] = value1[i];
+            }
+        });
+        $.each(objTarget, function (key1, value1) {
+            objTarget[key1] = vett;
+        });
+
         call(objTarget);
     }
     else
         call(undefined);
 }
 
-//Union two same type object and 
-function STUnionExtended(objSource, objTarget, call) {
-    //TODO
-    //Union extended
-    call();
-}
-
-//Union two same type object and 
-function STUnionRestricted(objSource, objTarget, call) {
-    //TODO
-    //Union Restricted
-    call();
-}
-
-//Join two same type object (Comparison)
-function STJoinComparisonOperator(objSource, objTarget, columnSource, columnTarget, operator, call) {
-    //TODO
-    //Join Comparison Operator
-    call();
-}
-
 //Join two same type object (Attributes)
-function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, call) {
+function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, operator, call) {
     //TODO
     //Join Attributes
+
+    STUnionAll(first, second, function (objectMerged) {
+
+    });
+
     call();
 }
 
 ///////////////////////////////////////////
+
+function LoadTemplateFile(id, call) {
+    chrome.extension.sendMessage({
+        "type": "getExternal",
+        "value": chrome.extension.getURL('html/templates.html')
+    }, function (data) {
+        call(data);
+    });
+
+}
 
 //the Middleware script
 function middleware(disa, iAPILayerDisable) {
@@ -880,6 +1316,10 @@ function getStoredObject(call) {
 
 //Save object
 function saveSpecificObject(idPage, idTag, obj, call) {
+    console.log("idPage:" + idPage);
+    console.log("idTag:" + idTag);
+    console.log("iobj:" + obj);
+
     chrome.extension.sendMessage({
         "type": "saveSpecificObject",
         "idPage": idPage,
@@ -939,4 +1379,28 @@ function getFirstRowKeyObject(dataitem, tmp, call) {
     else
         call(undefined);
 
+}
+
+//Get the titles of columns
+function getFirstRowKeyObjectNEW(dataitem, tmp, call) {
+    if (tmp != undefined) {
+        var arr = new Array();
+        $.each(tmp, function (key, value) {
+            for (var i = 0; i < value.length; i++) {
+                $.each(value[i], function (key, value) {
+                    arr.length = 0;
+                    if (dataitem === true)
+                        arr.push(key);
+                    for (var key in value) {
+                        arr.push(key);
+                    }
+                    call(arr);
+                });
+                return false;
+            }
+            return false;
+        });
+    }
+    else
+        call(undefined);
 }

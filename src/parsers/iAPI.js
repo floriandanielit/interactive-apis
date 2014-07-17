@@ -26,7 +26,7 @@ function extractIAPI(iapiid, urlsource, id, idPage, call) {
             'id': id,
             'value': datas
         };
-
+           
         call(JSON.stringify(pass_data));
     });
 }

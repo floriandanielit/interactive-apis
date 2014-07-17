@@ -135,9 +135,6 @@ function drop(ev) {
                 console.log("idsourcepage:" + idsourcepage);
                 console.log("idsource:" + idsource);
 
-
-
-
                 //var pass_data = {
                 //    'action': "pageidRequest"
                 //};
@@ -154,8 +151,8 @@ function drop(ev) {
                 //            pageID = JSON.parse(e.data).pageid;
 
                 /////////TEST////////
-                pageID = 132;
-                idsourcepage = 59;
+                pageID = 40;
+                idsourcepage = 57;
                 /////////////////////
 
                 console.log("..........SOURCE.............." + idsourcepage);
@@ -170,7 +167,6 @@ function drop(ev) {
                 }
 
                 //////////////////////DATA_INTEGRATION//////////////////////////////
-
 
                 //Rendering
                 //send messages to middleware
@@ -208,9 +204,6 @@ function drop(ev) {
                 } catch (e) {
                     alert(e);
                 }
-                //        }
-                //    } catch (err) { }
-                //}, false);
             }
         });
     });
@@ -1034,7 +1027,7 @@ function STJoin() {
         AnimationOverlay('<div class="info">'
                      + 'Type of join...'
                      + '<button id="joinComparisonOperatorButtonST" onclick="STJoinComparisonOperator()" >Join ComparisonOperator</button>'
-                     + '<button id="joinAttributesButtonST"  onclick="STJoinAttributes()">Join Attributes</button>'
+                     + '<button id="naturalJoinButtonST"  onclick="STNaturalJoin()">Natural Join</button>'
                      + '<button onclick="closeOverlay()">Cancel</button>'
                      + '<button onclick="MainOverlayST(true,true,true)">Back</button>'
                      + '</div>');
@@ -1042,8 +1035,8 @@ function STJoin() {
 }
 
 //Same type function join attributes
-function STJoinAttributes() {
-    console.log("STJoinAttributes" + idtarget);
+function STNaturalJoin() {
+    console.log("STNaturalJoin" + idtarget);
     closeOverlay(function () {
         console.log("arr1:" + arrSource[i]);
 
@@ -1052,7 +1045,7 @@ function STJoinAttributes() {
         for (var j = 1; j < arrSource.length; j++) {
             newchi += '<option value="' + arrSource[j] + '" >' + arrSource[j] + '</option>';
         }
-        newchi += '</select> = <select id="iapicolumnsTarget">';
+        newchi += '</select> IS -> <select id="iapicolumnsTarget">';
         for (var j = 1; j < arrTarget.length; j++) {
             newchi += '<option value="' + arrTarget[j] + '" >' + arrTarget[j] + '</option>';
         }
@@ -1097,7 +1090,6 @@ function STJoinAttributeApply() {
     var div = $("#" + idtarget).children(".info");
     var columnSource = $(div).children("#iapicolumnsSource").find(":selected").val();
     var columnTarget = $(div).children("#iapicolumnsTarget").find(":selected").val();
-
     try {
         var pass_data = {
             'action': "STJoin",
@@ -1149,15 +1141,14 @@ function STJoinComparisonOperatorApply() {
     });
 }
 
-//Same type function Union Menù
+//Same type function Union
 function STUnion() {
     console.log("STUnion" + idtarget);
     closeOverlay(function () {
 
         AnimationOverlay('<div class="info">'
                     + 'Type of Union...'
-                    + '<button id="unionRestrictedButtonST" onclick="STUnionRestricted()" >Restricted Union</button>'
-                    + '<button id="unionExtendedButtonST" onclick="STUnionExtended()" >Extended Union</button>'
+                    + '<button id="unionAllButtonST" onclick="STUnionAll()">Union All</button>'
                     + '<button id="eliminateDuplicatesButtonST" onclick="STEliminateDuplicates()">Eliminate Duplicates</button>'
                     + '<button onclick="closeOverlay()">Cancel</button>'
                     + '<button onclick="MainOverlayST(true,true,true)">Back</button>'
@@ -1165,10 +1156,9 @@ function STUnion() {
     });
 }
 
-//Same type function Union Extended
-function STUnionExtended() {
-    console.log("STUnionExtended" + idtarget);
-    console.log("STUnionAll");
+//Same type function Union all
+function STUnionAll() {
+    console.log("STUnionAll" + idtarget);
     console.log("idPageSource" + idsourcepage);
     console.log("idSource" + idsource);
     console.log("idPageTarget" + pageID);
@@ -1177,37 +1167,7 @@ function STUnionExtended() {
     try {
         var pass_data = {
             'action': "STUnion",
-            'subAction': "Extended",
-            'idPageSource': idsourcepage,
-            'idSource': idsource,
-            'idPageTarget': pageID,
-            'idTarget': idtarget
-
-        };
-        window.postMessage(JSON.stringify(pass_data), window.location.href);
-
-    } catch (e) {
-        alert(e);
-    }
-
-    closeOverlay(function () {
-    });
-    //TODO
-}
-
-//Same type function Union Extended
-function STUnionRestricted() {
-    console.log("STUnionRestricted" + idtarget);
-    console.log("STUnionAll");
-    console.log("idPageSource" + idsourcepage);
-    console.log("idSource" + idsource);
-    console.log("idPageTarget" + pageID);
-    console.log("idTarget" + idtarget);
-
-    try {
-        var pass_data = {
-            'action': "STUnion",
-            'subAction': "Restricted",
+            'subAction': "All",
             'idPageSource': idsourcepage,
             'idSource': idsource,
             'idPageTarget': pageID,
@@ -1332,7 +1292,7 @@ function DTUnionExtended() {
     //TODO
 }
 
-//Different type function Union Extended
+//Different type function Union Restricted
 function DTUnionRestricted() {
     console.log("DTUnionRestricted" + idtarget);
     closeOverlay(function () {
@@ -1519,6 +1479,7 @@ function getObject(call) {
     }
 
 }
+
 //return true if the element is a source
 function isSrcPage(YourFindElement, call) {
     var tagtarg = $(YourFindElement).attr("class").split(" ");

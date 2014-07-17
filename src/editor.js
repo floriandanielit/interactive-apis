@@ -217,7 +217,7 @@ function LoadPrewFilters(call) {
     var arrFilters = new Array();
     var arrColumns = new Array();
 
-    arrColumns.push({ "column": "oid", "selected": false });
+    /*arrColumns.push({ "column": "oid", "selected": false });
     arrColumns.push({ "column": "author", "selected": true });
     arrColumns.push({ "column": "title", "selected": false });
     arrColumns.push({ "column": "to_uploadresource", "selected": false });
@@ -227,7 +227,7 @@ function LoadPrewFilters(call) {
     arrFilters.push({ "columns": arrColumns, "operator": "<", "value": "PROVA" });
     arrFilters.push({ "columns": arrColumns, "operator": "contains", "value": "Daniel" });
     arrFilters.push({ "columns": arrColumns, "operator": "=", "value": "test" });
-
+    */
     call(arrFilters);
 }
 
@@ -826,8 +826,8 @@ function messageIapi_menu(id) {
         if (elementsClass[i].substr(0, 11) == ("datasource:")) {
             typeData = 'Page with interactions';
             presenceDataSourceOrData = true;
-        } else if (elementsClass[i].substr(0, 5) == ("data:")) {
-            typeData = elementsClass[i].substr(5);
+        } else if (elementsClass[i].substr(0, 7) == ("e-data:")) {
+            typeData = elementsClass[i].substr(7);
             presenceDataSourceOrData = true;
         }
     }
@@ -907,7 +907,8 @@ function getPageId(call) {
 }
 
 //send a message to middleware to get the template file
-function getTemplateFile(call) {
+function getTemplateFile(call)
+                                {
 
     try {
 

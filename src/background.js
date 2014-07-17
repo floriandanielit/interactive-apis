@@ -187,6 +187,7 @@ function saveObjectInTheLocalStorage(idPage, idTag, obj, call) {
     var TempObject = {};
     prewItems = JSON.parse(localStorage.getItem(idPage));
 
+    console.log("prewItem"+prewItems);
     if (prewItems !== null) {
         prewItems[idTag] = obj;
         localStorage.setItem(idPage, JSON.stringify(prewItems));
@@ -218,6 +219,7 @@ function deleteLocalStorageObjectWithASpecificDOMId(url, id, call) {
         $.each(data, function (key, val) {
             more++;
         });
+        
         if (more > 1) {
             delete data[id];
             localStorage.setItem(url, JSON.stringify(data));

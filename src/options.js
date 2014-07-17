@@ -23,11 +23,11 @@ $(document).ready(function () {
 
             removeTempObject(url, idDOM, function (idTab) {
                 deleteRowAndUpdateTable(id, url, idDOM, function () {
-                    if (idTab != null) {
+                    /*if (idTab != null) {
                         console.log("REFRESH");
                         console.log("url:" + idTab);
                         chrome.tabs.reload(idTab);
-                    }
+                    }*/
                 });
             });
         });
@@ -128,6 +128,7 @@ function deleteRowAndUpdateTable(index, url, id, call) {
     index = parseInt(index);
     index = index + 2;
 
+    console.log(url, id);
     BG.deleteLocalStorageObjectWithASpecificDOMId(url, id, function () {
         var table = $("#iapiDOMObjects").children("tbody");
         var numChildren = $(table).children("tr").length;
