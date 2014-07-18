@@ -470,11 +470,13 @@ function Join(first, second, columnA, columnB, operator, call) {
     //Equijoin
     if (operator === null) {
         STJoinAttributes(first, second, columnA, columnB, "=", function (ObjectMerged) {
+            console.log(ObjectMerged);
             call(ObjectMerged);
         });
     }
     else {
         STJoinAttributes(first, second, columnA, columnB, operator, function (ObjectMerged) {
+            console.log(ObjectMerged);
             call(ObjectMerged);
         });
     }
@@ -1130,7 +1132,7 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
                     "CarModel": "CarB",
                     "CarPrice": "30000"
                 }
-        },{
+        }, {
             "Publication2":
                 {
                     "CarModel": "CarC",
@@ -1153,7 +1155,7 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
                     "BoatModel": "Boat2",
                     "BoatPrice": "40000"
                 }
-        },{
+        }, {
             "Publication2":
                 {
                     "BoatModel": "Boat3",
@@ -1162,45 +1164,31 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
         }]
 
     }
-
-    console.log(objSource);
-    console.log(objTarget);
-
     var mergeDupe = function (pub1, pub2) {
-
-        var o = $.extend(true, {}, pub2, pub1);
-
-        console.log("1111111111111");
-        console.log(o);
-        console.log("2222222222222");
+        var o = $.extend(true, {}, pub1, pub2);
         return o;
     };
 
     // true if pub are "operator" (equal,greatest,lower)
     var checkDupe = function (pub1, pub2) {
         if (operator === ">=") {
-            if (pub1.localeCompare(pub2) === 1 || pub1.localeCompare(pub2) === 0) {
+            if (pub1.localeCompare(pub2) === 1 || pub1.localeCompare(pub2) === 0)
                 return true;
-            }
         } else if (operator === "<=") {
-            if (pub1.localeCompare(pub2) === -1 || pub1.localeCompare(pub2) === 0) {
+            if (pub1.localeCompare(pub2) === -1 || pub1.localeCompare(pub2) === 0)
                 return true;
-            }
         }
         else if (operator === "=") {
-            if (pub1.localeCompare(pub2) === 0) {
+            if (pub1.localeCompare(pub2) === 0)
                 return true;
-            }
         }
         else if (operator === "<") {
-            if (pub1.localeCompare(pub2) === -1) {
+            if (pub1.localeCompare(pub2) === -1)
                 return true;
-            }
         }
         else if (operator === ">") {
-            if (pub1.localeCompare(pub2) === 1) {
+            if (pub1.localeCompare(pub2) === 1)
                 return true;
-            }
         }
         else
             return false;
@@ -1210,10 +1198,11 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
     var checkDupes = function (arr, value1) {
         $.each(objTarget, function (pubKey, pubVal) {
             for (var i = 0; i < pubVal.length; i++) {
-                $.each(pubVal[i], function (key1, value2) {
-                    if (checkDupe(value1[columnSource], value2[columnTarget])) {
-                        arr.push(mergeDupe(value1, value2));
-                    }
+                $.each(value1, function (keyA, valueA) {
+                    $.each(pubVal[i], function (keyB, valueB) {
+                        if (checkDupe(valueA[columnSource], valueB[columnTarget]))
+                            arr.push(mergeDupe(value1, pubVal[i]));
+                    });
                 });
             }
         });
@@ -1223,23 +1212,14 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
     var existingPUBs = [];
     $.each(objSource, function (pubKey, pubVal) {
         for (var i = 0; i < pubVal.length; i++) {
-            $.each(pubVal[i], function (key1, value1) {
-                checkDupes(existingPUBs, value1);
-            });
+            checkDupes(existingPUBs, pubVal[i]);
         }
     });
+
     $.each(objTarget, function (key1, value1) {
         objTarget[key1] = existingPUBs;
     });
-    console.log("------------------------------------");
-
-
-    console.log(objTarget);
-
-
-
-
-    call();
+    call(objTarget);
 }
 
 ///////////////////////////////////////////
