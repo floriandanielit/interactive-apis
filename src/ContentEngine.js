@@ -494,12 +494,13 @@ function UnionAll(first, second, call) {
 }
 //TEST//UnionAll("", "", function () { });
 
-/// <summary>General Function UnionWithoutDuplication called by iapi_scripting</summary>
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!// <summary>General Function UnionWithoutDuplication called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
 /// <param name="second" type="Object">The second Object in LocalStorage</param>   
 /// <param name="call" type="function">Callback</param>
 function UnionWithoutDuplication(first, second, call) {
     STEliminateDuplicates(first, second, function (result) {
+        console.log(result);
         call(result);
     });
 }
@@ -555,6 +556,7 @@ function HideAttribute(first, option, call) {
         var opt = new Array();
         opt.push(option);
         Hide(first, opt, function (obj) {
+            console.log(obj);
             call(obj);
         });
     }
@@ -564,6 +566,7 @@ function HideAttribute(first, option, call) {
                 call(undefined);
         }
         Hide(first, option, function (obj) {
+            console.log(obj);
             call(obj);
         });
     }
@@ -675,7 +678,6 @@ function Hide(objTarget, options, call) {
                 });
             }
         });
-        console.log(objTarget);
         call(objTarget);
     }
 }
