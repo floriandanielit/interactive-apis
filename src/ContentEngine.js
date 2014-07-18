@@ -467,23 +467,19 @@ function SameType(arrSource, arrTarget, call) {
 /// <param name="operator" type="String">The operator of Join (=,<,>)</param>
 /// <param name="call" type="function">Callback</param>
 function Join(first, second, columnA, columnB, operator, call) {
-    //TODO
-    //Join
-
     //Equijoin
     if (operator === null) {
         STJoinAttributes(first, second, columnA, columnB, "=", function (ObjectMerged) {
-
+            call(ObjectMerged);
         });
     }
     else {
         STJoinAttributes(first, second, columnA, columnB, operator, function (ObjectMerged) {
-
+            call(ObjectMerged);
         });
     }
-    call();
 }
-//TEST//Join("", "", "oid", "oid", ">=", function () {});
+//TEST//Join("", "", "CarPrice", "BoatPrice", ">", function () { });
 
 /// <summary>General Function UnionAll called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
@@ -528,12 +524,10 @@ function Filter(first, option, call) {
 /// <param name="option" type="Array String">Array of columns ["Author","Conference","Title"]</param>
 /// <param name="call" type="function">Callback</param>
 function ShowAttribute(first, option, call) {
-    //TODO
-    //Show
     if (typeof option === "string") {
         var opt = new Array();
         opt.push(option);
-        Show(first,opt, function (obj) {
+        Show(first, opt, function (obj) {
             call(obj);
         });
     }
@@ -548,28 +542,32 @@ function ShowAttribute(first, option, call) {
     }
 }
 //TEST//ShowAttribute("", ["oid", "where", "title"], function () { });
-ShowAttribute("", "author", function () { });
+//TEST//ShowAttribute("", "author", function () { });
 
 /// <summary>General Function HideAttribute called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
 /// <param name="option" type="Array String">Array of columns ["Author","Conference","Title"]</param>
 /// <param name="call" type="function">Callback</param>
 function HideAttribute(first, option, call) {
-    //TODO
-    //Hide
     if (typeof option === "string") {
-        //TODO
+        var opt = new Array();
+        opt.push(option);
+        Hide(first, opt, function (obj) {
+            call(obj);
+        });
     }
     else {
-        var error = false;
         for (var i = 0; i < option.length; i++) {
             if (typeof option[i] !== "string")
                 call(undefined);
         }
-        //TODO
+        Hide(first, option, function (obj) {
+            call(obj);
+        });
     }
-    call();
 }
+//TEST//HideAttribute("", ["oid", "where", "title"], function () { });
+//TEST//HideAttribute("", "author", function () { });
 
 /// <summary>General Function GetTemplate called by iapi_scripting</summary>
 /// <param name="idTemplate" type="Integer">Id of Template</param>   
@@ -637,6 +635,50 @@ function getTemplate(idTemplate, first, call) {
 
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
+//Hide dataattribute
+function Hide(objTarget, options, call) {
+    objTarget = {
+        "Publication": [{
+            "Publication2":
+                {
+                    "oid": "234",
+                    "where": "Trento",
+                    "title": "Test"
+                }
+        }, {
+            "Publication2":
+               {
+                   "oid": "141",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }]
+    }
+    if (objTarget !== undefined) {
+        $.each(objTarget, function (key1, value1) {
+            for (var j = 0; j < value1.length; j++) {
+                $.each(value1[j], function (key2, value2) {
+                    for (var i = 0; i < options.length; i++) {
+                        var count = 0;
+                        for (var key in value2)
+                            count++;
+                        if (count === 1 && value2[options[i]] !== undefined)
+                            delete value1[j];
+                        else
+                            delete value2[options[i]];
+                    }
+                });
+            }
+        });
+        console.log(objTarget);
+        call(objTarget);
+    }
+}
+
+//Show dataattribute
 function Show(objTarget, options, call) {
     objTarget = {
         "Publication": [{
@@ -657,28 +699,7 @@ function Show(objTarget, options, call) {
                    "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
                }
         }]
-
     }
-    if (objTarget !== undefined) {
-        $.each(objTarget, function (key1, value1) {
-            for (var j = 0; j < value1.length; j++) {
-                $.each(value1[j], function (key2, value2) {
-                    for (var i = 0; i < options.length; i++) {
-                        var count = 0;
-                        for (var key in value2)
-                            count++;
-
-                        if (count === 1 && value2[options[i]] !== undefined)
-                            delete value1[j];
-                        else
-                            delete value2[options[i]];
-                    }
-                });
-            }
-        });
-        console.log(objTarget);
-    }
-    call();
 }
 
 //Filter the object in the local storage
@@ -1096,67 +1117,51 @@ function STUnionAll(objSource, objTarget, call) {
 
 //Join two same type object (Attributes)
 function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, operator, call) {
-    //TODO
-    //Join Attributes
     objSource = {
         "Publication": [{
             "Publication2":
                 {
-                    "oid": "120",
-                    "author": "B. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                    "title": "Advancsed Web Services",
-                    "to_uploadresource": null,
-                    "abstract": "Web services and Service-Oriented Computing (SOC)......",
-                    "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
+                    "CarModel": "CarA",
+                    "CarPrice": "20000"
                 }
         }, {
             "Publication2":
-               {
-                   "oid": "141",
-                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                   "title": "Advanced Web Services",
-                   "to_uploadresource": null,
-                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
-                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-               }
+                {
+                    "CarModel": "CarB",
+                    "CarPrice": "30000"
+                }
+        },{
+            "Publication2":
+                {
+                    "CarModel": "CarC",
+                    "CarPrice": "50000"
+                }
         }]
 
     }
 
-    objTarget =
-        {
-            "Publication": [
+    objTarget = {
+        "Publication": [{
+            "Publication2":
                 {
-                    "Publication2":
-                       {
-                           "oid": "115",
-                           "Author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                           "Title": "Advanced Web Services",
-                           "Abstract": "Web services and Service-Oriented Computing (SOC)......",
-                           "Conference": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
-                       }
-                },
+                    "BoatModel": "Boat1",
+                    "BoatPrice": "10000"
+                }
+        }, {
+            "Publication2":
                 {
-                    "Publication2":
-                       {
-                           "oid": "121",
-                           "Author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                           "Title": "Advanced Web Services",
-                           "Abstract": "Web services and Service-Oriented Computing (SOC)......",
-                           "Conference": "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
-                       }
-                },
+                    "BoatModel": "Boat2",
+                    "BoatPrice": "40000"
+                }
+        },{
+            "Publication2":
                 {
-                    "Publication2":
-                       {
-                           "oid": "141",
-                           "Author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                           "Title": "Advanced Web Services",
-                           "Abstract": "Web services and Service-Oriented Computing (SOC)......",
-                           "Conference": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-                       }
-                }]
-        }
+                    "BoatModel": "Boat3",
+                    "BoatPrice": "60000"
+                }
+        }]
+
+    }
 
     console.log(objSource);
     console.log(objTarget);
