@@ -363,100 +363,6 @@ function SameType(arrSource, arrTarget, call) {
     call(false);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////EXAMPLE SOURCE OBJECT///////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-//{                                                                                   //<-- Start Object
-//  "PRIMO":[                                                                         //<-- Id "DOM" Object
-//    {"0":                                                                           //<-- Real Dataitem
-//        {
-//            "oid":"120",                                                            //\
-//            "author":"A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",            // \
-//            "title":"Advanced Web Services",                                        //  \ Data
-//            "to_uploadresource":null,                                               //  / Attribute
-//            "abstract":"Web services and Service-Oriented Computing (SOC)......",   // /
-//            "where":"Springer, 2014. In print. ISBN 978-1-4614-7534-7"              ///
-//         }                                                                          
-//    },
-//    {"1":                                                                           //<-- Dataitem
-//        {
-//            "oid":"129",                                                            //\
-//            "author":"F. Daniel, G. Papadopoulos, P. Thiran (Eds.)",                // \
-//            "title":"Mobile Web Information Systems. 10th International........",   //  \ Data
-//            "to_uploadresource":null,                                               //  / Attribute
-//            "abstract":"This book constitutes the refereed proceedings ........",   // /
-//            "where":"Springer, August 2013. ISBN 978-3-642-40275-3"                 ///
-//         }         
-//     } ....                                                                             
-//  ],                                                                                
-//  "SECONDO":[                                                                       //<-- Id "DOM" Object
-//    {"Publication":                                                                 //<-- Dataitem
-//        {
-//            "Author":"IAPI SRC PAGE",                                               //\
-//            "Title":"The Interactive API (iAPI)",                                   // \
-//            "Conference":"Proceedings of ComposableWeb 2013",                       //  > DataAttribute
-//            "Href":"HREF",                                                          // / 
-//            "Abstract":"ABSTRACT"                                                   ///
-//        }                                                                           
-//    },                                                
-//    {"Publication":                                                                 //<-- Dataitem
-//        {
-//            "Author":"J. Jara, F. Daniel, F. Casati and M. Marchese",               //\
-//            "Title":"From a Simple Flow to Social Applications",                    // \
-//            "Conference":"Proceedings of ComposableWeb 2013",                       //  > DataAttribute
-//            "Href":"Proceedings of ComposableWeb 2013",                             // / 
-//            "Abstract":"Proceedings of ComposableWeb 2013"                          ///
-//        }                         
-//     }                            
-//  ]                                                                                 
-//}                                                                                   //<--End Object
-//
-////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////EXAMPLE TARGET OBJECT//////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-//{                                                                                   //<-- Start Object
-//  "TERZO":[                                                                         //<-- Id "DOM" Object
-//      {"Publication":                                                               //<-- Dataitem
-//          {
-//              "Author":"IAPI SRC PAGE",                                             //\              
-//              "Title":"The Interactive API (iAPI)",                                 // \
-//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
-//              "Href":"HREF",                                                        // / 
-//              "Abstract":"ABSTRACT"                                                 ///
-//          }
-//      },                                             
-//      {"1":                                                                         //<-- Dataitem
-//          {
-//              "Author":"J. Jara, F. Daniel, F. Casati and M. Marchese",             //\              
-//              "Title":"From a Simple Flow to Social Applications",                  // \
-//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
-//              "Href":"Proceedings of ComposableWeb 2013",                           // / 
-//              "Abstract":"Proceedings of ComposableWeb 2013"                        ///
-//          }
-//      }                      
-//  ],                                                                                
-//  "Quarto":[                                                                        //<-- Id "DOM" Object
-//      {"Publication":                                                               //<-- Dataitem
-//          {
-//              "Author":"IAPI SRC PAGE",                                             //\              
-//              "Title":"The Interactive API (iAPI)",                                 // \
-//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
-//              "Href":"HREF","Abstract":"ABSTRACT"                                   // /
-//          }                                                                         ///
-//      },                                 
-//      {"Publication":                                                               //<-- Dataitem
-//          {
-//              "Author":"J. Jara, F. Daniel, F. Casati and M. Marchese",             //\              
-//              "Title":"From a Simple Flow to Social Applications",                  // \
-//              "Conference":"Proceedings of ComposableWeb 2013",                     //  > DataAttribute
-//              "Href":"Proceedings of ComposableWeb 2013",                           // / 
-//              "Abstract":"Proceedings of ComposableWeb 2013"                        ///
-//          }                                                                         
-//      }                                                                             
-//  ]                                                                                 
-//}                                                                                   //<--End Object
-//
-
 /////////////////////////GENERAL FUNCTIONS///////////////////////////////
 
 /// <summary>General Function Join called by iapi_scripting</summary>
@@ -813,116 +719,14 @@ function doFilter(localObjectID, filters, call) {
 
 //Union two same type object and eliminate the duplicats
 function STEliminateDuplicates(objSource, objTarget, call) {
-    /* OLD
-    if (objSource != undefined && objTarget != undefined) {
-
-        $.merge(objTarget, objSource);
-
-        console.log("????????????MERGE?????????");
-        $.each(objTarget, function (key1, value1) {
-            $.each(value1, function (key1, value1) {
-                console.log("MERGE:" + key1);
-                for (var key1 in value1) {
-                    console.log(key1 + " : " + value1[key1]);
-                }
-            });
-        });
-
-
-        // true if pub are equal
-        var checkDupe = function (pub1, pub2) {
-            for (var key in pub1) {
-                //console.log("key1:" + arrValue[key] + "    key2:" + pub2[key]);
-                console.log("OUT:pub2[key]:" + pub2[key] + "     pub1[key]:" + pub1[key]);
-
-                if (pub1[key] != pub2[key]) {
-                    console.log("IN IF");
-                    return false;
-                }
-            }
-            return true;
-        };
-
-        //false if all equal
-        var checkDupes = function (arr, pub2) {
-            var isthere = false;
-            $.each(arr, function (arrKey, arrValue) {
-                isthere = isthere || checkDupe(arrValue, pub2);
-            });
-
-            if (!isthere) {
-                console.log("push");
-                arr.push(pub2);
-                return true;
-            }
-            else return false;
-        };
-
-        var existingPUBs = [];
-        objTarget = $.grep(objTarget, function (v) {
-            console.log("2");
-            $.each(v, function (pubKey, pubVal) {
-                return checkDupes(existingPUBs, pubVal);
-            });
-        }, true);
-
-        console.log("ARRRRRRR");
-        console.log(existingPUBs.length);
-        for (var i = 0; i < existingPUBs.length; i++) {
-            $.each(existingPUBs[i], function (pubKey, pubVal) {
-                console.log(pubKey + " : " + pubVal);
-            });
-        }
-
-        call(objTarget);
-    }
-    else
-        call(undefined);   */
-
-    //{
-    //    "Publication":
-    //    {
-    //        "Publication":
-    //        {
-    //            "oid": "120",
-    //            "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-    //            "title": "Advanced Web Services",
-    //            "to_uploadresource": null,
-    //            "abstract": "Web services and Service-Oriented Computing (SOC)......",
-    //            "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-    //        },
-    //        "Publication":
-    //            {
-    //                "oid": "121",
-    //                "author": "F. Daniel (Eds.)",
-    //                "title": "Services",
-    //                "to_uploadresource": "aaaa",
-    //                "abstract": "(SOC)......",
-    //                "where": "ISBN 978-1-4614-7534-7"
-    //            },
-    //        "Publication":
-    //            {
-    //                "oid": "123",
-    //                "author": "(Eds.)",
-    //                "title": "Services",
-    //                "to_uploadresource": "aaaa",
-    //                "abstract": "(SOC)......",
-    //                "where": "ISBN 978-1-4614-7534-7"
-    //            }
-    //    }
-    //}
-
-
 
     if (objSource != undefined && objTarget != undefined) {
-
-
         STUnionAll(objSource, objTarget, function (objTarget) {
 
             // true if pub are equal
             var checkDupe = function (pub1, pub2) {
                 for (var key in pub1) {
-                    if (pub1[key] != pub2[key]) {
+                    if (JSON.stringify(pub1[key]) !== JSON.stringify(pub2)) {
                         return false;
                     }
                 }
@@ -931,43 +735,29 @@ function STEliminateDuplicates(objSource, objTarget, call) {
 
             //false if all equal
             var checkDupes = function (arr, pub2) {
-                var isthere = false;
-                $.each(arr, function (arrKey, arrValue) {
-                    isthere = isthere || checkDupe(arrValue, pub2);
-                });
+                $.each(pub2, function (key1, value1) {
+                    var isthere = false;
 
-                if (!isthere) {
-                    console.log("push");
-                    arr.push(pub2);
-                    return true;
-                }
-                else return false;
+                    $.each(arr, function (arrKey, arrValue) {
+                        isthere = isthere || checkDupe(arr[arrKey], pub2[key1]);
+                    });
+                    if (!isthere) {
+                        arr.push(pub2);
+                        return true;
+                    }
+                    else return false;
+                });
             };
 
             var existingPUBs = [];
-            var arr = new Array();
             $.each(objTarget, function (pubKey, pubVal) {
                 for (var i = 0; i < pubVal.length; i++) {
-                    console.log(pubVal[i]);
-                    $.each(pubVal[i], function (key1, value1) {
-                        arr.push(checkDupes(existingPUBs, value1));
-                    });
+                     checkDupes(existingPUBs, pubVal[i]);
                 }
             });
             $.each(objTarget, function (key1, value1) {
                 objTarget[key1] = existingPUBs;
-            });
-
-            /*for (var i = 0; i < arr.length; i++) {
-                console.log("arr[" + i + "]" + arr[i]);
-            }  */
-            console.log("ARRRRRRR");
-            console.log(existingPUBs.length);
-            for (var i = 0; i < existingPUBs.length; i++) {
-                $.each(existingPUBs[i], function (pubKey, pubVal) {
-                    console.log(pubKey + " : " + pubVal);
-                });
-            }
+            }); 
             call(objTarget);
         });
     }
@@ -985,31 +775,11 @@ function STUnionAll(objSource, objTarget, call) {
                 {
                     "oid": "120",
                     "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                    "title": "Advancsed Web Services",
+                    "title": "Advancsed Web aaaaServices",
                     "to_uploadresource": null,
                     "abstract": "Web services and Service-Oriented Computing (SOC)......",
                     "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
                 }
-        }, {
-            "Publication2":
-               {
-                   "oid": "120",
-                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                   "title": "Advanced Web Services",
-                   "to_uploadresource": null,
-                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
-                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-               }
-        }, {
-            "Publication2":
-               {
-                   "oid": "120",
-                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                   "title": "Advanced Web Services",
-                   "to_uploadresource": null,
-                   "abstract": "Web services and Service-Oriented Computing (SOC)......",
-                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-               }
         }, {
             "Publication2":
                 {
@@ -1032,50 +802,17 @@ function STUnionAll(objSource, objTarget, call) {
                        {
                            "oid": "120",
                            "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                           "title": "Advanced Web Services",
+                           "title": "Advancsed Web aaaaServices",
                            "to_uploadresource": null,
                            "abstract": "Web services and Service-Oriented Computing (SOC)......",
-                           "where": "Springer, 2014. In ggggprint. ISBN 978-1-4614-7534-7"
-                       }
-                },
-                {
-                    "Publication2":
-                       {
-                           "oid": "120",
-                           "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                           "title": "Advasdd Web Services",
-                           "to_uploadresource": null,
-                           "abstract": "Web services and Service-asdasOriented Computing (SOC)......",
-                           "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-                       }
-                },
-                {
-                    "Publication2":
-                       {
-                           "oid": "110",
-                           "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                           "title": "Advanced Web Services",
-                           "to_uploadresource": null,
-                           "abstract": "Web sersddsdsvices and Service-Oriented Computing (SOC)......",
-                           "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-                       }
-                },
-                {
-                    "Publication2":
-                       {
-                           "oid": "120",
-                           "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                           "title": "Advanced Web Services",
-                           "to_uploadresource": null,
-                           "abstract": "Web services and Service-Orienasdsdted Computing (SOC)......",
-                           "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+                           "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
                        }
                 },
                 {
                     "Publication2":
                         {
-                            "oid": "123",
-                            "author": "(Eds.)",
+                            "oid": "121",
+                            "author": "F. Daniel (Eds.)",
                             "title": "Services",
                             "to_uploadresource": "aaaa",
                             "abstract": "(SOC)......",
