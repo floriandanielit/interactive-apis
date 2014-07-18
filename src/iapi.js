@@ -3,8 +3,6 @@
  */
 ( function ($) {
 
-
-
     $.fn.renderData = function (data) {
         console.log("render");
 
@@ -15,152 +13,73 @@
         var arr = {};
 
         var txt = "";
-        $.each(data, function(key, value) {
+        $.each(data, function (key, value) {
 
             var subtemplate = template.find("[class*='e-item:']");
             // console.log($(template)[0].outerHTML);
-              for(var k=0;k<value.length;k++){
+            for (var k = 0; k < value.length; k++) {
 
-          //  $.each(value, function(key, value) {
+                //  $.each(value, function(key, value) {
 
                 var tmpChild = subtemplate;
-                  $.each(value[k],function(key,value){
-                      var i=0;
-                      for (var key in value) {
-                            console.log($(tmpChild).children().eq(i).attr("class").substr(7), key);
-                          $(tmpChild).children().eq(i).html(function() {
+                $.each(value[k], function (key, value) {
+                    var i = 0;
+                    for (var key in value) {
 
-                              if ($(tmpChild).children().eq(i).attr("class").substr(7) === key) return value[key];
-                          });
-                          i++;
-                      }
-                  });
-                  txt = txt.concat($(subtemplate)[0].outerHTML);
-                  //console.log(txt);
-              }
+                        $(tmpChild).children().eq(i).html(function () {
+                            // for (var key in value) {
+                            //if ($(tmpChild).children().eq(i).attr("class").substr(7) === key) {
+                            //console.log($(tmpChild).children().eq(i).attr("class").substr(7), key);
+
+                            return value[key];
+                            //}
+
+                        });
+
+                        i++;
+                    }
+                });
+                txt = txt.concat($(subtemplate)[0].outerHTML);
+                //console.log(txt);
+            }
 
         });
-                       /* $.each(value, function(key, value) {
-                            console.log(key,value);
-                            $(tmpChild).eq(j).html(function() {
+        /* $.each(value, function(key, value) {
+         console.log(key,value);
+         $(tmpChild).eq(j).html(function() {
 
-                        for (var key in value) {
-                            //console.log(key,value);
-
-
-                            if ($(tmpChild).eq(j).attr("class").substr(7) === key) {
-                              //  console.log(value[key]);
-
-                                    return value[key];
-
-                            }
-                        }
-                           // console.log(value[key]);
-                           // return value[key];
-                        });
-                    });
+         for (var key in value) {
+         //console.log(key,value);
 
 
+         if ($(tmpChild).eq(j).attr("class").substr(7) === key) {
+         //  console.log(value[key]);
 
-            }*/
+         return value[key];
 
+         }
+         }
+         // console.log(value[key]);
+         // return value[key];
+         });
+         });
+
+
+
+         }*/
 
 
         template.find("[class*='e-item:']").remove();
         $(template).append(txt);
-    }
-    $.fn.hide = function (attrTohide,sourceType) {
-        var idtarget = this.attr("id");
-
-        getPageId(function () {
-
-            var flag1 = true;
-            window.addEventListener('message', function (e) {
-                try {
-
-
-                    if (JSON.parse(e.data).action === "pageidResponse" && flag1) {
-
-                        flag1 = false;
-
-                        pageId = JSON.parse(e.data).pageid;
-
-                        hideDataattribute(idtarget, attrTohide, function () {
-                            var tmp = $('#' + idtarget).clone();
-                            $(tmp).find("[class*='iapitemplate:item']").nextAll().remove();
-                            $(tmp).find("[class*='iapitemplate:item']").children().each(function () {
-                                $(this).text("");
-                            });
-
-                            getObject(function (tmp) {
-
-                                if (tmp !== undefined) {
-                                    tmp = JSON.parse(tmp);
-                                    tmp = tmp[idtarget];
-
-                                    if(sourceType === undefined) alert("Error: please insert the source type param " );
-                                     else generate(idtarget,tmp,sourceType);
-                                }});
-
-                        });
-                    }
-                } catch (err) {
-                    alert("Error: couldnt get page Id " + err)
-                }
-            }, false);
-        });
-    }
-    $.fn.show = function (attrToshow,sourceType){
-        var idtarget = this.attr("id");
-
-        getPageId(function () {
-
-            var flag1 = true;
-            window.addEventListener('message', function (e) {
-                try {
-
-
-                    if (JSON.parse(e.data).action === "pageidResponse" && flag1) {
-
-                        flag1 = false;
-
-                        pageId = JSON.parse(e.data).pageid;
-
-                        showDataattribute(idtarget, attrToshow, function () {
-
-                            var tmp = $('#' + idtarget).clone();
-                            $(tmp).find("[class*='iapitemplate:item']").nextAll().remove();
-                            $(tmp).find("[class*='iapitemplate:item']").children().each(function () {
-                                $(this).text("");
-                            });
-
-                            getObject(function (tmp) {
-
-                                if (tmp !== undefined) {
-                                    tmp = JSON.parse(tmp);
-                                    tmp = tmp[idtarget];
-
-                                    if(sourceType === undefined) alert("Error: please insert the source type param " );
-                                    else generate(idtarget,tmp,sourceType);
-                                }});
-
-                        });
-                    }
-                } catch (err) {
-                    alert("Error: couldnt get page Id " + err)
-                }
-            }, false);
-        });
     }
 }(jQuery));
 
 
 var iapi = (function () {
 
-
     return {
-        fetchData: function (URL, id,call) {
-            var idTarget=id;
+        fetchData: function (URL, id, call) {
+            var idTarget = id;
 
             getPage(URL, id, function () {
 
@@ -175,71 +94,72 @@ var iapi = (function () {
                             var template = $("<div>" + data + "</div>").find('#' + idTarget);
 
                             var sourceType = "iapi";
-                            var url=URL;
+                            var url = URL;
                             var classAttr = $(template).attr("class").split(" ");
                             for (var i = 0; i < classAttr.length; i++) {
                                 if (classAttr[i].slice(0, 7) === ("u-json:")) {
 
-                                     var sourceType = "json";
+                                    var sourceType = "json";
                                     var url = classAttr[i].substr(7);
                                 }
                             }
 
-                            var arr=new Array();
-                            var arr2=new Array();
-                            var obj={};
+                            var arr = new Array();
+                            var arr2 = new Array();
+                            var obj = {};
 
-                            if(sourceType === "json"){
-                                var classAttr=template.attr("class").split(" ");
+                            if (sourceType === "json") {
+                                var classAttr = template.attr("class").split(" ");
                                 for (var i = 0; i < classAttr.length; i++) {
-                                    if(classAttr[i].substr(0,7)==="p-attr:"){
-                                        var pattr=classAttr[i].substr(7);//  arr.push(classAttr[i].substr(7));
+                                    if (classAttr[i].substr(0, 7) === "p-attr:") {
+                                        var pattr = classAttr[i].substr(7);//  arr.push(classAttr[i].substr(7));
 
                                         arr.push(pattr.split(":")[0].replace(/(\r\n|\n|\r)/gm, ""));
                                         arr2.push(pattr.split(":")[1].replace(/(\r\n|\n|\r)/gm, ""));
                                     }
-                                    if(classAttr[i].substr(0,7)==="e-item:") var eitem=classAttr[i].substr(7);
+                                    if (classAttr[i].substr(0, 7) === "e-item:") var eitem = classAttr[i].substr(7);
                                 }
-                                eitem1=eitem.split(":")[0].replace(/(\r\n|\n|\r)/gm, "");
-                                eitem2=eitem.split(":")[1].replace(/(\r\n|\n|\r)/gm, "");
+                                eitem1 = eitem.split(":")[0].replace(/(\r\n|\n|\r)/gm, "");
+                                eitem2 = eitem.split(":")[1].replace(/(\r\n|\n|\r)/gm, "");
                                 // obj={eitem1:arr,eitem2:arr2};
-                                obj[eitem1]=arr;
-                                obj[eitem2]=arr2;
+                                obj[eitem1] = arr;
+                                obj[eitem2] = arr2;
                             }
-                            if(sourceType === "iapi"){
-                                var pattr=template.find("[class*='e-item:']").first().children();
-                                $.each(pattr,function (key,value) {
-                                     //attr= value.attr("class").split(" ");
-                                   classAttr=$(value).attr("class").split(" ");
+                            if (sourceType === "iapi") {
+                                var pattr = template.find("[class*='e-item:']").first().children();
+                                $.each(pattr, function (key, value) {
+                                    //attr= value.attr("class").split(" ");
+                                    classAttr = $(value).attr("class").split(" ");
                                     for (var i = 0; i < classAttr.length; i++) {
-                                        if(classAttr[i].substr(0,7)==="p-attr:")
-                                        arr.push(classAttr[i].substr(7).replace(/(\r\n|\n|\r)/gm, ""));
+                                        if (classAttr[i].substr(0, 7) === "p-attr:")
+                                            arr.push(classAttr[i].substr(7).replace(/(\r\n|\n|\r)/gm, ""));
                                     }
                                 });
-                                var classAttr=template.find("[class*='e-item:']").attr("class").split(" ");
+                                var classAttr = template.find("[class*='e-item:']").attr("class").split(" ");
                                 for (var i = 0; i < classAttr.length; i++) {
 
-                                    if(classAttr[i].substr(0,7)==="e-item:") var eitem=classAttr[i].substr(7).replace(/(\r\n|\n|\r)/gm, "");
+                                    if (classAttr[i].substr(0, 7) === "e-item:") var eitem = classAttr[i].substr(7).replace(/(\r\n|\n|\r)/gm, "");
                                 }
-                                   obj[eitem]=arr;
+                                obj[eitem] = arr;
 
                             }
 
-                            extractData(idTarget,url,sourceType,obj,function(data){
+                            extractData(idTarget, url, sourceType, obj, function (data) {
                                 data = JSON.parse(data);
                                 data = data[idTarget];
                                 call(data);
                             });
 
                         }
-                    } catch (err) { }
+                    } catch (err) {
+                    }
 
                 });
 
             });
 
         },
-        join: function (first, second, columnA, columnB, operator, call){
+        join: function (first, second, columnA, columnB, operator, call) {
             //Equijoin
             if (operator === null) {
                 STJoinAttributes(first, second, columnA, columnB, "=", function (ObjectMerged) {
@@ -252,9 +172,199 @@ var iapi = (function () {
                 });
             }
         },
-        fillForm:  function(idtarget,program,json,call){
-            jsonstr = [ {"attribute":"Citazioni", "value":"1"},{"attribute":"Citazioni", "value":"2"},{"attribute":"Citazioni", "value":"3"},{"attribute":"Citazioni", "value":"4"}];
-            var activity=jsonstr;
+        unionAll: function (objSource, objTarget, call) {
+
+            if (objSource != undefined && objTarget != undefined) {
+
+                var lenA = 0;
+                var lenB = 0;
+
+                $.each(objSource, function (key1, value1) {
+                    for (; lenA < value1.length; lenA++) {
+                    }
+                });
+                $.each(objTarget, function (key1, value1) {
+                    for (; lenB < value1.length; lenB++) {
+                    }
+                });
+                var vett = [];
+                vett.length = lenA + lenB;
+                $.each(objSource, function (key1, value1) {
+                    for (var i = 0; i < value1.length; i++) {
+                        vett[i] = value1[i];
+                    }
+                });
+                $.each(objTarget, function (key1, value1) {
+                    for (var i = 0; i < value1.length; i++) {
+                        vett[i + lenA] = value1[i];
+                    }
+                });
+                $.each(objTarget, function (key1, value1) {
+                    objTarget[key1] = vett;
+                });
+
+                call(objTarget);
+            }
+            else
+                call(undefined);
+        },
+        unionWithoutDuplicate: function (objSource, objTarget, call) {
+
+            if (objSource != undefined && objTarget != undefined) {
+                iapi.unionAll(objSource, objTarget, function (objTarget) {
+
+                    // true if pub are equal
+                    var checkDupe = function (pub1, pub2) {
+                        for (var key in pub1) {
+                            if (JSON.stringify(pub1[key]) !== JSON.stringify(pub2)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    };
+
+                    //false if all equal
+                    var checkDupes = function (arr, pub2) {
+                        $.each(pub2, function (key1, value1) {
+                            var isthere = false;
+
+                            $.each(arr, function (arrKey, arrValue) {
+                                isthere = isthere || checkDupe(arr[arrKey], pub2[key1]);
+                            });
+                            if (!isthere) {
+                                arr.push(pub2);
+                                return true;
+                            }
+                            else return false;
+                        });
+                    };
+
+                    var existingPUBs = [];
+                    $.each(objTarget, function (pubKey, pubVal) {
+                        for (var i = 0; i < pubVal.length; i++) {
+                            checkDupes(existingPUBs, pubVal[i]);
+                        }
+                    });
+                    $.each(objTarget, function (key1, value1) {
+                        objTarget[key1] = existingPUBs;
+                    });
+                    call(objTarget);
+                });
+            }
+            else
+                call(undefined);
+        },
+        doFilter: function (localObjectID, filters, call) {
+            if (localObjectID !== undefined) {
+                //for (var i = 0; i < filters.length; i++) {
+                //   console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
+                //}
+                var ar = new Array();
+                $.each(localObjectID, function (key1, value1) {
+                    for (var j = 0; j < value1.length; j++) {
+                        $.each(value1[j], function (key2, value) {
+                            ar.push(value1[j]);
+                            for (var i = 0; i < filters.length; i++) {
+                                var flag = true;
+
+                                if (filters[i].operator === "<=") {
+                                    if (value[filters[i].column].localeCompare(filters[i].value) === 0 || value[filters[i].column].localeCompare(filters[i].value) === -1) {
+                                        //console.log("_____<=_____");
+                                        flag = false;
+                                    }
+                                } else if (filters[i].operator === ">=") {
+                                    if (value[filters[i].column].localeCompare(filters[i].value) === 0 || value[filters[i].column].localeCompare(filters[i].value) === 1) {
+                                        //console.log("_____>=_____");
+                                        flag = false;
+                                    }
+                                } else if (filters[i].operator === "<") {
+                                    if (value[filters[i].column].localeCompare(filters[i].value) === -1) {
+                                        //console.log("_____<_____");
+                                        flag = false;
+                                    }
+                                } else if (filters[i].operator === ">") {
+                                    if (value[filters[i].column].localeCompare(filters[i].value) === 1) {
+                                        //console.log("_____>_____");
+                                        flag = false;
+                                    }
+                                } else if (filters[i].operator === "=") {
+                                    if (value[filters[i].column].localeCompare(filters[i].value) === 0) {
+                                        //console.log("_____=_____");
+                                        flag = false;
+
+                                    }
+                                } else if (filters[i].operator === "contains") {
+                                    if (value[filters[i].column].indexOf(filters[i].value) != -1) {
+                                        //console.log("_____contains_____");
+                                        flag = false;
+                                    }
+                                }
+
+
+                                if (flag) {
+                                    ar.pop();
+                                    $.each(localObjectID, function (key, value) {
+                                        delete localObjectID[key];
+                                        localObjectID[key] = ar;
+                                    });
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                $.each(localObjectID, function (key1, value1) {
+                    if (value1.length != 0)
+                        call(localObjectID);  //Return the object
+                    else
+                        call(undefined);      //Return "undefined" if the object is empty
+                });
+            }
+            else
+                call(undefined);
+
+        },
+        hide: function (objTarget, options, call) {
+            if (objTarget !== undefined) {
+                $.each(objTarget, function (key1, value1) {
+                    for (var j = 0; j < value1.length; j++) {
+                        $.each(value1[j], function (key2, value2) {
+                            for (var i = 0; i < options.length; i++) {
+                                var count = 0;
+
+                                for (var key in value2)
+                                    count++;
+                                if (count === 1 && value2[options[i]] !== undefined)
+                                    delete value1[j];
+                                else
+                                    delete value2[options[i]];
+
+                                /*  for (var key in value2) {
+                                 if(key === options[i]){
+                                 delete value2[options[i]];
+                                 }
+                                 /* count++;
+                                 if (count === 1 && value2[options[i]] !== undefined)
+                                 delete value1[j];
+                                 else
+                                 delete value2[options[i]];*/
+
+                            }
+                        });
+                    }
+                });
+                call(objTarget);
+            }
+        },
+        fillForm: function (idtarget, program, json, call) {
+            jsonstr = [
+                {"attribute": "Citazioni", "value": "1"},
+                {"attribute": "Citazioni", "value": "2"},
+                {"attribute": "Citazioni", "value": "3"},
+                {"attribute": "Citazioni", "value": "4"}
+            ];
+            var activity = jsonstr;
 
 
             getPageId(function () {
@@ -269,27 +379,29 @@ var iapi = (function () {
 
                             pageId = JSON.parse(e.data).pageid;
 
-                                getObject(function (tmp) {
+                            getObject(function (tmp) {
 
-                                    if (tmp !== undefined) {
-                                        tmp = JSON.parse(tmp);
-                                        tmp = tmp[idtarget];
-                                       // console.log($("#"+idtarget).find("[class*='iapitemplate:item']")[0].outerHTML);
-                                        $("#"+idtarget).find("[class*='iapitemplate:item']").each(function (index) {
-                                            tmp[index].Publication[activity[index].attribute]=activity[index].value;
+                                if (tmp !== undefined) {
+                                    tmp = JSON.parse(tmp);
+                                    tmp = tmp[idtarget];
+                                    // console.log($("#"+idtarget).find("[class*='iapitemplate:item']")[0].outerHTML);
+                                    $("#" + idtarget).find("[class*='iapitemplate:item']").each(function (index) {
+                                        tmp[index].Publication[activity[index].attribute] = activity[index].value;
 
+                                    });
+                                    updateData(idtarget, pageId, tmp, function () {
+                                        getObject(function (tmp) {
+
+                                            if (tmp !== undefined) {
+                                                tmp = JSON.parse(tmp);
+                                                tmp = tmp[idtarget];
+                                                call(tmp);
+                                            }
                                         });
-                                        updateData(idtarget,pageId,tmp,function(){
-                                            getObject(function (tmp) {
+                                    });
 
-                                                if (tmp !== undefined) {
-                                                    tmp = JSON.parse(tmp);
-                                                    tmp = tmp[idtarget];
-                                                    call(tmp);
-                                                }});
-                                        });
-
-                                    }});
+                                }
+                            });
 
                         }
                     } catch (err) {
@@ -304,7 +416,7 @@ var iapi = (function () {
 }());
 
 
-function extractData(idTarget,url,sourceType,obj,call) {
+function extractData(idTarget, url, sourceType, obj, call) {
 
 
     try {
@@ -333,16 +445,15 @@ function extractData(idTarget,url,sourceType,obj,call) {
 }
 
 
-
 //update data
 function updateData(idtarget, pageId, data, call) {
-        console.log("send to the content engine");
+    console.log("send to the content engine");
     try {
         var pass_data = {
             'action': "updateData",
             'idTarget': idtarget,
             'pageId': pageId,
-            'data':data
+            'data': data
 
         };
 
@@ -356,51 +467,34 @@ function updateData(idtarget, pageId, data, call) {
 }
 
 
-
-
 //Join two same type object (Attributes)
 function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, operator, call) {
-    //TODO
-    //Join Attributes
-
-
-
-
-
 
     var mergeDupe = function (pub1, pub2) {
-
-        var o = $.extend(true, {}, pub2, pub1);
-
-
+        var o = $.extend(true, {}, pub1, pub2);
         return o;
     };
 
     // true if pub are "operator" (equal,greatest,lower)
     var checkDupe = function (pub1, pub2) {
         if (operator === ">=") {
-            if (pub1.localeCompare(pub2) === 1 || pub1.localeCompare(pub2) === 0) {
+            if (pub1.localeCompare(pub2) === 1 || pub1.localeCompare(pub2) === 0)
                 return true;
-            }
         } else if (operator === "<=") {
-            if (pub1.localeCompare(pub2) === -1 || pub1.localeCompare(pub2) === 0) {
+            if (pub1.localeCompare(pub2) === -1 || pub1.localeCompare(pub2) === 0)
                 return true;
-            }
         }
         else if (operator === "=") {
-            if (pub1.localeCompare(pub2) === 0) {
+            if (pub1.localeCompare(pub2) === 0)
                 return true;
-            }
         }
         else if (operator === "<") {
-            if (pub1.localeCompare(pub2) === -1) {
+            if (pub1.localeCompare(pub2) === -1)
                 return true;
-            }
         }
         else if (operator === ">") {
-            if (pub1.localeCompare(pub2) === 1) {
+            if (pub1.localeCompare(pub2) === 1)
                 return true;
-            }
         }
         else
             return false;
@@ -410,10 +504,11 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
     var checkDupes = function (arr, value1) {
         $.each(objTarget, function (pubKey, pubVal) {
             for (var i = 0; i < pubVal.length; i++) {
-                $.each(pubVal[i], function (key1, value2) {
-                    if (checkDupe(value1[columnSource], value2[columnTarget])) {
-                        arr.push(mergeDupe(value1, value2));
-                    }
+                $.each(value1, function (keyA, valueA) {
+                    $.each(pubVal[i], function (keyB, valueB) {
+                        if (checkDupe(valueA[columnSource], valueB[columnTarget]))
+                            arr.push(mergeDupe(value1, pubVal[i]));
+                    });
                 });
             }
         });
@@ -423,28 +518,20 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
     var existingPUBs = [];
     $.each(objSource, function (pubKey, pubVal) {
         for (var i = 0; i < pubVal.length; i++) {
-            $.each(pubVal[i], function (key1, value1) {
-                checkDupes(existingPUBs, value1);
-            });
+            checkDupes(existingPUBs, pubVal[i]);
         }
     });
+
     $.each(objTarget, function (key1, value1) {
         objTarget[key1] = existingPUBs;
     });
-
-
-
-
-
-
-
     call(objTarget);
 }
 
 
 // rendering
 //render the data in the appropriate place
-function generate(idtarget,data,sourceType){
+function generate(idtarget, data, sourceType) {
     template = $('#' + idtarget);
     // select the template
     var arr = {};
@@ -463,23 +550,23 @@ function generate(idtarget,data,sourceType){
 
     if (sourceType === "iapi") {
         var txt = "";
-        $.each(data, function(key, value) {
+        $.each(data, function (key, value) {
             var subtemplate = template.find("[class*='dataitem:']");
             //get the dataitem
             // checks whether the template is auto implemented or given by the developer  "Presence of iapitemplate "
             //  console.log(template.html());
             var SplitDataAttribute = subtemplate.attr("class").split(" ");
             var iapiTemplatePresence;
-            for ( i = 0; i < SplitDataAttribute.length; i++) {
+            for (i = 0; i < SplitDataAttribute.length; i++) {
                 if (SplitDataAttribute[i].slice(0, 12) == ("iapitemplate")) {
                     iapiTemplatePresence = SplitDataAttribute[i].substr(0, 12);
                 }
             }
 
-            $.each(value, function(key, value) {
+            $.each(value, function (key, value) {
                 var tmpChild = subtemplate.children();
                 for (var j = 0; j < $(tmpChild).length; j++) {
-                    $(tmpChild).eq(j).html(function() {
+                    $(tmpChild).eq(j).html(function () {
                         for (var key in value) {
 
                             if ($(tmpChild).eq(j).attr("class").substr(14) === key) {
@@ -498,17 +585,17 @@ function generate(idtarget,data,sourceType){
     }
     else if (sourceType === "json") {
         var txt = "";
-        $.each(data, function(key, value) {
+        $.each(data, function (key, value) {
             var subtemplate = template.find("[class*='dataitem:']");
             //get the dataitem
             // checks whether the template is auto implemented or given by the developer  "Presence of iapitemplate "
             var SplitDataAttribute = subtemplate.attr("class").split(" ");
             var iapiTemplatePresence;
-            for ( i = 0; i < SplitDataAttribute.length; i++) {
+            for (i = 0; i < SplitDataAttribute.length; i++) {
                 if (SplitDataAttribute[i].slice(0, 12) == ("iapitemplate"))
                     iapiTemplatePresence = SplitDataAttribute[i].substr(0, 12);
             }
-            $.each(value, function(key, value) {
+            $.each(value, function (key, value) {
                 var tmpChild = subtemplate.children();
                 for (var j = 0; j < $(tmpChild).length; j++) {
                     var arrAtt = $(tmpChild).eq(j).attr("class").split(" ");
@@ -517,7 +604,7 @@ function generate(idtarget,data,sourceType){
                         if (arrAtt[i].substr(0, 14) === "dataattribute:") {
                             var attribute = arrAtt[i].split(":");
                             array = attribute[2];
-                            $(tmpChild).eq(j).html(function() {
+                            $(tmpChild).eq(j).html(function () {
                                 for (var key in value) {
                                     if (array === key) {
                                         if (arr[key] !== key)
@@ -564,7 +651,6 @@ function getObject(call) {
     }
 
 }
-
 
 
 //  send a message to middleware to load and Externale page
