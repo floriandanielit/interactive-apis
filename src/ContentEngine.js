@@ -483,10 +483,9 @@ function Join(first, second, columnA, columnB, operator, call) {
     }
     call();
 }
+//Join("", "", "oid", "oid", ">=", function () {});
 
-Join("", "", "oid", "oid", ">=", function () {
 
-});
 /// <summary>General Function UnionAll called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
 /// <param name="second" type="Object">The second Object in LocalStorage</param>   
@@ -496,6 +495,8 @@ function UnionAll(first, second, call) {
         call(result);
     });
 }
+//UnionAll("", "", function () { });
+
 
 /// <summary>General Function UnionWithoutDuplication called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
@@ -506,6 +507,7 @@ function UnionWithoutDuplication(first, second, call) {
         call(result);
     });
 }
+//UnionWithoutDuplication("", "", function () { });
 
 /// <summary>General Function Filter called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
@@ -518,6 +520,10 @@ function Filter(first, option, call) {
         call(obj);
     })
 }
+var a = new Array();
+a.push({ "column": "oid", "operator": ">", "value": "129" });
+a.push({ "column": "oid", "operator": "constains", "value": "a" });
+Filter("", a, function () { });
 
 /// <summary>General Function Show called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
@@ -623,142 +629,152 @@ function getTemplate(idTemplate, first, call) {
 
     });
 }
-
-//TEST
 //getTemplate("2D_L_SNEW", "", function (val) {});
 
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
 //Filter the object in the local storage
 function doFilter(localObjectID, filters, call) {
-    var cloneLocalObjectID = localObjectID;
-    try {
-        if (localObjectID != undefined) {
-            //for (var i = 0; i < filters.length; i++) {
-            //   console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
-            //}
-            //TODO
+    localObjectID = {
+        "Publication": [{
+            "Publication2":
+                {
+                    "oid": "120",
+                    "author": "B. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                    "title": "Advancsed Web Services",
+                    "to_uploadresource": null,
+                    "abstract": "Web services and Service-Oriented Computing (SOC)......",
+                    "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
+                }
+        }, {
+            "Publication2":
+               {
+                   "oid": "141",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }]
 
-            if (localObjectID != undefined) {
-                console.log("type:" + typeof localObjectID);
-                $.each(localObjectID, function (key1, value) {
-                    $.each(value, function (key, value) {
+    }
 
+    console.log(localObjectID);
+
+
+    if (localObjectID !== undefined) {
+        //for (var i = 0; i < filters.length; i++) {
+        //   console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
+        //}
+        var ar = new Array();
+        $.each(localObjectID, function (key1, value1) {
+            for (var j = 0; j < value1.length; j++) {
+                $.each(value1[j], function (key2, value) {
+                    ar.push(value1[j]);
+                    for (var i = 0; i < filters.length; i++) {
                         var flag = false;
+                        var entrato = false;
                         for (var key in value) {
-                            for (var i = 0; i < filters.length; i++) {
-                                if (key === filters[i].column) {
-                                    console.log("value[key]:" + value[key]);
+                            console.log(key, value[key], filters[i].operator, filters[i].value);
 
-                                    //console.log("key:" + key);
-                                    //console.log("value[key]:" + value[key]);
-                                    //console.log("filters[i].column:" + filters[i].column);
-                                    //console.log("filters[i].value:" + filters[i].value);
-                                    //console.log("filters[i].operator:" + filters[i].operator);
-                                    //var attr = {};
-                                    if (filters[i].operator === "<=") {
-                                        if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === -1) {
-                                            //att = { key: value[key] };
-                                            //console.log("value[key]:" + value[key]);
-                                            //console.log("filters[i].value:" + filters[i].value);
-                                            console.log("MINORE UGUALE");
-                                            flag = false;
-                                            break;
-                                        } else {
-                                            flag = true;
-                                            break;
-                                        }
-                                    } else if (filters[i].operator === ">=") {
-                                        if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === 1) {
-                                            //att = { key: value[key] };
-                                            //console.log("value[key]:" + value[key]);
-                                            //console.log("filters[i].value:" + filters[i].value);
-                                            console.log("MAGGIORE UGUALE");
-                                            flag = false;
-                                            break;
-                                        }
-                                        else {
-                                            flag = true;
-                                            break;
-                                        }
-                                    } else if (filters[i].operator === "<") {
-                                        if (value[key].localeCompare(filters[i].value) === -1) {
-                                            //att = { key: value[key] };
-                                            //console.log("value[key]:" + value[key]);
-                                            //console.log("filters[i].value:" + filters[i].value);
-                                            console.log("MINORE");
-                                            flag = false;
-                                            break
-                                        } else {
-                                            flag = true;
-                                            break;
-                                        }
-                                    } else if (filters[i].operator === ">") {
-                                        if (value[key].localeCompare(filters[i].value) === 1) {
-                                            //att = { key: value[key] };
-                                            //console.log("value[key]:" + value[key]);
-                                            //console.log("filters[i].value:" + filters[i].value);
-                                            console.log("MAGGIORE");
-                                            flag = false;
-                                            break
-                                        } else {
-                                            flag = true;
-                                            break;
-                                        }
-                                    } else if (filters[i].operator === "=") {
-                                        if (value[key].localeCompare(filters[i].value) === 0) {
-                                            //att = { key: value[key] };
-                                            //console.log("value[key]:" + value[key]);
-                                            //console.log("filters[i].value:" + filters[i].value);
-                                            console.log("UGUALE");
-                                            flag = false;
-                                            break;
-                                        } else {
-                                            flag = true;
-                                            break;
-                                        }
-                                    } else if (filters[i].operator === "contains") {
-                                        if (value[key].indexOf(filters[i].value) != -1) {
-                                            //att = { key: value[key] };
-                                            //console.log("value[key]:" + value[key]);
-                                            //console.log("filters[i].value:" + filters[i].value);
-                                            console.log("Contains");
-                                            flag = false;
-                                            break;
-                                        } else {
-                                            flag = true;
-                                            break;
-                                        }
+                            if (key === filters[i].column) {
+                                entrato = true;
+                                if (filters[i].operator === "<=") {
+                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === -1) {
+                                        console.log("MINORE UGUALE");
+                                        flag = false;
+                                        break;
+                                    } else {
+                                        console.log("NO MINORE UGUALE");
+                                        flag = true;
+                                        break;
                                     }
-
-                                    //console.log("---------------------------------------------");
-
+                                } else if (filters[i].operator === ">=") {
+                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === 1) {
+                                        console.log("MAGGIORE UGUALE");
+                                        flag = false;
+                                        break;
+                                    }
+                                    else {
+                                        console.log("NO MAGGIORE UGUALE");
+                                        flag = true;
+                                        break;
+                                    }
+                                } else if (filters[i].operator === "<") {
+                                    if (value[key].localeCompare(filters[i].value) === -1) {
+                                        console.log("MINORE");
+                                        flag = false;
+                                        break
+                                    } else {
+                                        console.log("NO MINORE");
+                                        flag = true;
+                                        break;
+                                    }
+                                } else if (filters[i].operator === ">") {
+                                    if (value[key].localeCompare(filters[i].value) === 1) {
+                                        console.log("MAGGIORE");
+                                        flag = false;
+                                        break
+                                    } else {
+                                        console.log("NO MAGGIORE");
+                                        flag = true;
+                                        break;
+                                    }
+                                } else if (filters[i].operator === "=") {
+                                    if (value[key].localeCompare(filters[i].value) === 0) {
+                                        console.log("UGUALE");
+                                        flag = false;
+                                        break;
+                                    } else {
+                                        console.log("NO UGUALE");
+                                        flag = true;
+                                        break;
+                                    }
+                                } else if (filters[i].operator === "contains") {
+                                    if (value[key].indexOf(filters[i].value) != -1) {
+                                        console.log("CONTIENE");
+                                        flag = false;
+                                        break;
+                                    } else {
+                                        console.log("NON CONTIENE");
+                                        flag = true;
+                                        break;
+                                    }
                                 }
                             }
 
-                        }
-                        if (flag) {
-                            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + key1 + " " + key);
-                            delete localObjectID[key1];
+                        } console.log("--------------------------------------");
 
+                        if (flag && entrato) {
+                            ar.pop();
+                            $.each(localObjectID, function (key, value) {
+                                delete localObjectID[key];
+                                localObjectID[key] = ar;
+                            });
                         }
-                    });
+                        console.log("--------------------------------------");
+                    }
+
                 });
             }
-            else
-                call(undefined);
+        });
 
-            console.log("FINE;");
-
-            console.log(localObjectID);
-            //Filters
-            call(localObjectID);
-        }
-        else
-            call(undefined);
-    } catch (er) {
-        call(undefined);
+        console.log("FINE;");
+        for (var i = 0; i < ar.length; i++) {
+            console.log(ar[i]);
+        }                
+        //Filters
+        console.log(localObjectID);
+        $.each(localObjectID, function (key, value) {
+            delete localObjectID[key];
+            localObjectID[key] = ar;
+        });
+        call(localObjectID);
     }
+    else
+        call(undefined);
+
 }
 
 //Union two same type object and eliminate the duplicats
@@ -1133,6 +1149,9 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
                 }]
         }
 
+    console.log(objSource);
+    console.log(objTarget);
+
     var mergeDupe = function (pub1, pub2) {
 
         var o = $.extend(true, {}, pub2, pub1);
@@ -1199,7 +1218,7 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
         objTarget[key1] = existingPUBs;
     });
     console.log("------------------------------------");
-    
+
 
     console.log(objTarget);
 
