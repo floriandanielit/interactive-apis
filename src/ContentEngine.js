@@ -523,32 +523,38 @@ function Filter(first, option, call) {
 //TEST//a.push({ "column": "oid", "operator": ">", "value": "129" });
 //TEST//Filter("", a, function () { });
 
-/// <summary>General Function Show called by iapi_scripting</summary>
+/// <summary>General Function ShowAttribute called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
 /// <param name="option" type="Array String">Array of columns ["Author","Conference","Title"]</param>
 /// <param name="call" type="function">Callback</param>
-function Show(first, option, call) {
+function ShowAttribute(first, option, call) {
     //TODO
     //Show
     if (typeof option === "string") {
-        //TODO
+        var opt = new Array();
+        opt.push(option);
+        Show(first,opt, function (obj) {
+            call(obj);
+        });
     }
     else {
-        var error = false;
         for (var i = 0; i < option.length; i++) {
             if (typeof option[i] !== "string")
                 call(undefined);
         }
-        //TODO
+        Show(first, option, function (obj) {
+            call(obj);
+        });
     }
-    call();
 }
+//TEST//ShowAttribute("", ["oid", "where", "title"], function () { });
+ShowAttribute("", "author", function () { });
 
-/// <summary>General Function Hide called by iapi_scripting</summary>
+/// <summary>General Function HideAttribute called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
 /// <param name="option" type="Array String">Array of columns ["Author","Conference","Title"]</param>
 /// <param name="call" type="function">Callback</param>
-function Hide(first, option, call) {
+function HideAttribute(first, option, call) {
     //TODO
     //Hide
     if (typeof option === "string") {
@@ -631,6 +637,50 @@ function getTemplate(idTemplate, first, call) {
 
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
+function Show(objTarget, options, call) {
+    objTarget = {
+        "Publication": [{
+            "Publication2":
+                {
+                    "oid": "234",
+                    "where": "Trento",
+                    "title": "Test"
+                }
+        }, {
+            "Publication2":
+               {
+                   "oid": "141",
+                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
+                   "title": "Advanced Web Services",
+                   "to_uploadresource": null,
+                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
+                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
+               }
+        }]
+
+    }
+    if (objTarget !== undefined) {
+        $.each(objTarget, function (key1, value1) {
+            for (var j = 0; j < value1.length; j++) {
+                $.each(value1[j], function (key2, value2) {
+                    for (var i = 0; i < options.length; i++) {
+                        var count = 0;
+                        for (var key in value2)
+                            count++;
+
+                        if (count === 1 && value2[options[i]] !== undefined)
+                            delete value1[j];
+                        else
+                            delete value2[options[i]];
+                    }
+                });
+            }
+        });
+        console.log(objTarget);
+    }
+    call();
+}
+
 //Filter the object in the local storage
 function doFilter(localObjectID, filters, call) {
     localObjectID = {
@@ -668,7 +718,7 @@ function doFilter(localObjectID, filters, call) {
                     ar.push(value1[j]);
                     for (var i = 0; i < filters.length; i++) {
                         var flag = true;
-                        
+
                         //console.log(value[filters[i].column]);
                         //console.log(filters[i].operator);
                         //console.log(filters[i].value);
@@ -677,7 +727,7 @@ function doFilter(localObjectID, filters, call) {
                             if (value[filters[i].column].localeCompare(filters[i].value) === 0 || value[filters[i].column].localeCompare(filters[i].value) === -1) {
                                 //console.log("_____<=_____");
                                 flag = false;
-                            } 
+                            }
                         } else if (filters[i].operator === ">=") {
                             if (value[filters[i].column].localeCompare(filters[i].value) === 0 || value[filters[i].column].localeCompare(filters[i].value) === 1) {
                                 //console.log("_____>=_____");
@@ -687,18 +737,18 @@ function doFilter(localObjectID, filters, call) {
                             if (value[filters[i].column].localeCompare(filters[i].value) === -1) {
                                 //console.log("_____<_____");
                                 flag = false;
-                            } 
+                            }
                         } else if (filters[i].operator === ">") {
                             if (value[filters[i].column].localeCompare(filters[i].value) === 1) {
                                 //console.log("_____>_____");
                                 flag = false;
-                            } 
+                            }
                         } else if (filters[i].operator === "=") {
                             if (value[filters[i].column].localeCompare(filters[i].value) === 0) {
                                 //console.log("_____=_____");
                                 flag = false;
-                                
-                            } 
+
+                            }
                         } else if (filters[i].operator === "contains") {
                             if (value[filters[i].column].indexOf(filters[i].value) != -1) {
                                 //console.log("_____contains_____");
@@ -706,7 +756,7 @@ function doFilter(localObjectID, filters, call) {
                             }
                         }
 
-                       
+
                         if (flag) {
                             //console.log("--------------------------------------");
                             ar.pop();
