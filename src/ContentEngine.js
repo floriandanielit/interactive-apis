@@ -483,8 +483,7 @@ function Join(first, second, columnA, columnB, operator, call) {
     }
     call();
 }
-//Join("", "", "oid", "oid", ">=", function () {});
-
+//TEST//Join("", "", "oid", "oid", ">=", function () {});
 
 /// <summary>General Function UnionAll called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
@@ -495,8 +494,7 @@ function UnionAll(first, second, call) {
         call(result);
     });
 }
-//UnionAll("", "", function () { });
-
+//TEST//UnionAll("", "", function () { });
 
 /// <summary>General Function UnionWithoutDuplication called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
@@ -507,7 +505,7 @@ function UnionWithoutDuplication(first, second, call) {
         call(result);
     });
 }
-//UnionWithoutDuplication("", "", function () { });
+//TEST//UnionWithoutDuplication("", "", function () { });
 
 /// <summary>General Function Filter called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
@@ -520,10 +518,10 @@ function Filter(first, option, call) {
         call(obj);
     })
 }
-var a = new Array();
-a.push({ "column": "oid", "operator": ">", "value": "129" });
-a.push({ "column": "oid", "operator": "constains", "value": "a" });
-Filter("", a, function () { });
+//TEST//var a = new Array();
+//TEST//a.push({ "column": "oid", "operator": "contains", "value": "1" });
+//TEST//a.push({ "column": "oid", "operator": ">", "value": "129" });
+//TEST//Filter("", a, function () { });
 
 /// <summary>General Function Show called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
@@ -629,7 +627,7 @@ function getTemplate(idTemplate, first, call) {
 
     });
 }
-//getTemplate("2D_L_SNEW", "", function (val) {});
+//TEST//getTemplate("2D_L_SNEW", "", function (val) {});
 
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
@@ -659,10 +657,6 @@ function doFilter(localObjectID, filters, call) {
         }]
 
     }
-
-    console.log(localObjectID);
-
-
     if (localObjectID !== undefined) {
         //for (var i = 0; i < filters.length; i++) {
         //   console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
@@ -673,104 +667,69 @@ function doFilter(localObjectID, filters, call) {
                 $.each(value1[j], function (key2, value) {
                     ar.push(value1[j]);
                     for (var i = 0; i < filters.length; i++) {
-                        var flag = false;
-                        var entrato = false;
-                        for (var key in value) {
-                            console.log(key, value[key], filters[i].operator, filters[i].value);
+                        var flag = true;
+                        
+                        //console.log(value[filters[i].column]);
+                        //console.log(filters[i].operator);
+                        //console.log(filters[i].value);
 
-                            if (key === filters[i].column) {
-                                entrato = true;
-                                if (filters[i].operator === "<=") {
-                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === -1) {
-                                        console.log("MINORE UGUALE");
-                                        flag = false;
-                                        break;
-                                    } else {
-                                        console.log("NO MINORE UGUALE");
-                                        flag = true;
-                                        break;
-                                    }
-                                } else if (filters[i].operator === ">=") {
-                                    if (value[key].localeCompare(filters[i].value) === 0 || value[key].localeCompare(filters[i].value) === 1) {
-                                        console.log("MAGGIORE UGUALE");
-                                        flag = false;
-                                        break;
-                                    }
-                                    else {
-                                        console.log("NO MAGGIORE UGUALE");
-                                        flag = true;
-                                        break;
-                                    }
-                                } else if (filters[i].operator === "<") {
-                                    if (value[key].localeCompare(filters[i].value) === -1) {
-                                        console.log("MINORE");
-                                        flag = false;
-                                        break
-                                    } else {
-                                        console.log("NO MINORE");
-                                        flag = true;
-                                        break;
-                                    }
-                                } else if (filters[i].operator === ">") {
-                                    if (value[key].localeCompare(filters[i].value) === 1) {
-                                        console.log("MAGGIORE");
-                                        flag = false;
-                                        break
-                                    } else {
-                                        console.log("NO MAGGIORE");
-                                        flag = true;
-                                        break;
-                                    }
-                                } else if (filters[i].operator === "=") {
-                                    if (value[key].localeCompare(filters[i].value) === 0) {
-                                        console.log("UGUALE");
-                                        flag = false;
-                                        break;
-                                    } else {
-                                        console.log("NO UGUALE");
-                                        flag = true;
-                                        break;
-                                    }
-                                } else if (filters[i].operator === "contains") {
-                                    if (value[key].indexOf(filters[i].value) != -1) {
-                                        console.log("CONTIENE");
-                                        flag = false;
-                                        break;
-                                    } else {
-                                        console.log("NON CONTIENE");
-                                        flag = true;
-                                        break;
-                                    }
-                                }
+                        if (filters[i].operator === "<=") {
+                            if (value[filters[i].column].localeCompare(filters[i].value) === 0 || value[filters[i].column].localeCompare(filters[i].value) === -1) {
+                                //console.log("_____<=_____");
+                                flag = false;
+                            } 
+                        } else if (filters[i].operator === ">=") {
+                            if (value[filters[i].column].localeCompare(filters[i].value) === 0 || value[filters[i].column].localeCompare(filters[i].value) === 1) {
+                                //console.log("_____>=_____");
+                                flag = false;
                             }
+                        } else if (filters[i].operator === "<") {
+                            if (value[filters[i].column].localeCompare(filters[i].value) === -1) {
+                                //console.log("_____<_____");
+                                flag = false;
+                            } 
+                        } else if (filters[i].operator === ">") {
+                            if (value[filters[i].column].localeCompare(filters[i].value) === 1) {
+                                //console.log("_____>_____");
+                                flag = false;
+                            } 
+                        } else if (filters[i].operator === "=") {
+                            if (value[filters[i].column].localeCompare(filters[i].value) === 0) {
+                                //console.log("_____=_____");
+                                flag = false;
+                                
+                            } 
+                        } else if (filters[i].operator === "contains") {
+                            if (value[filters[i].column].indexOf(filters[i].value) != -1) {
+                                //console.log("_____contains_____");
+                                flag = false;
+                            }
+                        }
 
-                        } console.log("--------------------------------------");
-
-                        if (flag && entrato) {
+                       
+                        if (flag) {
+                            //console.log("--------------------------------------");
                             ar.pop();
+                            //console.log("POP");
                             $.each(localObjectID, function (key, value) {
                                 delete localObjectID[key];
                                 localObjectID[key] = ar;
                             });
+                            //console.log("--------------------------------------");
+                            break;
                         }
-                        console.log("--------------------------------------");
+                        //console.log("...................END FILTER........................");                      
                     }
-
                 });
             }
         });
 
-        console.log("FINE;");
-        for (var i = 0; i < ar.length; i++) {
-            console.log(ar[i]);
-        }                
-        //Filters
-        console.log(localObjectID);
-        $.each(localObjectID, function (key, value) {
-            delete localObjectID[key];
-            localObjectID[key] = ar;
+        $.each(localObjectID, function (key1, value1) {
+            if (value1.length != 0)
+                call(localObjectID);  //Return the object
+            else
+                call(undefined);      //Return "undefined" if the object is empty
         });
-        call(localObjectID);
     }
     else
         call(undefined);
