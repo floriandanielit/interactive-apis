@@ -18,33 +18,53 @@
         $.each(data, function(key, value) {
 
             var subtemplate = template.find("[class*='e-item:']");
-           // console.log($(template)[0].outerHTML);
+            // console.log($(template)[0].outerHTML);
+              for(var k=0;k<value.length;k++){
 
-            $.each(value, function(key, value) {
-                //console.log(key,value);
-                var tmpChild = subtemplate.children();
-                for (var j = 0; j < $(tmpChild).length; j++) {
+          //  $.each(value, function(key, value) {
 
+                var tmpChild = subtemplate;
+                  $.each(value[k],function(key,value){
+                      var i=0;
+                      for (var key in value) {
+                            console.log($(tmpChild).children().eq(i).attr("class").substr(7), key);
+                          $(tmpChild).children().eq(i).html(function() {
 
-                    $(tmpChild).eq(j).html(function() {
-                        $.each(value, function(key, value) {
+                              if ($(tmpChild).children().eq(i).attr("class").substr(7) === key) return value[key];
+                          });
+                          i++;
+                      }
+                  });
+                  txt = txt.concat($(subtemplate)[0].outerHTML);
+                  //console.log(txt);
+              }
+
+        });
+                       /* $.each(value, function(key, value) {
+                            console.log(key,value);
+                            $(tmpChild).eq(j).html(function() {
+
                         for (var key in value) {
+                            //console.log(key,value);
 
-                            //console.log($(tmpChild).eq(j).attr("class").substr(7) === key);
 
                             if ($(tmpChild).eq(j).attr("class").substr(7) === key) {
-                                console.log(value[key]);
+                              //  console.log(value[key]);
 
-                                    return "ciao";
+                                    return value[key];
 
                             }
-                        }});
+                        }
+                           // console.log(value[key]);
+                           // return value[key];
+                        });
                     });
-                }
 
-                txt = txt.concat($(subtemplate)[0].outerHTML);
-            });
-        });
+
+
+            }*/
+
+
 
         template.find("[class*='e-item:']").remove();
         $(template).append(txt);
@@ -219,6 +239,19 @@ var iapi = (function () {
             });
 
         },
+        join: function (first, second, columnA, columnB, operator, call){
+            //Equijoin
+            if (operator === null) {
+                STJoinAttributes(first, second, columnA, columnB, "=", function (ObjectMerged) {
+                    call(ObjectMerged);
+                });
+            }
+            else {
+                STJoinAttributes(first, second, columnA, columnB, operator, function (ObjectMerged) {
+                    call(ObjectMerged);
+                });
+            }
+        },
         fillForm:  function(idtarget,program,json,call){
             jsonstr = [ {"attribute":"Citazioni", "value":"1"},{"attribute":"Citazioni", "value":"2"},{"attribute":"Citazioni", "value":"3"},{"attribute":"Citazioni", "value":"4"}];
             var activity=jsonstr;
@@ -322,6 +355,91 @@ function updateData(idtarget, pageId, data, call) {
     call();
 }
 
+
+
+
+//Join two same type object (Attributes)
+function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, operator, call) {
+    //TODO
+    //Join Attributes
+
+
+
+
+
+
+    var mergeDupe = function (pub1, pub2) {
+
+        var o = $.extend(true, {}, pub2, pub1);
+
+
+        return o;
+    };
+
+    // true if pub are "operator" (equal,greatest,lower)
+    var checkDupe = function (pub1, pub2) {
+        if (operator === ">=") {
+            if (pub1.localeCompare(pub2) === 1 || pub1.localeCompare(pub2) === 0) {
+                return true;
+            }
+        } else if (operator === "<=") {
+            if (pub1.localeCompare(pub2) === -1 || pub1.localeCompare(pub2) === 0) {
+                return true;
+            }
+        }
+        else if (operator === "=") {
+            if (pub1.localeCompare(pub2) === 0) {
+                return true;
+            }
+        }
+        else if (operator === "<") {
+            if (pub1.localeCompare(pub2) === -1) {
+                return true;
+            }
+        }
+        else if (operator === ">") {
+            if (pub1.localeCompare(pub2) === 1) {
+                return true;
+            }
+        }
+        else
+            return false;
+    };
+
+    //false if all equal
+    var checkDupes = function (arr, value1) {
+        $.each(objTarget, function (pubKey, pubVal) {
+            for (var i = 0; i < pubVal.length; i++) {
+                $.each(pubVal[i], function (key1, value2) {
+                    if (checkDupe(value1[columnSource], value2[columnTarget])) {
+                        arr.push(mergeDupe(value1, value2));
+                    }
+                });
+            }
+        });
+
+    };
+
+    var existingPUBs = [];
+    $.each(objSource, function (pubKey, pubVal) {
+        for (var i = 0; i < pubVal.length; i++) {
+            $.each(pubVal[i], function (key1, value1) {
+                checkDupes(existingPUBs, value1);
+            });
+        }
+    });
+    $.each(objTarget, function (key1, value1) {
+        objTarget[key1] = existingPUBs;
+    });
+
+
+
+
+
+
+
+    call(objTarget);
+}
 
 
 // rendering
@@ -447,223 +565,6 @@ function getObject(call) {
 
 }
 
-
-// get all dataattribute from the stored object
-function getFirstRowKeyObject(dataitem, tmp, call) {
-    var arr = new Array();
-    $.each(tmp, function(key, value) {
-        $.each(value, function(key, value) {
-            arr.length = 0;
-            if (dataitem === true)
-                arr.push(key);
-            for (var key in value) {
-
-                arr.push(key);
-            }
-            call(arr);
-        });
-        return false;
-    });
-}
-//  scan the Dom object
-function scanDOMObject(objectDOM,sourceType, calli) {
-    // console.log(sourceType);
-    var arrdataAttributeKey = new Array();
-    var dataItemLabel;
-    var isRefExt = false;
-    //  console.log(  $("#"+objectDOM).html());
-    if(sourceType ==="json") isRefExt=true;
-
-
-    if (isRefExt === true) {
-        var tmp = false;
-        var ItemTag = $("#"+objectDOM).find("[class*='iapitemplate:item']");
-
-        var classdataItem = $(ItemTag).attr("class").split(" ");
-        console.log(classdataItem);
-        for (var i = 0; i < classdataItem.length; i++) {
-            if (classdataItem[i].substr(0, 9).toLowerCase() === "dataitem:") {
-                var subArrKeyLabel = classdataItem[i].split(":");
-
-                if (subArrKeyLabel.length === 3) {
-                    object = {
-                        "key" : subArrKeyLabel[1],
-                        "label" : subArrKeyLabel[2]
-                    };
-                    arrdataAttributeKey.push(object);
-                } else if (subArrKeyLabel.length === 2) {
-                    object = {
-                        "key" : subArrKeyLabel[1]
-                    };
-                    arrdataAttributeKey.push(object);
-                }
-            }
-        }
-        $(ItemTag).first().children("[class*='dataattribute:']").each(function() {
-
-            var classdataAttribute = $(this).attr("class").split(" ");
-            for (var i = 0; i < classdataAttribute.length; i++) {
-                if (classdataAttribute[i].substr(0, 14) === "dataattribute:") {
-                    var subArrKeyLabel = classdataAttribute[i].split(":");
-                    if (subArrKeyLabel.length === 3) {
-                        object = {
-                            "key" : subArrKeyLabel[1],
-                            "label" : subArrKeyLabel[2]
-                        };
-                        arrdataAttributeKey.push(object);
-                    }
-                }
-            }
-        });
-    }
-    console.log(arrdataAttributeKey);
-    calli(arrdataAttributeKey);
-}
-//Edit and process the template
-function compileAndInjectTemplate(ret, idtarget,tmp, sourceType, callback) {
-
-
-
-    getFirstRowKeyObject(true, tmp, function(arr) {
-        idTemplate = $(ret).attr("id");
-        $(ret).removeAttr('id');
-        $(ret).removeAttr("name");
-        if ($(ret).prop("tagName").toLowerCase()=== "table") {
-            // if the template is a table I set the name of columns
-            ret = $(ret).children();
-            var ret2 = $(ret).children().first();
-            var titleAttribute = ret2.html();
-            for (var k = 2; k < arr.length; k++)
-                $(ret2).append(titleAttribute);
-
-            //set the j children with array keys
-            $(ret2).children().each(function(i) {
-                $(this).empty();
-                console.log(arr[i+1]);
-                $(this).html("" + arr[i + 1]);
-                i++;
-            });
-        }
-        scanDOMObject(idtarget,sourceType, function(arrdataAttributeKey, dataItemLabel) {
-            var dataitemIterator = $(ret).find("[class*='iapitemplate:item']");
-            $(dataitemIterator).removeClass('dataitem:[label]');
-            if (dataItemLabel !== undefined)
-                $(dataitemIterator).addClass("dataitem:" + dataItemLabel + ":" + arr[0]);
-            else
-                $(dataitemIterator).addClass("dataitem:" + arr[0]);
-            arr.shift();
-            $(dataitemIterator).addClass("idTemplate:" + idTemplate);
-            var dataattributeIterator = $(dataitemIterator).children().filter("[class*='iapitemplate:attribute']");
-            $(dataattributeIterator).removeClass("iapitemplate:attribute");
-            var dataattribute = dataattributeIterator[0].outerHTML;
-            //insert j children
-            if (arrdataAttributeKey.length !== 0) {
-                for (var j = 1; j < arrdataAttributeKey.length; j++){
-                    //     console.log("aaa"+ arrdataAttributeKey[j].key +" :"+arrdataAttributeKey[j].label);
-                    $(dataitemIterator).append(dataattribute);
-                }
-
-            } else {
-                for (var j = 1; j < arr.length; j++)
-                    $(dataitemIterator).append(dataattribute);
-
-            }
-            //set the j children with array keys
-            $(dataattributeIterator).parent().children().each(function() {
-
-                $(this).removeClass();
-                if (arrdataAttributeKey.length !== 0) {
-                    var i;
-                    var find = false;
-                    for ( i = 0; i < arr.length && find === false; i++) {
-                        console.log(arrdataAttributeKey[0].label +"aa:"+arr[i]);
-                        //.replace(/(\r\n|\n|\r)/gm, "")
-                        if (arrdataAttributeKey[0].label === arr[i]) {
-                            find = true;
-
-                            $(this).addClass("dataattribute:" + arrdataAttributeKey[0].key.replace(/(\r\n|\n|\r)/gm, "") + ":" + arr[i]);
-                        }
-                    }
-                    arrdataAttributeKey.shift();
-                    if (find === true) {
-                        arr.splice(i - 1, 1);
-                    }
-                } else {
-                    $(this).addClass("dataattribute:" + arr[0]);
-                    arr.shift();
-                }
-            });
-            if ($(ret).prop("tagName").toLowerCase() === "tbody") {
-                callback($(ret).parent());
-            } else
-                callback(ret);
-        });
-    });
-
-
-}
-
-
-
-// Add hide property to the selected Dataattribute
-function hideDataattribute(id, type, call) {
-    var YourFindElement = $(".iapi").filter("#" + id);
-    var findHide = false;
-    var tagtarg = YourFindElement.attr("class").split(" ");
-    var tagtarg2;
-    var tagClass = "";
-    for (i = 0; i < tagtarg.length; i++) {
-        if (tagtarg[i].substr(0, 5) === "hide:") {
-            findHide = true;
-            tagtarg[i] += ":" + type;
-        }
-        if (i === 0)
-            tagClass += tagtarg[i];
-        else
-            tagClass += " " + tagtarg[i];
-    }
-
-    if (findHide === false) {
-        tagtarg2 = YourFindElement.attr("class");
-        tagtarg2 += " hide:" + type;
-        tagClass = tagtarg2;
-    }
-
-    YourFindElement.attr("class", tagClass);
-    call("done");
-}
-
-// Remove the Hide property from the selected Dataattribute
-function showDataattribute(id, type, call) {
-    var YourFindElement = $(".iapi").filter("#" + id);
-    var findHide = false;
-    var tagClass = "";
-    var findDataAttribute = false;
-    var tagtarg = YourFindElement.attr("class").split(" ");
-    for (i = 0; i < tagtarg.length; i++) {
-        if (tagtarg[i].substr(0, 5) === "hide:") {
-            findHide = true;
-            var arrayHideElement = tagtarg[i].substr(5).split(":");
-            if (arrayHideElement.length !== 1)
-                tagClass += " " + tagtarg[i].substr(0, 4);
-            for (var j = 0; j < arrayHideElement.length; j++) {
-                if (arrayHideElement[j] === type) {
-                    findDataAttribute = true;
-                    tagClass.substr(0, tagClass.length - 1);
-                } else {
-                    tagClass += ":" + arrayHideElement[j];
-                }
-            }
-        } else {
-            if (i === 0)
-                tagClass += tagtarg[i];
-            else
-                tagClass += " " + tagtarg[i];
-        }
-    }
-    YourFindElement.attr("class", tagClass);
-    call("done");
-}
 
 
 //  send a message to middleware to load and Externale page
