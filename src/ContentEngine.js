@@ -420,13 +420,14 @@ function Filter(first, option, call) {
     //TODO
     //Filter
     doFilter(first, option, function (obj) {
+        console.log(obj);
         call(obj);
     })
 }
 //TEST//var a = new Array();
-//TEST//a.push({ "column": "oid", "operator": "contains", "value": "1" });
-//TEST//a.push({ "column": "oid", "operator": ">", "value": "129" });
-//TEST//Filter("", a, function () { });
+//TEST//a.push({ "column": "Oid", "operator": ">", "value": "119" });
+//TEST//a.push({ "column": "Oid", "operator": "contains", "value": "0" });
+//TEST//Filter("", [{ "column": "Oid", "operator": ">", "value": "119" }], function () { });
 
 /// <summary>General Function ShowAttribute called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
@@ -533,16 +534,49 @@ function getTemplate(idTemplate, first, call) {
 
     LoadTemplateFile(idTemplate, function (file) {
         var template = $("<div>" + file + "</div>").find('#' + idTemplate);
-        getFirstRowKeyObjectNEW(false, first, function (arr) {
-            for (var i = 0; i < arr.length; i++) {
-                console.log(arr[i]);
+        $(template).removeAttr("name");
+        $(template).removeAttr("id");
+        getFirstRowKeyObjectNEW(true, first, function (arr) {
+            //for (var i = 0; i < arr.length; i++) {
+            //    console.log(arr[i]);
+            //}
+            if ($(template).prop("tagName").toLowerCase() === "table") {
+                template = $(template).children().first();
+                var html = $(template).children().first().html();
+                for (var i = 1; i < arr.length - 1; i++) {
+                    $(template).children().first().append(html);
+                    $(template).children().first().children().eq(i - 1).replaceWith($(html).html(arr[i]));
+                }
+                $(template).children().first().children().last().replaceWith($(html).html(arr[arr.length - 1]));
             }
-            call();
+            
+            var dataitemIterator = $(template).find("[class*='iapitemplate:item']");
+            $(dataitemIterator).removeClass('e-item:[label]');
+            $(dataitemIterator).addClass("e-item:" + arr[0]);
+            arr.shift();
+            //$(dataitemIterator).addClass("idTemplate:" + idTemplate);
+            var dataattributeIterator = $(dataitemIterator).children().filter("[class*='iapitemplate:attribute']");
+            $(dataattributeIterator).removeClass("iapitemplate:attribute");
+            var dataattribute = dataattributeIterator[0].outerHTML;
+
+            //insert j children
+            for (var j = 1; j < arr.length; j++)
+                $(dataitemIterator).append(dataattribute);
+
+            $(dataattributeIterator).parent().children().each(function () {
+                $(this).removeClass();
+                $(this).addClass("p-attr:" + arr[0]);
+                arr.shift();
+            });
+            call(template);
         });
 
     });
 }
-//TEST//getTemplate("2D_L_SNEW", "", function (val) {});
+//TEST//
+getTemplate("2D_NL_SNEW", "", function (val) {
+    console.log(val[0].outerHTML);
+});
 
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
@@ -615,29 +649,52 @@ function Show(objTarget, options, call) {
 //Filter the object in the local storage
 function doFilter(localObjectID, filters, call) {
     localObjectID = {
-        "Publication": [{
-            "Publication2":
-                {
-                    "oid": "120",
-                    "author": "B. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                    "title": "Advancsed Web Services",
-                    "to_uploadresource": null,
-                    "abstract": "Web services and Service-Oriented Computing (SOC)......",
-                    "where": "Springer, 2014. In print. ISBasdsN 978-1-4614-7534-7"
-                }
-        }, {
-            "Publication2":
-               {
-                   "oid": "141",
-                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                   "title": "Advanced Web Services",
-                   "to_uploadresource": null,
-                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
-                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-               }
-        }]
-
+        "Publications":
+            [{
+                "Publication":
+                 {
+                     "Oid": "120",
+                     "Authors": "F. Daniel and A. Furlan",
+                     "Title": "The Interactive API (iAPI)",
+                     "Conference": "ComposableWeb 2013",
+                     "Href": "Florian@email.com",
+                     "Abstract": "this is a demo "
+                 }
+            }, {
+                "Publication":
+                    {
+                        "Oid": "125",
+                        "Authors": "F. Daniel",
+                        "Title": "The Interactive API (iAPI)",
+                        "Conference": "ComposableWeb 2014",
+                        "Href": "Florian@email.com",
+                        "Abstract": "this is a demo "
+                    }
+            }, {
+                "Publication":
+                    {
+                        "Oid": "127",
+                        "Authors": "A. Furlan",
+                        "Title": "The Interactive API (iAPI)",
+                        "Conference": "ComposableWeb 2015",
+                        "Href": "Florian@email.com",
+                        "Abstract": "this is a demo "
+                    }
+            }, {
+                "Publication":
+                    {
+                        "Oid": "118",
+                        "Authors": "Anis Nouri",
+                        "Title": "The Interactive API (iAPI)",
+                        "Conference": "ComposableWeb 2016",
+                        "Href": "Florian@email.com",
+                        "Abstract": "this is a demo "
+                    }
+            }]
     }
+
+
+    //{"3":{"Publications":[{"Publication":{"Oid":"120","Authors":"F. Daniel and A. Furlan","Title":"The Interactive API (iAPI)","Conference":"ComposableWeb 2013","Href":"Florian@email.com","Abstract":"this is a demo "}},{"Publication":{"Oid":"117","Authors":"B","Title":"The Interactive API (iAPI)","Conference":"ComposableWeb 2014","Href":"Florian@email.com","Abstract":"this is a demo "}},{"Publication":{"Oid":"140","Authors":"C","Title":"The Interactive API (iAPI)","Conference":"ComposableWeb 2015","Href":"Florian@email.com","Abstract":"this is a demo "}},{"Publication":{"Oid":"189","Authors":"D","Title":"The Interactive API (iAPI)","Conference":"ComposableWeb 2016","Href":"Florian@email.com","Abstract":"this is a demo "}}]}}
     if (localObjectID !== undefined) {
         //for (var i = 0; i < filters.length; i++) {
         //   console.log("Filter[" + i + "]:column:" + filters[i].column + "_" + filters[i].operator + "_" + filters[i].value);
@@ -704,7 +761,6 @@ function doFilter(localObjectID, filters, call) {
                 });
             }
         });
-
         $.each(localObjectID, function (key1, value1) {
             if (value1.length != 0)
                 call(localObjectID);  //Return the object
@@ -752,12 +808,12 @@ function STEliminateDuplicates(objSource, objTarget, call) {
             var existingPUBs = [];
             $.each(objTarget, function (pubKey, pubVal) {
                 for (var i = 0; i < pubVal.length; i++) {
-                     checkDupes(existingPUBs, pubVal[i]);
+                    checkDupes(existingPUBs, pubVal[i]);
                 }
             });
             $.each(objTarget, function (key1, value1) {
                 objTarget[key1] = existingPUBs;
-            }); 
+            });
             call(objTarget);
         });
     }
@@ -963,6 +1019,7 @@ function STJoinAttributes(objSource, objTarget, columnSource, columnTarget, oper
 
 ///////////////////////////////////////////
 
+//Load Template file
 function LoadTemplateFile(id, call) {
     chrome.extension.sendMessage({
         "type": "getExternal",
