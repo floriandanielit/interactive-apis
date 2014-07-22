@@ -400,7 +400,7 @@ function UnionAll(first, second, call) {
 }
 //TEST//UnionAll("", "", function () { });
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!// <summary>General Function UnionWithoutDuplication called by iapi_scripting</summary>
+//TEST// <summary>General Function UnionWithoutDuplication called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>    
 /// <param name="second" type="Object">The second Object in LocalStorage</param>   
 /// <param name="call" type="function">Callback</param>
@@ -417,42 +417,14 @@ function UnionWithoutDuplication(first, second, call) {
 /// <param name="option" type="Array Object">Array of Filters [{"column":"Author","operator":"contains","value":"Florian"},{"column":"oid","operator":">=","value":"120"}]</param>
 /// <param name="call" type="function">Callback</param>
 function Filter(first, option, call) {
-    //TODO
-    //Filter
     doFilter(first, option, function (obj) {
-        console.log(obj);
         call(obj);
     })
 }
 //TEST//var a = new Array();
 //TEST//a.push({ "column": "Oid", "operator": ">", "value": "119" });
 //TEST//a.push({ "column": "Oid", "operator": "contains", "value": "0" });
-//TEST//Filter("", [{ "column": "Oid", "operator": ">", "value": "119" }], function () { });
-
-/// <summary>General Function ShowAttribute called by iapi_scripting</summary>
-/// <param name="first" type="Object">The Object in LocalStorage</param>   
-/// <param name="option" type="Array String">Array of columns ["Author","Conference","Title"]</param>
-/// <param name="call" type="function">Callback</param>
-function ShowAttribute(first, option, call) {
-    if (typeof option === "string") {
-        var opt = new Array();
-        opt.push(option);
-        Show(first, opt, function (obj) {
-            call(obj);
-        });
-    }
-    else {
-        for (var i = 0; i < option.length; i++) {
-            if (typeof option[i] !== "string")
-                call(undefined);
-        }
-        Show(first, option, function (obj) {
-            call(obj);
-        });
-    }
-}
-//TEST//ShowAttribute("", ["oid", "where", "title"], function () { });
-//TEST//ShowAttribute("", "author", function () { });
+//TEST//Filter("", [{ "column": "Oid", "operator": ">", "value": "119" }], function (obj) { console.log(obj);});
 
 /// <summary>General Function HideAttribute called by iapi_scripting</summary>
 /// <param name="first" type="Object">The Object in LocalStorage</param>   
@@ -463,7 +435,6 @@ function HideAttribute(first, option, call) {
         var opt = new Array();
         opt.push(option);
         Hide(first, opt, function (obj) {
-            console.log(obj);
             call(obj);
         });
     }
@@ -473,19 +444,18 @@ function HideAttribute(first, option, call) {
                 call(undefined);
         }
         Hide(first, option, function (obj) {
-            console.log(obj);
             call(obj);
         });
     }
 }
-//TEST//HideAttribute("", ["oid", "where", "title"], function () { });
-//TEST//HideAttribute("", "author", function () { });
+//TEST//HideAttribute("", ["oid", "where", "title"], function (obj) { console.log(obj);});
+//TEST//HideAttribute("", "author", function (obj) {console.log(obj);});
 
 /// <summary>General Function GetTemplate called by iapi_scripting</summary>
 /// <param name="idTemplate" type="Integer">Id of Template</param>   
 /// <param name="first" type="Object">The Object in LocalStorage</param>
 /// <param name="call" type="function">Callback</param>
-function getTemplate(idTemplate, first, call) {
+function getTemplate(idTemplate, first) {
 
     first = {
         "Publication": [{
@@ -568,15 +538,15 @@ function getTemplate(idTemplate, first, call) {
                 $(this).addClass("p-attr:" + arr[0]);
                 arr.shift();
             });
-            call(template);
+            //console.log($(template)[0].outerHTML);
+            return template;
         });
+        //return template;
 
     });
 }
-//TEST//
-getTemplate("2D_NL_SNEW", "", function (val) {
-    console.log(val[0].outerHTML);
-});
+var temp = getTemplate("2D_TNEW", "");
+console.log(temp);
 
 /////////////////FUNCTIONS UNION, JOIN, FILTERS//////////////////////////
 
@@ -619,30 +589,6 @@ function Hide(objTarget, options, call) {
             }
         });
         call(objTarget);
-    }
-}
-
-//Show dataattribute
-function Show(objTarget, options, call) {
-    objTarget = {
-        "Publication": [{
-            "Publication2":
-                {
-                    "oid": "234",
-                    "where": "Trento",
-                    "title": "Test"
-                }
-        }, {
-            "Publication2":
-               {
-                   "oid": "141",
-                   "author": "A. Bouguettaya, Q. Z. Sheng and F. Daniel (Eds.)",
-                   "title": "Advanced Web Services",
-                   "to_uploadresource": null,
-                   "abstract": "Web services and Service-Orieaaaaaaaaaaaaaaanted Computing (SOC)......",
-                   "where": "Springer, 2014. In print. ISBN 978-1-4614-7534-7"
-               }
-        }]
     }
 }
 
