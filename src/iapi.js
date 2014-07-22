@@ -357,6 +357,49 @@ var iapi = (function () {
                 call(objTarget);
             }
         },
+        getTemplate: function (idTemplate, first, call) {
+
+            LoadTemplateFile(idTemplate, function (file) {
+                var template = $("<div>" + file + "</div>").find('#' + idTemplate);
+                $(template).removeAttr("name");
+                $(template).removeAttr("id");
+                getFirstRowKeyObjectNEW(true, first, function (arr) {
+                    //for (var i = 0; i < arr.length; i++) {
+                    //    console.log(arr[i]);
+                    //}
+                    if ($(template).prop("tagName").toLowerCase() === "table") {
+                        template = $(template).children().first();
+                        var html = $(template).children().first().html();
+                        for (var i = 1; i < arr.length - 1; i++) {
+                            $(template).children().first().append(html);
+                            $(template).children().first().children().eq(i - 1).replaceWith($(html).html(arr[i]));
+                        }
+                        $(template).children().first().children().last().replaceWith($(html).html(arr[arr.length - 1]));
+                    }
+
+                    var dataitemIterator = $(template).find("[class*='iapitemplate:item']");
+                    $(dataitemIterator).removeClass('e-item:[label]');
+                    $(dataitemIterator).addClass("e-item:" + arr[0]);
+                    arr.shift();
+                    //$(dataitemIterator).addClass("idTemplate:" + idTemplate);
+                    var dataattributeIterator = $(dataitemIterator).children().filter("[class*='iapitemplate:attribute']");
+                    $(dataattributeIterator).removeClass("iapitemplate:attribute");
+                    var dataattribute = dataattributeIterator[0].outerHTML;
+
+                    //insert j children
+                    for (var j = 1; j < arr.length; j++)
+                        $(dataitemIterator).append(dataattribute);
+
+                    $(dataattributeIterator).parent().children().each(function () {
+                        $(this).removeClass();
+                        $(this).addClass("p-attr:" + arr[0]);
+                        arr.shift();
+                    });
+                    call(template);
+                });
+
+            });
+        },
         fillForm: function (idtarget, program, json, call) {
             jsonstr = [
                 {"attribute": "Citazioni", "value": "1"},
@@ -670,3 +713,18 @@ function getPage(urlSource, idtarget, call) {
 
 
 
+
+//  send a message to middleware to load the templates
+function LoadTemplateFile(urlSource, idtarget, call) {
+    try {
+        var pass_data = {
+            'action': "getExternal",
+            'value': urlSource,
+            'idtarget': idtarget
+        };
+        window.postMessage(JSON.stringify(pass_data), window.location.href);
+    } catch (e) {
+        alert(e);
+    }
+    call();
+}

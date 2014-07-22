@@ -4,94 +4,80 @@
     <title>TEMPLATES</title>
 </head>
 <body>
-    <!--/////////////////////////////////////////////////////////////////////////////////
-    	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-        /////////////////////////////////////////////////////////////////////////////////-->
+<!--/////////////////////////////////////////////////////////////////////////////////
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    /////////////////////////////////////////////////////////////////////////////////-->
 
-    <div id="2D">
-        <table id="2D_T" name="Table" cellspacing="1" cellpadding="3">
-            <tbody>
-                <tr>
-                    <td>[attribute:label]</td>
-                </tr>
-                <tr class="iapitemplate:item dataitem:[label]">
-                    <td class="iapitemplate:attribute dataattribute:[label]"></td>
-                </tr>
-            </tbody>
-        </table>
+<div id="2D">
+    <table id="2D_T" name="Table" border="1" cellspacing="0">
+        <tbody>
+        <tr>
+            <td>[p-attr]</td>
+        </tr>
+        <tr class="iapitemplate:item e-item:[label]">
+            <td class="iapitemplate:attribute p-attr:[label]"></td>
+        </tr>
+        </tbody>
+    </table>
 
-        <!--<table id="78" class="iapi datasource:http://localhost:60481/demo/source.html sourcetype:iapi iapiid:1" style="background-color: gray;" cellspacing="1" cellpadding="3">
-            <tr style="font-weight: bold; background-color: white;">
-                <td>Author</td>
-                <td>Href</td>
-                <td>Conference</td>
-            </tr>
-            <tr class="iapitemplate:item dataitem:Publication" style="background-color: white;">
-                <td class="dataattribute:Author"> </td>
-                <td class="dataattribute:Href"></td>
-                <td class="dataattribute:Conference"></td>
-            </tr>
-        </table>
-            -->
-        <!--/////////////////////////////////////////////////////////////////////////////////-->
+    <!--/////////////////////////////////////////////////////////////////////////////////-->
 
-        <ul id="2D_L_S" name="List Span">
-            <li class="iapitemplate:item dataitem:[label]">
-                <span class="iapitemplate:attribute dataattribute:[label]">
+    <ul id="2D_L_S" name="List Span">
+        <li class="iapitemplate:item e-item:[label]">
+                <span class="iapitemplate:attribute p-attr:[label]">
                 </span>
+        </li>
+    </ul>
+    <ul id="2D_L_D" name="List Div">
+        <li class="iapitemplate:item e-item:[label]">
+            <div class="iapitemplate:attribute p-attr:[label]">
+            </div>
+        </li>
+    </ul>
+
+    <!--/////////////////////////////////////////////////////////////////////////////////-->
+    <div id="2D_NL_S" name="Numbered List">
+
+        <ol class="iapitemplate:item e-item:[label]">
+            <li class="iapitemplate:attribute p-attr:[label]">
             </li>
-        </ul>
-        <ul id="2D_L_D" name="List Div">
-            <li class="iapitemplate:item dataitem:[label]">
-                <div class="iapitemplate:attribute dataattribute:[label]">
-                </div>
-            </li>
-        </ul>
+        </ol>
 
-        <!--/////////////////////////////////////////////////////////////////////////////////-->
-        <div id="2D_NL_S" name="Numbered List">
+    </div>
+    <div id="2D_NL_D" name="Numbered List Div">
 
-            <ol class="iapitemplate:item dataitem:[label]">
-                <li class="iapitemplate:attribute dataattribute:[label]">
-                </li>
-            </ol>
-
-        </div>
-        <div id="2D_NL_D" name="Numbered List Div">
-
-            <ol class="iapitemplate:item dataitem:[label]">
-                <div class="iapitemplate:attribute dataattribute:[label]">
-                </div>
-            </ol>
-
-        </div>
-
-        <!--/////////////////////////////////////////////////////////////////////////////////-->
-
-        <div id="2D_P_S" name="Paragraph Span">
-            <p class="iapitemplate:item dataitem:[label]">
-                <span class="iapitemplate:attribute dataattribute:[label]">
-                </span>
-            </p>
-        </div>
+        <ol class="iapitemplate:item e-item:[label]">
+            <div class="iapitemplate:attribute p-attr:[label]">
+            </div>
+        </ol>
     </div>
 
-    <!--/////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////-->
+    <!--/////////////////////////////////////////////////////////////////////////////////-->
 
-    <div id="3D">
-        <table id="3D_Tr2" name="Table 3D">
-            <tr class="iapitemplate:item  dataitem:[label]">
-                <td class="iapitemplate:subitem  subitem:[label]">
+    <div id="2D_P_S" name="Paragraph Span">
+        <p class="iapitemplate:item e-item:[label]">
+                <span class="iapitemplate:attribute p-attr:[label]">
+                </span>
+        </p>
+    </div>
+</div>
+
+<!--/////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////-->
+
+<div id="3D">
+    <table id="3D_Tr2" name="Table 3D">
+        <tr class="iapitemplate:item  dataitem:[label]">
+            <td class="iapitemplate:subitem  subitem:[label]">
                     <span class="iapitemplate:attribute dataattribute:[label]">
                     </span>
-                </td>
-            </tr>
-        </table>
-    </div>
+            </td>
+        </tr>
+    </table>
+</div>
 
-    <!--/////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////-->
+<!--/////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////-->
 
 
 
